@@ -103,6 +103,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 generateInitialSolution(
                         (CollectionObject) queryObject, (CollectionObject) caseObject, valuator));
 
+        //TODO: DONE
+
         // iterate as long as we dont find a finished solution
         AStarSolution topSolution = solutions.first();
         int sizeQueryObjects = ((CollectionObject) queryObject).size();
@@ -124,6 +126,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 this, queryObject, caseObject, topSolution.f.getValue(), localSimilarities);
     }
 
+    //TODO: DONE
     private void cutOffQueue(TreeSet<AStarSolution> solutions) {
         Iterator<AStarSolution> iter = solutions.descendingIterator();
         // if maxQueueSize is negative, the pruning of the queue is disabled
@@ -185,6 +188,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         return newSolutions;
     }
 
+    //TODO: DONE
     /**
      * creates the starting solution
      */
@@ -196,6 +200,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         initialSolution.queryCollection = new LinkedList<>();
         initialSolution.caseCollection = new LinkedList<>();
         initialSolution.mapping = new HashSet<>();
+        initialSolution.g_h_Denominator = 0;
 
         // transform CAKE collections to Java-collections (easier handling)
         DataObjectIterator itC = caseObject.iterator();
@@ -210,17 +215,18 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
             // calc max similarity per queryItem (necessary for A* II heuristic approximation)
             // also fill cache
             double maxQSim = getMaxSimilarity(curQDO, initialSolution.caseCollection, valuator);
+            DataObject maxQsimCase = getMaxSimilarityCase(curQDO, initialSolution.caseCollection, valuator);
             maxQueryItemSimilarities.put(curQDO, maxQSim);
             initialSolution.h_Numerator += maxQSim;
+            initialSolution.g_h_Denominator += weightFunc.apply(curQDO,maxQsimCase);
         }
-
-        initialSolution.g_h_Denominator = initialSolution.queryCollection.size();
 
         calcFValue(initialSolution);
 
         return initialSolution;
     }
 
+    //TODO: DONE
     /**
      * retrieves the next ID
      */
@@ -228,6 +234,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         return IDCounter++;
     }
 
+    //TODO: DONE
     /**
      * calculates the maximum similarity for the queryItem among the given caseItems
      */
@@ -236,7 +243,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
         double maxSim = 0;
         for (DataObject curCaseDO : amongTheseCaseItems) {
-            Similarity curSim = valuator.computeSimilarity(queryItem, curCaseDO, getSimilarityToUse());
+            Similarity curSim = valuator.computeSimilarity(queryItem, curCaseDO, similarityToUseFunc.apply(queryItem, curCaseDO));
+            curSim = new SimilarityImpl(this, queryItem, curCaseDO, weightFunc.apply(queryItem, curCaseDO) * curSim.getValue());
             // fill cache
             mappingCache.put(queryItem, curCaseDO, curSim);
             double simValue = curSim.getValue();
@@ -248,6 +256,31 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         return maxSim;
     }
 
+    //TODO: DONE
+    /**
+     * calculates the maximum similarity for the queryItem among the given caseItems
+     */
+    private DataObject getMaxSimilarityCase(
+            DataObject queryItem, List<DataObject> amongTheseCaseItems, SimilarityValuator valuator) {
+
+        double maxSim = 0;
+        DataObject maxCase = null;
+        for (DataObject curCaseDO : amongTheseCaseItems) {
+            Similarity curSim = valuator.computeSimilarity(queryItem, curCaseDO, similarityToUseFunc.apply(queryItem, curCaseDO));
+            curSim = new SimilarityImpl(this, queryItem, curCaseDO, weightFunc.apply(queryItem, curCaseDO) * curSim.getValue());
+            // fill cache
+            mappingCache.put(queryItem, curCaseDO, curSim);
+            double simValue = curSim.getValue();
+            if (simValue > maxSim) {
+                maxSim = simValue;
+                maxCase = curCaseDO;
+            }
+        }
+
+        return maxCase;
+    }
+
+    //TODO: DONE
     /**
      * f = g + h
      *
@@ -279,7 +312,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         return newValue;
     }
 
-
+    //TODO: DONE
     @Override
     // it's necessary to override this method, because otherwise the maxQueueSize would be returned to
     // the default value
