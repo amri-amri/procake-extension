@@ -5,6 +5,7 @@ import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionIsolatedMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionIsolatedMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import utils.SimFunc;
@@ -12,7 +13,7 @@ import utils.WeightFunc;
 
 import java.util.ArrayList;
 
-public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMappingExt {
+public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMapping, ISimFunc, IWeightFunc {
 
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a, b) -> 1;

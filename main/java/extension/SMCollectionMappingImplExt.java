@@ -20,7 +20,7 @@ import utils.WeightFunc;
 import java.security.InvalidParameterException;
 import java.util.*;
 
-public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt {
+public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMapping, ISimFunc, IWeightFunc {
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a, b) -> 1;
 

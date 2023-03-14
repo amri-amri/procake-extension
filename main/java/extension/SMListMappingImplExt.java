@@ -5,6 +5,7 @@ import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMListMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import utils.SimFunc;
@@ -12,7 +13,7 @@ import utils.WeightFunc;
 
 import java.util.ArrayList;
 
-public class SMListMappingImplExt extends SMListMappingImpl implements SMListMappingExt{
+public class SMListMappingImplExt extends SMListMappingImpl implements SMListMapping, ISimFunc, IWeightFunc {
 
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a, b) -> 1;

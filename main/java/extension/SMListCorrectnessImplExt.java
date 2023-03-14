@@ -4,12 +4,13 @@ import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMListCorrectness;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListCorrectnessImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import utils.SimFunc;
 import utils.WeightFunc;
 
-public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectnessExt {
+public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectness, IWeightFunc {
 
     protected WeightFunc weightFunc = (a, b) -> 1;
     private double discordantParameter = DEFAULT_DISCORDANT_PARAMETER;
