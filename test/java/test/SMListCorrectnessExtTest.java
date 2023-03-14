@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ListCorrectnessTest extends CollectionSimilarityTest{
+public class SMListCorrectnessExtTest extends CollectionSimilarityTest{
 
     protected ListObject list1(){
         ListObject list = (ListObject) ModelFactory.getDefaultModel().createObject(listname);

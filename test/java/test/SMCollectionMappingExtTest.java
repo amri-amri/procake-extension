@@ -10,7 +10,7 @@ import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionMapp
 import extension.SMCollectionMappingImplExt;
 import org.junit.Test;
 
-public class CollectionMappingTest extends CollectionSimilarityTest{
+public class SMCollectionMappingExtTest extends CollectionSimilarityTest{
 
     public ListObject workdays2(){
         ListObject workdays = (ListObject) ModelFactory.getDefaultModel().createObject(listname);

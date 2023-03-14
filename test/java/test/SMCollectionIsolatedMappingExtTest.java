@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class CollectionIsolatedMappingTest extends CollectionSimilarityTest {
+public class SMCollectionIsolatedMappingExtTest extends CollectionSimilarityTest {
 
     public ListObject workdays2(){
         ListObject workdays = (ListObject) ModelFactory.getDefaultModel().createObject(listname);

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ListMappingTest extends CollectionSimilarityTest {
+public class SMListMappingExtTest extends CollectionSimilarityTest {
 
     public ListObject weekdays2(){
         ListObject workdays = (ListObject) ModelFactory.getDefaultModel().createObject(listname);

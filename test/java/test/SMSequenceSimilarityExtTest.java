@@ -26,7 +26,7 @@ import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
 
 import javax.naming.directory.InvalidAttributeValueException;
 
-public class SequenceSimilarityTest {
+public class SMSequenceSimilarityExtTest {
 
 
 
