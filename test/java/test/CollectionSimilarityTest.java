@@ -5,14 +5,12 @@ import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.model.base.ListClass;
 import de.uni_trier.wi2.procake.data.object.DataObjectUtils;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
-import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinImpl;
 import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
-import org.junit.Before;
+import org.junit.*;
 
 
 public class CollectionSimilarityTest {
@@ -29,12 +27,12 @@ public class CollectionSimilarityTest {
 
     public DataObjectUtils utils;
     public SimilarityValuator simVal;
-    String listname = "customListClass";
+    final String LIST_CLASS_NAME = "customListClass";
 
     public final double delta = 0.0000001;
 
     public ListObject weekdays(){
-        ListObject weekdays = (ListObject) ModelFactory.getDefaultModel().createObject(listname);
+        ListObject weekdays = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
 
         weekdays.addValue(utils.createStringObject(days[0]));
         weekdays.addValue(utils.createStringObject(days[1]));
@@ -48,7 +46,7 @@ public class CollectionSimilarityTest {
     }
 
     public ListObject workdays(){
-        ListObject workdays = (ListObject) ModelFactory.getDefaultModel().createObject(listname);
+        ListObject workdays = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
 
         workdays.addValue(utils.createStringObject(days[0]));
         workdays.addValue(utils.createStringObject(days[1]));
@@ -64,7 +62,7 @@ public class CollectionSimilarityTest {
         CakeInstance.start(ResourcePaths.PATH_COMPOSITION);
 
         ListClass listClass = (ListClass) ModelFactory.getDefaultModel().getListSystemClass();
-        ListClass customListClass = (ListClass) listClass.createSubclass(listname);
+        ListClass customListClass = (ListClass) listClass.createSubclass(LIST_CLASS_NAME);
         customListClass.setElementClass(ModelFactory.getDefaultModel().getStringSystemClass());
         customListClass.finishEditing();
 

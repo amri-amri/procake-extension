@@ -1,0 +1,152 @@
+package test;
+
+import de.uni_trier.wi2.procake.data.model.ModelFactory;
+import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.base.StringObject;
+import de.uni_trier.wi2.procake.similarity.Similarity;
+import org.junit.Test;
+import extension.*;
+
+import static org.junit.Assert.assertEquals;
+
+public class SMListMappingImplExtTest extends CollectionSimilarityTest{
+
+    @Test
+    public void test1(){
+        ListObject queryList = workdays();
+        ListObject caseList = weekdays();
+
+        SMListMappingImplExt sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+
+        Similarity sim = sm.compute(queryList, caseList, simVal);
+
+        assertEquals(1.0, sim.getValue(),delta);
+
+        sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+
+        sim = sm.compute(caseList, queryList, simVal);
+
+        assertEquals(1.0, sim.getValue(),delta);
+    }
+
+    @Test
+    public void test2(){
+        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+
+        queryList.addValue(utils.createStringObject("A"));
+        queryList.addValue(utils.createStringObject("B"));
+        queryList.addValue(utils.createStringObject("C"));
+
+        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        caseList.addValue(utils.createStringObject("A"));
+        caseList.addValue(utils.createStringObject("B"));
+        caseList.addValue(utils.createStringObject("B"));
+        caseList.addValue(utils.createStringObject("C"));
+
+        SMListMappingImplExt sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+
+        Similarity sim = sm.compute(queryList, caseList, simVal);
+
+        assertEquals(2./3, sim.getValue(), delta);
+
+        sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+        sm.setWeightFunction(a -> {
+            if (((StringObject) a).getNativeString().equals("C")) return 0.;
+            return 1.;
+        });
+
+        sim = sm.compute(queryList, caseList, simVal);
+
+        assertEquals(1., sim.getValue(), delta);
+
+
+
+
+        sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+        sm.setWeightFunction(a -> {
+            if (((StringObject) a).getNativeString().equals("C")) return 0.5;
+            return 1.;
+        });
+
+        sim = sm.compute(queryList, caseList, simVal);
+
+        assertEquals(4./5, sim.getValue(), delta);
+
+
+
+        sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+        sm.setWeightFunction(a -> {
+            if (((StringObject) a).getNativeString().equals("C")) return 0.5;
+            return 1.;
+        });
+
+        sim = sm.compute(caseList, queryList, simVal);
+
+        assertEquals(2./3, sim.getValue(), delta);
+
+    }
+
+    @Test
+    public void test3(){
+        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+
+        queryList.addValue(utils.createStringObject("A"));
+        queryList.addValue(utils.createStringObject("B"));
+        queryList.addValue(utils.createStringObject("C"));
+        queryList.addValue(utils.createStringObject("D"));
+
+
+        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        caseList.addValue(utils.createStringObject("A"));
+        caseList.addValue(utils.createStringObject("B"));
+        caseList.addValue(utils.createStringObject("B"));
+        caseList.addValue(utils.createStringObject("D"));
+
+        SMListMappingImplExt sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+        sm.setWeightFunction(a -> {
+            if (((StringObject) a).getNativeString().equals("B")) return 0.;
+            return 1.;
+        });
+        sm.setContainsExact();
+
+        Similarity sim = sm.compute(queryList, caseList, simVal);
+
+        assertEquals(2./3, sim.getValue(), delta);
+
+
+        sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+        sm.setWeightFunction(a -> {
+            if (((StringObject) a).getNativeString().equals("B")) return 0.;
+            return 1.;
+        });
+        sm.setContainsExact();
+
+        sim = sm.compute(caseList, queryList, simVal);
+
+        assertEquals(1., sim.getValue(), delta);
+
+
+
+        queryList.addValue(utils.createStringObject("E"));
+
+        sm = new SMListMappingImplExt();
+        sm.setSimilarityToUse("SMStringEqual");
+        sm.setWeightFunction(a -> {
+            if (((StringObject) a).getNativeString().equals("B")) return 0.;
+            return 1.;
+        });
+        sm.setContainsExact();
+
+        sim = sm.compute(queryList, caseList, simVal);
+
+        assertEquals(0., sim.getValue(), delta);
+    }
+}

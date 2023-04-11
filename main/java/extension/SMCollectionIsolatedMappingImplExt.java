@@ -50,11 +50,6 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         return weightFunc;
     }
 
-
-
-
-
-
     @Override
     public Similarity compute(
             DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
@@ -93,10 +88,9 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     protected Similarity computeLocalSimilarity(
             DataObject queryElement, CollectionObject caseCollection, SimilarityValuator valuator) {
 
-        String localSimToUse = similarityToUseFunc.apply(queryElement, null);
+        String localSimToUse;
         double localWeightToUse = weightFunc.apply(queryElement);
-        Similarity maxSim = valuator.computeSimilarity(queryElement, null, localSimToUse);
-        maxSim = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimToUse), queryElement, null, maxSim.getValue()*localWeightToUse, (ArrayList<Similarity>) maxSim.getLocalSimilarities(), maxSim.getInfo());
+        Similarity maxSim = new SimilarityImpl(null, queryElement, null, 0.);
 
         DataObjectIterator caseElements = caseCollection.iterator();
 
@@ -108,7 +102,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
             Similarity sim = valuator.computeSimilarity(queryElement, caseElement, localSimToUse);
             sim = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimToUse), queryElement, caseElement, sim.getValue()*localWeightToUse, (ArrayList<Similarity>) sim.getLocalSimilarities(), sim.getInfo());
-            if (sim.isValidValue() && sim.getValue() > maxSim.getValue()) {
+            if (sim.isValidValue() && sim.getValue() >= maxSim.getValue()) {
                 maxSim = sim;
             }
         }
