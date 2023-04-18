@@ -16,7 +16,7 @@ import utils.MethodInvoker;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SimilarityValuatorImplExt extends SimilarityValuatorImpl implements SimilarityValuatorExt {
+public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
 
     public SimilarityValuatorImplExt(SimilarityModel simModel) {
         super(simModel);
