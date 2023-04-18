@@ -1,4 +1,4 @@
-package extension;
+package extension.SimilarityMeasures;
 
 import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.DataObject;
@@ -13,15 +13,21 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.nest.sequence.SMGraphSWA;
 import de.uni_trier.wi2.procake.similarity.nest.sequence.impl.SMGraphSWAImpl;
 import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
+import extension.IMethodInvokerFunc;
+import extension.ISimFunc;
+import extension.IWeightFunc;
+import utils.MethodInvoker;
+import utils.MethodInvokerFunc;
 import utils.SimFunc;
 import utils.WeightFunc;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISimFunc, IWeightFunc {
+public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISimFunc, IWeightFunc, IMethodInvokerFunc {
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
+    protected MethodInvokerFunc methodInvokerFunc = (a,b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setLocalSimilarityToUse(String newValue) {
@@ -53,6 +59,16 @@ public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISi
     @Override
     public WeightFunc getWeightFunction() {
         return weightFunc;
+    }
+
+    @Override
+    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
+        this.methodInvokerFunc = methodInvokerFunc;
+    }
+
+    @Override
+    public MethodInvokerFunc getMethodInvokerFunc() {
+        return methodInvokerFunc;
     }
 
     private Similarity similarity;
@@ -105,6 +121,7 @@ public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISi
         SMListSWAImplExt smListSWAImplExt = new SMListSWAImplExt();
         smListSWAImplExt.setSimilarityToUse(getSimilarityToUseFunc());
         smListSWAImplExt.setWeightFunction(getWeightFunction());
+        smListSWAImplExt.setMethodInvokerFunc(getMethodInvokerFunc());
         smListSWAImplExt.setInsertionScheme(getInsertionScheme());
         smListSWAImplExt.setDeletionScheme(getDeletionScheme());
         smListSWAImplExt.setHalvingDistancePercentage(getHalvingDistancePercentage());

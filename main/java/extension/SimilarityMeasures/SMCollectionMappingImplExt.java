@@ -1,4 +1,4 @@
-package extension;
+package extension.SimilarityMeasures;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
@@ -9,16 +9,24 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
+import extension.IMethodInvokerFunc;
+import extension.ISimFunc;
+import extension.IWeightFunc;
+import extension.SimilarityValuatorImplExt;
 import org.apache.commons.collections4.map.MultiKeyMap;
+import utils.MethodInvoker;
+import utils.MethodInvokerFunc;
 import utils.SimFunc;
 import utils.WeightFunc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMapping, ISimFunc, IWeightFunc {
+public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMapping, ISimFunc, IWeightFunc, IMethodInvokerFunc {
 
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
+    protected MethodInvokerFunc methodInvokerFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setSimilarityToUse(String newValue) {
@@ -53,6 +61,15 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
 
+    @Override
+    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
+        this.methodInvokerFunc = methodInvokerFunc;
+    }
+
+    @Override
+    public MethodInvokerFunc getMethodInvokerFunc() {
+        return methodInvokerFunc;
+    }
 
     /**
      * uniqueID-counter
@@ -104,7 +121,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         do {
             topSolution = solutions.pollFirst();
             TreeSet<AStarSolution> newSolutions =
-                    (TreeSet<AStarSolution>) expandSolution(topSolution, valuator);
+                    (TreeSet<AStarSolution>) expandSolution(topSolution);
             solutions.addAll(newSolutions);
             topSolution = solutions.first();
             cutOffQueue(solutions);
@@ -133,7 +150,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     /**
      * expands the next queryItem
      */
-    private Set<AStarSolution> expandSolution(AStarSolution solution, SimilarityValuator valuator) {
+    private Set<AStarSolution> expandSolution(AStarSolution solution) {
 
         Set<AStarSolution> newSolutions = new TreeSet<>();
         for (DataObject queryItemToExpand : solution.queryCollection) {
@@ -241,7 +258,17 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
         for (DataObject curCaseDO : amongTheseCaseItems) {
             String simToUse = getSimilarityToUseFunc().apply(queryItem, curCaseDO);
-            Similarity curSim = valuator.computeSimilarity(queryItem, curCaseDO, simToUse);
+
+            Similarity curSim;
+            if (valuator instanceof SimilarityValuatorImplExt) {
+                try {
+                    curSim = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryItem, curCaseDO, simToUse, methodInvokerFunc.apply(queryItem, curCaseDO));
+                } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                    curSim = valuator.computeSimilarity(queryItem, curCaseDO, simToUse);
+                }
+            }
+            else curSim = valuator.computeSimilarity(queryItem, curCaseDO, simToUse);
+
             curSim = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryItem.getDataClass(), simToUse),queryItem, curCaseDO, weight*curSim.getValue());
             // fill cache
             mappingCache.put(queryItem, curCaseDO, curSim);

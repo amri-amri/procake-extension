@@ -1,4 +1,4 @@
-package extension;
+package extension.SimilarityMeasures;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
@@ -8,15 +8,20 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionIsolatedMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionIsolatedMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
+import extension.*;
+import utils.MethodInvoker;
+import utils.MethodInvokerFunc;
 import utils.SimFunc;
 import utils.WeightFunc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMapping, ISimFunc, IWeightFunc {
+public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMapping, ISimFunc, IWeightFunc, IMethodInvokerFunc {
 
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
+    protected MethodInvokerFunc methodInvokerFunc = (a,b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setSimilarityToUse(String newValue) {
@@ -48,6 +53,16 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     @Override
     public WeightFunc getWeightFunction() {
         return weightFunc;
+    }
+
+    @Override
+    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
+        this.methodInvokerFunc = methodInvokerFunc;
+    }
+
+    @Override
+    public MethodInvokerFunc getMethodInvokerFunc() {
+        return methodInvokerFunc;
     }
 
     @Override
@@ -100,7 +115,17 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
             localSimToUse = similarityToUseFunc.apply(queryElement, caseElement);
 
-            Similarity sim = valuator.computeSimilarity(queryElement, caseElement, localSimToUse);
+            Similarity sim;
+
+            if (valuator instanceof SimilarityValuatorImplExt) {
+                try {
+                    sim = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimToUse, methodInvokerFunc.apply(queryElement, caseElement));
+                } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                    sim = valuator.computeSimilarity(queryElement, caseElement, localSimToUse);
+                }
+            }
+            else sim = valuator.computeSimilarity(queryElement, caseElement, localSimToUse);
+
             sim = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimToUse), queryElement, caseElement, sim.getValue()*localWeightToUse, (ArrayList<Similarity>) sim.getLocalSimilarities(), sim.getInfo());
             if (sim.isValidValue() && sim.getValue() >= maxSim.getValue()) {
                 maxSim = sim;

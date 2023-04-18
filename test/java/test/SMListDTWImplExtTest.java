@@ -4,9 +4,16 @@ import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
-import extension.SMListDTWImplExt;
+import extension.SimilarityMeasures.SMCollectionMappingImplExt;
+import extension.SimilarityMeasures.SMListDTWImplExt;
+import extension.SimilarityValuatorImplExt;
 import org.junit.Assert;
 import org.junit.Test;
+import utils.MethodInvoker;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 public class SMListDTWImplExtTest extends CollectionSimilarityTest {
 
@@ -72,5 +79,47 @@ public class SMListDTWImplExtTest extends CollectionSimilarityTest {
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
         Assert.assertEquals(1., sim.getValue(), delta);
+    }
+
+    @Test
+    public void test3(){
+        SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
+
+        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+
+        queryList.addValue(utils.createStringObject("Abc"));
+        queryList.addValue(utils.createStringObject("dEf"));
+
+        caseList.addValue(utils.createStringObject("abC"));
+        caseList.addValue(utils.createStringObject("DeF"));
+        caseList.addValue(utils.createStringObject("dEf"));
+
+        SMListDTWImplExt sm = new SMListDTWImplExt();
+        sm.setLocalSimilarityToUse("SMStringLevenshtein");
+        sm.setMethodInvokerFunc((a,b)->{
+            MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
+            ArrayList<MethodInvoker> list = new ArrayList<>();
+            list.add(mi);
+            return list;
+        });
+
+
+        Similarity sim = sm.compute(queryList, caseList, simValExt);
+        assertEquals(8./15, sim.getValue(), delta);
+
+
+        sm = new SMListDTWImplExt();
+        sm.setLocalSimilarityToUse("SMStringLevenshtein");
+        sm.setMethodInvokerFunc((a,b)->{
+            MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
+            ArrayList<MethodInvoker> list = new ArrayList<>();
+            list.add(mi);
+            return list;
+        });
+
+
+        sim = sm.compute(queryList, caseList, simValExt);
+        assertEquals(1., sim.getValue(), delta);
     }
 }

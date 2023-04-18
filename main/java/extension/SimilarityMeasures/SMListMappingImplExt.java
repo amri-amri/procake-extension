@@ -1,4 +1,4 @@
-package extension;
+package extension.SimilarityMeasures;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -8,15 +8,23 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionIsolatedMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
+import extension.IMethodInvokerFunc;
+import extension.ISimFunc;
+import extension.IWeightFunc;
+import extension.SimilarityValuatorImplExt;
+import utils.MethodInvoker;
+import utils.MethodInvokerFunc;
 import utils.SimFunc;
 import utils.WeightFunc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SMListMappingImplExt extends SMListMappingImpl implements SMCollectionIsolatedMapping, ISimFunc, IWeightFunc {
+public class SMListMappingImplExt extends SMListMappingImpl implements SMCollectionIsolatedMapping, ISimFunc, IWeightFunc, IMethodInvokerFunc {
 
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
+    protected MethodInvokerFunc methodInvokerFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setSimilarityToUse(String newValue) {
@@ -48,6 +56,16 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMCollect
     @Override
     public WeightFunc getWeightFunction() {
         return weightFunc;
+    }
+
+    @Override
+    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
+        this.methodInvokerFunc = methodInvokerFunc;
+    }
+
+    @Override
+    public MethodInvokerFunc getMethodInvokerFunc() {
+        return methodInvokerFunc;
     }
 
     //private boolean containsExact = DEFAULT_CONTAINS_EXACT;
@@ -90,8 +108,19 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMCollect
             DataObject caseElement = (DataObject) caseIt.next();
             String simToUse = getSimilarityToUseFunc().apply(queryElement, caseElement);
             double weight = getWeightFunction().apply(queryElement);
-            Similarity currentSimilarity =
-                    valuator.computeSimilarity(queryElement, caseElement, simToUse);
+
+            Similarity currentSimilarity;
+
+            if (valuator instanceof SimilarityValuatorImplExt) {
+                try {
+                    currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, simToUse, methodInvokerFunc.apply(queryElement, caseElement));
+                } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                    currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, simToUse);
+                }
+            }
+            else currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, simToUse);
+
+
             currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), simToUse), queryElement, caseElement, currentSimilarity.getValue() * weight);
             simSum += currentSimilarity.getValue();
             simCount += weight;
@@ -136,23 +165,41 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMCollect
                 while (queryIt.hasNext() & caseIt.hasNext()) {
                     queryElement = (DataObject) queryIt.next();
                     DataObject caseElement = (DataObject) caseIt.next();
-                    String simToUse = getSimilarityToUseFunc().apply(queryElement,caseElement);
-                    double weight;
-                    if (queryFirst) weight = getWeightFunction().apply(queryElement);
-                    else weight = getWeightFunction().apply(caseElement);
 
                     // the query has to be at the first position, because the similarity computation can be
                     // asymetric
 
+                    double weight;
                     Similarity currentSimilarity;
+                    String currentSimToUse;
                     if (queryFirst) {
-                        currentSimilarity =
-                                valuator.computeSimilarity(queryElement, caseElement, getSimilarityToUse());
-                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), simToUse), queryElement, caseElement, currentSimilarity.getValue() * weight);
+                        currentSimToUse = getSimilarityToUseFunc().apply(queryElement, caseElement);
+                        weight = getWeightFunction().apply(queryElement);
+
+                        if (valuator instanceof SimilarityValuatorImplExt) {
+                            try {
+                                currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, currentSimToUse, methodInvokerFunc.apply(queryElement, caseElement));
+                            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                                currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, currentSimToUse);
+                            }
+                        }
+                        else currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, currentSimToUse);
+
+                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), currentSimToUse), queryElement, caseElement, currentSimilarity.getValue() * weight);
                     } else {
-                        currentSimilarity =
-                                valuator.computeSimilarity(caseElement, queryElement, getSimilarityToUse());
-                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(caseElement.getDataClass(), simToUse), caseElement, queryElement, currentSimilarity.getValue() * weight);
+                        currentSimToUse = getSimilarityToUseFunc().apply(caseElement, queryElement);
+                        weight = getWeightFunction().apply(caseElement);
+
+                        if (valuator instanceof SimilarityValuatorImplExt) {
+                            try {
+                                currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(caseElement, queryElement, currentSimToUse, methodInvokerFunc.apply(caseElement, queryElement));
+                            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                                currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, currentSimToUse);
+                            }
+                        }
+                        else currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, currentSimToUse);
+
+                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(caseElement.getDataClass(), currentSimToUse), caseElement, queryElement, currentSimilarity.getValue() * weight);
 
                     }
                     simSum += currentSimilarity.getValue();

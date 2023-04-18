@@ -1,4 +1,4 @@
-package extension;
+package extension.SimilarityMeasures;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -7,12 +7,23 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListDTW;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
+import extension.IMethodInvokerFunc;
+import extension.ISimFunc;
+import extension.IWeightFunc;
+import extension.SimilarityValuatorImplExt;
+import org.checkerframework.checker.units.qual.A;
+import utils.MethodInvoker;
+import utils.MethodInvokerFunc;
 import utils.SimFunc;
 import utils.WeightFunc;
 
-public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTW, ISimFunc, IWeightFunc {
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+
+public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTW, ISimFunc, IWeightFunc, IMethodInvokerFunc {
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
+    protected MethodInvokerFunc methodInvokerFunc = (a,b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setLocalSimilarityToUse(String newValue) {
@@ -44,6 +55,16 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTW, ISimFu
     @Override
     public WeightFunc getWeightFunction() {
         return weightFunc;
+    }
+
+    @Override
+    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
+        this.methodInvokerFunc = methodInvokerFunc;
+    }
+
+    @Override
+    public MethodInvokerFunc getMethodInvokerFunc() {
+        return methodInvokerFunc;
     }
 
     private boolean algorithmFinished = false;
@@ -116,8 +137,16 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTW, ISimFu
 
                 //SimilarityMeasure sm = valuator.getSimilarityModel().getSimilarityMeasure( queryList[j-1].getDataClass(), localSimToUse );
 
-                Similarity localSim = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimToUse );
-                //localSim = new SimilarityImpl(sm, queryList[j-1], caseList[i-1],localSim.getValue() * weight );
+                Similarity localSim;
+
+                if (valuator instanceof SimilarityValuatorImplExt) {
+                    try {
+                        localSim = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryArray[j], caseArray[i], localSimToUse, methodInvokerFunc.apply(queryArray[j], caseArray[i]));
+                    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                        localSim = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimToUse );
+                    }
+                }
+                else localSim = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimToUse );
 
                 double diagonal =   matrix[i-1][j-1]    + wTemp     * localSim.getValue()    * weight * 2;
                 double horizontal = matrix[i][j-1]      + wTemp     * localSim.getValue()    * weight;
