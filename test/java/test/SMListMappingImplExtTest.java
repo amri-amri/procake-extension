@@ -4,9 +4,8 @@ import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
-import extension.SimilarityMeasures.SMListMappingImplExt;
-import extension.SimilarityMeasures.SMListSWAImplExt;
-import extension.SimilarityValuatorImplExt;
+import extension.similarity.SMListMappingImplExt;
+import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Test;
 import utils.MethodInvoker;
 

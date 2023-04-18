@@ -6,8 +6,8 @@ import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTAbstractWorkflowModifier;
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTWorkflowBuilder;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTWorkflowBuilderImpl;
-import extension.SimilarityMeasures.SMGraphDTWImplExt;
-import extension.SimilarityMeasures.SMGraphSWAImplExt;
+import extension.similarity.measure.SMGraphDTWImplExt;
+import extension.similarity.measure.SMGraphSWAImplExt;
 import org.junit.Test;
 
 public class SMGraphDPImplExtTest extends CollectionSimilarityTest{

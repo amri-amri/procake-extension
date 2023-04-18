@@ -1,33 +1,25 @@
-package extension.SimilarityMeasures;
+package extension.similarity.measure;
 
-import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
-import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
-import de.uni_trier.wi2.procake.similarity.base.collection.SMListSWA;
-import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListSWAImpl;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMListDTW;
+import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import de.uni_trier.wi2.procake.similarity.nest.sequence.utils.SWA;
-import extension.IMethodInvokerFunc;
-import extension.ISimFunc;
-import extension.IWeightFunc;
-import extension.SimilarityValuatorImplExt;
+import extension.abstraction.IMethodInvokerFunc;
+import extension.abstraction.ISimFunc;
+import extension.abstraction.IWeightFunc;
+import extension.similarity.valuator.SimilarityValuatorImplExt;
 import utils.MethodInvoker;
 import utils.MethodInvokerFunc;
 import utils.SimFunc;
 import utils.WeightFunc;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimFunc, IWeightFunc, IMethodInvokerFunc {
-
+public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTW, ISimFunc, IWeightFunc, IMethodInvokerFunc {
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
     protected MethodInvokerFunc methodInvokerFunc = (a,b) -> new ArrayList<MethodInvoker>();
@@ -104,14 +96,17 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimFu
 
         //initializing the matrix
         double[][] matrix = new double[caseArray.length][queryArray.length];
+        double[][] normalizingMatrix = new double[caseArray.length][queryArray.length];
         int[][][] origins = new int[caseArray.length][queryArray.length][2];
         for (int j = 0; j< queryArray.length; j++){
             matrix[0][j] = 0;
+            normalizingMatrix[0][j] = 0;
             origins[0][j][0] = 0;
             origins[0][j][1] = j-1;
         }
         for (int i = 1; i< caseArray.length; i++){
             matrix[i][0] = 0;
+            normalizingMatrix[i][0] = 0;
             origins[i][0][0] = i-1;
             origins[i][0][1] = 0;
         }
@@ -119,8 +114,6 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimFu
         //compute matrix values and find maximum
         int maxCell_i = 0;
         int maxCell_j = 0;
-
-        double denominator = 0;
 
         double wTempDenominator = 1;
         if (halvingDistancePercentage>0) {
@@ -138,8 +131,6 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimFu
                 wTemp = halvingDistancePercentage/(2*(wTempDenominator));
             }
 
-            denominator += weight * wTemp;
-
             for ( int i = 1; i< caseArray.length; i++ ) {
                 String localSimToUse = getSimilarityToUseFunc().apply( queryArray[j], caseArray[i] );
 
@@ -156,32 +147,37 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimFu
                 }
                 else localSim = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimToUse );
 
-                double diagonal =   matrix[i-1][j-1]    + wTemp     * localSim.getValue()                    * weight;
-                double horizontal = matrix[i][j-1]      + wTemp     * insertionScheme.apply(caseArray[i])    * weight;
-                double vertical =   matrix[i-1][j]      + wTemp     * deletionScheme.apply(queryArray[j])    * weight;
+                double diagonal =   matrix[i-1][j-1]    + wTemp     * localSim.getValue()    * weight * 2;
+                double horizontal = matrix[i][j-1]      + wTemp     * localSim.getValue()    * weight;
+                double vertical =   matrix[i-1][j]      + wTemp     * localSim.getValue()    * weight;
 
                 if (diagonal >= horizontal && diagonal >= vertical) {
                     origins[i][j][0] = i-1;
                     origins[i][j][1] = j-1;
 
                     matrix[i][j] = diagonal;
+                    normalizingMatrix[i][j] = normalizingMatrix[i-1][j-1]    + wTemp     * weight * 2;
 
-                } else if (horizontal > diagonal && horizontal >= vertical) {
+                }
+                else if (horizontal > diagonal && horizontal >= vertical) {
                     origins[i][j][0] = i;
                     origins[i][j][1] = j-1;
 
                     matrix[i][j] = horizontal;
+                    normalizingMatrix[i][j] = normalizingMatrix[i][j-1]    + wTemp     * weight;
 
-                } else if (vertical > diagonal && vertical >= horizontal) {
+                }
+                else if (vertical > diagonal && vertical >= horizontal) {
                     origins[i][j][0] = i-1;
                     origins[i][j][1] = j;
 
                     matrix[i][j] = vertical;
+                    normalizingMatrix[i][j] = normalizingMatrix[i-1][j]    + wTemp     * weight;
 
                 }
 
                 if (matrix[i][j] >= matrix[maxCell_i][maxCell_j]
-                    && (!forceAlignmentEndsWithQuery || j == queryArray.length-1)) {
+                        && (!forceAlignmentEndsWithQuery || j == queryArray.length-1)) {
                     maxCell_i = i;
                     maxCell_j = j;
                 }
@@ -189,7 +185,10 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimFu
             }
         }
 
+
+
         double maxValue = matrix[maxCell_i][maxCell_j];
+        double denominator = normalizingMatrix[maxCell_i][maxCell_j];
 
         algorithmFinished = true;
 

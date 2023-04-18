@@ -1,4 +1,4 @@
-package extension.SimilarityMeasures;
+package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -7,7 +7,7 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListCorrectness;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListCorrectnessImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import extension.IWeightFunc;
+import extension.abstraction.IWeightFunc;
 import utils.WeightFunc;
 
 public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectness, IWeightFunc {

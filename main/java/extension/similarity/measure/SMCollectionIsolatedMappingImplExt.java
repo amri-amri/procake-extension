@@ -1,4 +1,4 @@
-package extension.SimilarityMeasures;
+package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
@@ -8,7 +8,10 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionIsolatedMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionIsolatedMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import extension.*;
+import extension.abstraction.IMethodInvokerFunc;
+import extension.abstraction.ISimFunc;
+import extension.abstraction.IWeightFunc;
+import extension.similarity.valuator.SimilarityValuatorImplExt;
 import utils.MethodInvoker;
 import utils.MethodInvokerFunc;
 import utils.SimFunc;

@@ -1,4 +1,4 @@
-package extension;
+package extension.similarity.valuator;
 
 import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;

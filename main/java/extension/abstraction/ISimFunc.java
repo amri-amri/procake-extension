@@ -1,4 +1,4 @@
-package extension;
+package extension.abstraction;
 
 import utils.SimFunc;
 

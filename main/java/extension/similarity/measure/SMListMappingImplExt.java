@@ -1,4 +1,4 @@
-package extension.SimilarityMeasures;
+package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;

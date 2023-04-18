@@ -1,4 +1,4 @@
-package extension.SimilarityMeasures;
+package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.DataObject;
@@ -10,12 +10,12 @@ import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTSequentialWorkfl
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import de.uni_trier.wi2.procake.similarity.nest.sequence.SMGraphDTW;
-import de.uni_trier.wi2.procake.similarity.nest.sequence.impl.SMGraphDTWImpl;
+import de.uni_trier.wi2.procake.similarity.nest.sequence.SMGraphSWA;
+import de.uni_trier.wi2.procake.similarity.nest.sequence.impl.SMGraphSWAImpl;
 import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
-import extension.IMethodInvokerFunc;
-import extension.ISimFunc;
-import extension.IWeightFunc;
+import extension.abstraction.IMethodInvokerFunc;
+import extension.abstraction.ISimFunc;
+import extension.abstraction.IWeightFunc;
 import utils.MethodInvoker;
 import utils.MethodInvokerFunc;
 import utils.SimFunc;
@@ -24,10 +24,10 @@ import utils.WeightFunc;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISimFunc, IWeightFunc, IMethodInvokerFunc {
+public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISimFunc, IWeightFunc, IMethodInvokerFunc {
     protected SimFunc similarityToUseFunc;
     protected WeightFunc weightFunc = (a) -> 1;
-    protected MethodInvokerFunc methodInvokerFunc = (a, b) -> new ArrayList<MethodInvoker>();
+    protected MethodInvokerFunc methodInvokerFunc = (a,b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setLocalSimilarityToUse(String newValue) {
@@ -118,15 +118,16 @@ public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISi
             caseList.addValue(  ((NESTTaskNodeObject) caseIt.next()).getSemanticDescriptor()  );
         }
 
-        SMListDTWImplExt smListDTWImplExt = new SMListDTWImplExt();
-        smListDTWImplExt.setSimilarityToUse(getSimilarityToUseFunc());
-        smListDTWImplExt.setWeightFunction(getWeightFunction());
-        smListDTWImplExt.setMethodInvokerFunc(getMethodInvokerFunc());
-        smListDTWImplExt.setValBelowZero(getValBelowZero());
-        smListDTWImplExt.setHalvingDistancePercentage(getHalvingDistancePercentage());
-        smListDTWImplExt.setForceAlignmentEndsWithQuery(getForceAlignmentEndsWithQuery());
+        SMListSWAImplExt smListSWAImplExt = new SMListSWAImplExt();
+        smListSWAImplExt.setSimilarityToUse(getSimilarityToUseFunc());
+        smListSWAImplExt.setWeightFunction(getWeightFunction());
+        smListSWAImplExt.setMethodInvokerFunc(getMethodInvokerFunc());
+        smListSWAImplExt.setInsertionScheme(getInsertionScheme());
+        smListSWAImplExt.setDeletionScheme(getDeletionScheme());
+        smListSWAImplExt.setHalvingDistancePercentage(getHalvingDistancePercentage());
+        smListSWAImplExt.setForceAlignmentEndsWithQuery(getForceAlignmentEndsWithQuery());
 
-        this.similarity = smListDTWImplExt.compute(queryList, caseList, valuator);
+        this.similarity = smListSWAImplExt.compute(queryList, caseList, valuator);
 
         return similarity;
 

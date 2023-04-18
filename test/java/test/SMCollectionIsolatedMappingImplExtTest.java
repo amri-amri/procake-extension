@@ -4,16 +4,12 @@ import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
-import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
-import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringEqualImpl;
-import de.uni_trier.wi2.procake.similarity.impl.SimilarityValuatorImpl;
-import extension.SimilarityMeasures.SMCollectionIsolatedMappingImplExt;
-import extension.SimilarityValuatorImplExt;
+import extension.similarity.measure.SMCollectionIsolatedMappingImplExt;
+import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Test;
 import utils.MethodInvoker;
 import utils.WeightFunc;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;

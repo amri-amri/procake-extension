@@ -1,7 +1,6 @@
-package extension;
+package extension.abstraction;
 
 import utils.MethodInvokerFunc;
-import utils.SimFunc;
 
 public interface IMethodInvokerFunc {
     void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc);
