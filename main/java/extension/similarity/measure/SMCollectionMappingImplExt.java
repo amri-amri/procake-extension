@@ -22,7 +22,7 @@ import utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMapping, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
@@ -70,6 +70,9 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         return weightFunc;
     }
 
+    public String getSystemName() {
+        return SMCollectionMappingExt.NAME;
+    }
 
 
 

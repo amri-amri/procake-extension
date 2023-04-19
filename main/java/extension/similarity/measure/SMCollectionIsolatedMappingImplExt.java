@@ -20,7 +20,32 @@ import utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMapping, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+/**
+ * A similarity measure using the isolated mapping algorithm for collection objects.
+ *
+ * The isolated mapping algorithm assigns to each element of the query collection the case element
+ * with which the respective query element has the highest (local) weighted similarity.
+ *
+ * The overall similarity between query and case collection is the sum of the local weighted
+ * similarities divided by the sum of the weights.
+ *
+ * The weight values are depending solely on the characteristics of the query elements and can
+ * be defined by a functional interface (WeightFunc).
+ *
+ * Instead of one single local similarity measure, a functional interface (SimilarityMeasureFunc)
+ * can be defined for this similarity measure.
+ * This functional interface assigns a similarity measure to each pair of query element
+ * and case element.
+ *
+ * These similarity measures may be defined more precisely by setting their parameters via methods.
+ * In order to call these methods another functional interface (MethodInvokersFunc) can be defined
+ * for this similarity measure.
+ * This functional interface assigns a list of MethodInvoker objects to each pair of query element
+ * and case element.
+ *
+ * The given methods are then invoked with given parameters by the respective similarity measures.
+ */
+public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
@@ -68,8 +93,19 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         return weightFunc;
     }
 
+    public String getSystemName() {
+        return SMCollectionIsolatedMappingExt.NAME;
+    }
 
 
+    /**
+     * Computes the isolated mapping similarity between a given query- and case- object of type Collection.
+     *
+     * @param queryObject  the query object of type Collection
+     * @param caseObject  the case object of type Collection
+     * @param valuator  the similarity valuator used for computation
+     * @return similarity object containing local similarities
+     */
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 

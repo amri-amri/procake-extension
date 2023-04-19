@@ -10,7 +10,7 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IWeightFunc;
 import utils.WeightFunc;
 
-public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectness, IWeightFunc {
+public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectnessExt, IWeightFunc {
 
     protected WeightFunc weightFunc = (a) -> 1;
 
@@ -28,6 +28,10 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
     @Override
     public WeightFunc getWeightFunc() {
         return weightFunc;
+    }
+
+    public String getSystemName() {
+        return SMListCorrectnessExt.NAME;
     }
 
 

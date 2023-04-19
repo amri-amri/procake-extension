@@ -24,7 +24,7 @@ import utils.WeightFunc;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWAExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityToUseFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
@@ -70,6 +70,10 @@ public class SMGraphSWAImplExt extends SMGraphSWAImpl implements SMGraphSWA, ISi
     @Override
     public WeightFunc getWeightFunc() {
         return weightFunc;
+    }
+
+    public String getSystemName() {
+        return SMGraphSWAExt.NAME;
     }
 
 

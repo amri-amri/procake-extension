@@ -19,7 +19,7 @@ import utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityToUseFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
@@ -65,6 +65,10 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWA, ISimil
     @Override
     public WeightFunc getWeightFunc() {
         return weightFunc;
+    }
+
+    public String getSystemName() {
+        return SMListSWAExt.NAME;
     }
 
 

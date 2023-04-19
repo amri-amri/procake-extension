@@ -18,7 +18,7 @@ import utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SMListMappingImplExt extends SMListMappingImpl implements SMCollectionIsolatedMapping, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMListMappingImplExt extends SMListMappingImpl implements SMListMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
     protected WeightFunc weightFunc = (a) -> 1;
@@ -66,6 +66,9 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMCollect
         return methodInvokersFunc;
     }
 
+    public String getSystemName() {
+        return SMListMappingExt.NAME;
+    }
 
 
     @Override

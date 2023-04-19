@@ -86,11 +86,11 @@ public class CollectionSimilarityTest {
         SMStringLevenshtein smStringLevenshtein = (SMStringLevenshtein) simVal.getSimilarityModel().createSimilarityMeasure(SMStringLevenshtein.NAME, ModelFactory.getDefaultModel().getStringSystemClass());
         smStringLevenshtein.setCaseInsensitive();
         smStringLevenshtein.setThreshold(100);
-        model.addSimilarityMeasure(smStringLevenshtein, "SMStringLevenshtein");
+        model.addSimilarityMeasure(smStringLevenshtein, SMStringLevenshtein.NAME);
 
         SMStringEqual smStringEqual = (SMStringEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMStringEqual.NAME, ModelFactory.getDefaultModel().getStringSystemClass());
         smStringEqual.setCaseInsensitive();
-        model.addSimilarityMeasure(smStringEqual, "SMStringEqual");
+        model.addSimilarityMeasure(smStringEqual, SMStringEqual.NAME);
 
         SMObjectEqual smObjectEqual = (SMObjectEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMObjectEqual.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         model.addSimilarityMeasure(smObjectEqual, SMObjectEqual.NAME);
@@ -99,14 +99,14 @@ public class CollectionSimilarityTest {
                 model.getSimilarityMeasure(ModelFactory.getDefaultModel().getListSystemClass(), SMObjectEqual.NAME);
 
         //add(model, new SMObjectEqualImpl(), "SMObjectEqual");
-        add(model, new SMCollectionIsolatedMappingImplExt(), "SMCollectionIsolatedMappingExt", ModelFactory.getDefaultModel().getCollectionSystemClass());
-        add(model, new SMCollectionMappingImplExt(), "SMCollectionMappingExt", ModelFactory.getDefaultModel().getCollectionSystemClass());
-        add(model, new SMGraphDTWImplExt(), "SMGraphDTWExt", ModelFactory.getDefaultModel().getNESTGraphClass());
-        add(model, new SMGraphSWAImplExt(), "SMGraphSWAExt", ModelFactory.getDefaultModel().getNESTGraphClass());
-        add(model, new SMListCorrectnessImplExt(), "SMListCorrectnessExt", ModelFactory.getDefaultModel().getListSystemClass());
-        add(model, new SMListDTWImplExt(), "SMListDTWExt", ModelFactory.getDefaultModel().getListSystemClass());
-        add(model, new SMListSWAImplExt(), "SMListSWAExt", ModelFactory.getDefaultModel().getListSystemClass());
-        add(model, new SMListMappingImplExt(), "SMListMappingExt", ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMCollectionIsolatedMappingImplExt(), SMCollectionIsolatedMappingExt.NAME, ModelFactory.getDefaultModel().getCollectionSystemClass());
+        add(model, new SMCollectionMappingImplExt(), SMCollectionMappingExt.NAME, ModelFactory.getDefaultModel().getCollectionSystemClass());
+        add(model, new SMGraphDTWImplExt(), SMGraphDTWExt.NAME, ModelFactory.getDefaultModel().getNESTGraphClass());
+        add(model, new SMGraphSWAImplExt(), SMGraphSWAExt.NAME, ModelFactory.getDefaultModel().getNESTGraphClass());
+        add(model, new SMListCorrectnessImplExt(), SMListCorrectnessExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMListDTWImplExt(), SMListDTWExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMListSWAImplExt(), SMListSWAExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMListMappingImplExt(), SMListMappingExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
 
     }
 
