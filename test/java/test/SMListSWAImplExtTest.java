@@ -82,7 +82,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         sm1.setDeletionScheme(a -> -0.5);
         sm1.setInsertionScheme(a -> -0.5);
         sm1.setHalvingDistancePercentage(0.3);
-        sm1.setWeightFunction(a -> {
+        sm1.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("Y")) return 0.;
             return 1.;
         });
@@ -118,7 +118,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
 
         SMListSWAImplExt sm = new SMListSWAImplExt();
         sm.setLocalSimilarityToUse("SMStringLevenshtein");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -131,7 +131,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListSWAImplExt();
         sm.setLocalSimilarityToUse("SMStringLevenshtein");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

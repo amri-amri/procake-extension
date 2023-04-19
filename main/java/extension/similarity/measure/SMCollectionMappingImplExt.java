@@ -9,43 +9,53 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import extension.abstraction.IMethodInvokerFunc;
-import extension.abstraction.ISimFunc;
+import extension.abstraction.IMethodInvokersFunc;
+import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import utils.MethodInvoker;
-import utils.MethodInvokerFunc;
-import utils.SimFunc;
+import utils.MethodInvokersFunc;
+import utils.SimilarityMeasureFunc;
 import utils.WeightFunc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMapping, ISimFunc, IWeightFunc, IMethodInvokerFunc {
+public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMapping, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimFunc similarityToUseFunc;
+    protected SimilarityMeasureFunc similarityMeasureFunc;
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
     protected WeightFunc weightFunc = (a) -> 1;
-    protected MethodInvokerFunc methodInvokerFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setSimilarityToUse(String newValue) {
         super.setSimilarityToUse(newValue);
-        similarityToUseFunc = (a, b) -> newValue;
+        similarityMeasureFunc = (a, b) -> newValue;
     }
 
     @Override
-    public void setSimilarityToUse(SimFunc similarityToUse){
-        similarityToUseFunc = similarityToUse;
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
+        this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
-    public utils.SimFunc getSimilarityToUseFunc() {
-        return similarityToUseFunc;
+    public SimilarityMeasureFunc getSimilarityMeasureFunc() {
+        return similarityMeasureFunc;
     }
 
     @Override
-    public void setWeightFunction(WeightFunc weightFunc) {
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
+    }
+
+    @Override
+    public MethodInvokersFunc getMethodInvokersFunc() {
+        return methodInvokersFunc;
+    }
+
+    @Override
+    public void setWeightFunc(WeightFunc weightFunc) {
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight==null) return 1;
@@ -56,31 +66,18 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     @Override
-    public WeightFunc getWeightFunction() {
+    public WeightFunc getWeightFunc() {
         return weightFunc;
     }
 
 
-    @Override
-    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
-        this.methodInvokerFunc = methodInvokerFunc;
-    }
 
-    @Override
-    public MethodInvokerFunc getMethodInvokerFunc() {
-        return methodInvokerFunc;
-    }
-
-    /**
-     * uniqueID-counter
-     */
-    private int IDCounter = 0;
 
     /**
      * keeps a list of maximum similarities, which can be achieved if there would be no mapping
      * involved
      */
-    private Map<DataObject, Double> maxQueryItemSimilarities = new HashMap<>();
+    private Map<DataObject, Double> maxQueryElementSimilaritiyValues = new HashMap<>();
 
     /**
      * This cache stores calculated mappings of collection items.
@@ -93,8 +90,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     private Map<DataObject, Double> weightCache;
 
     @Override
-    public Similarity compute(
-            DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+    public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
         // init cache
         mappingCache = new MultiKeyMap<>();
         weightCache = new HashMap<>();
@@ -104,10 +100,6 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
             return similarity;
         }
 
-        // read the QSize set in sim.xml
-//    if (!queueSizeChecked) {
-//      readQSizeSimilaritySetting();
-//    }
 
         // initialize the first solution
         TreeSet<AStarSolution> solutions = new TreeSet<>();
@@ -115,34 +107,33 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 generateInitialSolution(
                         (CollectionObject) queryObject, (CollectionObject) caseObject, valuator));
 
+
         // iterate as long as we dont find a finished solution
-        AStarSolution topSolution = solutions.first();
-        int sizeQueryObjects = ((CollectionObject) queryObject).size();
+        AStarSolution topSolution;
+        int sizeQueryObject = ((CollectionObject) queryObject).size();
         do {
             topSolution = solutions.pollFirst();
-            TreeSet<AStarSolution> newSolutions =
-                    (TreeSet<AStarSolution>) expandSolution(topSolution);
+            TreeSet<AStarSolution> newSolutions = (TreeSet<AStarSolution>) expandSolution(topSolution);
             solutions.addAll(newSolutions);
             topSolution = solutions.first();
             cutOffQueue(solutions);
-        } while (topSolution.mapping.size() < sizeQueryObjects);
+        } while (topSolution.mapping.size() < sizeQueryObject);
 
         // transforming to a SimilarityImpl object
         ArrayList<Similarity> localSimilarities = new ArrayList<>();
         for (AStarMap mapping : topSolution.mapping) {
             localSimilarities.add(mapping.f);
         }
-        return new SimilarityImpl(
-                this, queryObject, caseObject, topSolution.f.getValue(), localSimilarities);
+        return new SimilarityImpl(this, queryObject, caseObject, topSolution.f.getValue(), localSimilarities);
     }
 
     private void cutOffQueue(TreeSet<AStarSolution> solutions) {
-        Iterator<AStarSolution> iter = solutions.descendingIterator();
+        Iterator<AStarSolution> aStarSolutionIterator = solutions.descendingIterator();
         // if maxQueueSize is negative, the pruning of the queue is disabled
         if (getMaxQueueSize() >= 1) {
             while (solutions.size() > getMaxQueueSize()) {
-                iter.next();
-                iter.remove();
+                aStarSolutionIterator.next();
+                aStarSolutionIterator.remove();
             }
         }
     }
@@ -153,27 +144,26 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     private Set<AStarSolution> expandSolution(AStarSolution solution) {
 
         Set<AStarSolution> newSolutions = new TreeSet<>();
-        for (DataObject queryItemToExpand : solution.queryCollection) {
+        for (DataObject queryElement : solution.queryElements) {
             // the next queryItem is just next item in the list
 
-            double weight = weightCache.get(queryItemToExpand);
+            double weight = weightCache.get(queryElement);
 
-            if (!solution.containsQuery(queryItemToExpand)) {
+            if (!solution.containsQuery(queryElement)) {
                 // we remove the previously used approx for this item
-                if (solution.caseCollection.size() > 0) {
-                    for (DataObject curCaseDO : solution.caseCollection) {
-                        Similarity subSim = mappingCache.get(queryItemToExpand, curCaseDO);
+                if (solution.caseElements.size() > 0) {
+                    for (DataObject caseElement : solution.caseElements) {
+                        Similarity similarity = mappingCache.get(queryElement, caseElement);
                         AStarMap newMapping = new AStarMap();
-                        newMapping.queryItem = queryItemToExpand;
-                        newMapping.caseItem = curCaseDO;
-                        newMapping.f = subSim;
+                        newMapping.queryElement = queryElement;
+                        newMapping.caseElement = caseElement;
+                        newMapping.f = similarity;
 
                         AStarSolution newSolution = new AStarSolution(solution);
-                        newSolution.caseCollection.remove(curCaseDO);
+                        newSolution.caseElements.remove(caseElement);
                         newSolution.mapping.add(newMapping);
                         newSolution.g_Numerator += newMapping.f.getValue();
-                        newSolution.h_Numerator =
-                                solution.h_Numerator - maxQueryItemSimilarities.get(newMapping.queryItem);
+                        newSolution.h_Numerator = solution.h_Numerator - maxQueryElementSimilaritiyValues.get(newMapping.queryElement);
 
                         calcFValue(newSolution);
                         newSolutions.add(newSolution);
@@ -183,12 +173,12 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                     // the current
                     // solution
                     AStarMap newMapping = new AStarMap();
-                    newMapping.queryItem = queryItemToExpand;
-                    newMapping.caseItem = null;
-                    newMapping.f = new SimilarityImpl(this, newMapping.queryItem, newMapping.caseItem, 0.);
+                    newMapping.queryElement = queryElement;
+                    newMapping.caseElement = null;
+                    newMapping.f = new SimilarityImpl(this, newMapping.queryElement, newMapping.caseElement, 0.);
                     solution.mapping.add(newMapping);
                     solution.h_Numerator =
-                            solution.h_Numerator - maxQueryItemSimilarities.get(newMapping.queryItem);
+                            solution.h_Numerator - maxQueryElementSimilaritiyValues.get(newMapping.queryElement);
                     solution.g_Numerator = solution.g_Numerator + 0;
 
                     calcFValue(solution);
@@ -204,32 +194,31 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     /**
      * creates the starting solution
      */
-    private AStarSolution generateInitialSolution(
-            CollectionObject queryObject, CollectionObject caseObject, SimilarityValuator valuator) {
+    private AStarSolution generateInitialSolution(CollectionObject queryObject, CollectionObject caseObject, SimilarityValuator valuator) {
 
         AStarSolution initialSolution = new AStarSolution();
 
-        initialSolution.queryCollection = new LinkedList<>();
-        initialSolution.caseCollection = new LinkedList<>();
+        initialSolution.queryElements = new LinkedList<>();
+        initialSolution.caseElements = new LinkedList<>();
         initialSolution.mapping = new HashSet<>();
 
         // transform CAKE collections to Java-collections (easier handling)
-        DataObjectIterator itC = caseObject.iterator();
-        while (itC.hasNext()) {
-            initialSolution.caseCollection.add((DataObject) itC.next());
+        DataObjectIterator caseElementIterator = caseObject.iterator();
+        while (caseElementIterator.hasNext()) {
+            initialSolution.caseElements.add((DataObject) caseElementIterator.next());
         }
-        DataObjectIterator itQ = queryObject.iterator();
-        while (itQ.hasNext()) {
-            DataObject curQDO = (DataObject) itQ.next();
-            initialSolution.queryCollection.add(curQDO);
-            double weight = weightFunc.apply(curQDO);
-            weightCache.put(curQDO,weight);
+        DataObjectIterator queryElementIterator = queryObject.iterator();
+        while (queryElementIterator.hasNext()) {
+            DataObject queryElement = (DataObject) queryElementIterator.next();
+            initialSolution.queryElements.add(queryElement);
+            double weight = getWeightFunc().apply(queryElement);
+            weightCache.put(queryElement, weight);
 
             // calc max similarity per queryItem (necessary for A* II heuristic approximation)
             // also fill cache
-            double maxQSim = getMaxSimilarity(curQDO, initialSolution.caseCollection, valuator);
-            maxQueryItemSimilarities.put(curQDO, maxQSim);
-            initialSolution.h_Numerator += maxQSim;
+            double maxSimilarityValue = getMaxSimilarity(queryElement, initialSolution.caseElements, valuator);
+            maxQueryElementSimilaritiyValues.put(queryElement, maxSimilarityValue);
+            initialSolution.h_Numerator += maxSimilarityValue;
             initialSolution.g_h_Denominator += weight;
         }
 
@@ -240,45 +229,38 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     /**
-     * retrieves the next ID
-     */
-    private int getNextID() {
-        return IDCounter++;
-    }
-
-    /**
      * calculates the maximum similarity for the queryItem among the given caseItems
      */
-    private double getMaxSimilarity(
-            DataObject queryItem, List<DataObject> amongTheseCaseItems, SimilarityValuator valuator) {
+    private double getMaxSimilarity(DataObject queryElement, List<DataObject> caseElements, SimilarityValuator valuator) {
 
-        double maxSim = 0;
+        double maxSimilarityValue = 0;
 
-        double weight = getWeightFunction().apply(queryItem);
+        double weight = getWeightFunc().apply(queryElement);
 
-        for (DataObject curCaseDO : amongTheseCaseItems) {
-            String simToUse = getSimilarityToUseFunc().apply(queryItem, curCaseDO);
+        for (DataObject caseElement : caseElements) {
+            String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
 
-            Similarity curSim;
+            Similarity similarity;
             if (valuator instanceof SimilarityValuatorImplExt) {
                 try {
-                    curSim = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryItem, curCaseDO, simToUse, methodInvokerFunc.apply(queryItem, curCaseDO));
+                    similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, getMethodInvokersFunc().apply(queryElement, caseElement));
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                    curSim = valuator.computeSimilarity(queryItem, curCaseDO, simToUse);
+                    similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                 }
             }
-            else curSim = valuator.computeSimilarity(queryItem, curCaseDO, simToUse);
+            else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-            curSim = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryItem.getDataClass(), simToUse),queryItem, curCaseDO, weight*curSim.getValue());
+            similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure),queryElement, caseElement, weight * similarity.getValue());
+
             // fill cache
-            mappingCache.put(queryItem, curCaseDO, curSim);
-            double simValue = curSim.getValue();
-            if (simValue > maxSim) {
-                maxSim = simValue;
+            mappingCache.put(queryElement, caseElement, similarity);
+            double similarityValue = similarity.getValue();
+            if (similarityValue > maxSimilarityValue) {
+                maxSimilarityValue = similarityValue;
             }
         }
 
-        return maxSim;
+        return maxSimilarityValue;
     }
 
     /**
@@ -297,27 +279,25 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         }
     }
 
-    /**
-     * calculates the new h-numerator for the solution (sum of yet unmapped queryItems)
-     */
-    private double getHNumerator(AStarSolution solution) {
-        double newValue = 0;
-        for (DataObject curItem : solution.queryCollection) {
-            if (!solution.containsQuery(curItem)) {
-                newValue +=
-                        maxQueryItemSimilarities.get(curItem); // only for the querys, that aren't mapped yet
-            }
-        }
-
-        return newValue;
-    }
-
     @Override
     // it's necessary to override this method, because otherwise the maxQueueSize would be returned to
     // the default value
     protected void initializeBasedOn(SimilarityMeasure base) {
         super.initializeBasedOn(base);
         this.setMaxQueueSize(((SMCollectionMapping) base).getMaxQueueSize());
+    }
+
+
+    /**
+     * uniqueID-counter
+     */
+    private int IDCounter = 0;
+
+    /**
+     * retrieves the next ID
+     */
+    private int getNextID() {
+        return IDCounter++;
     }
 
     /**
@@ -354,8 +334,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
      */
     public class AStarMap extends AStarComparable {
 
-        public DataObject queryItem = null;
-        public DataObject caseItem = null;
+        public DataObject queryElement = null;
+        public DataObject caseElement = null;
     }
 
     /**
@@ -366,11 +346,11 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         /**
          * list of yet unmapped queryItems
          */
-        public List<DataObject> queryCollection = null;
+        public List<DataObject> queryElements = null;
         /**
          * list of yet unmapped caseItems
          */
-        public List<DataObject> caseCollection = null;
+        public List<DataObject> caseElements = null;
         /**
          * list of mappings until now
          */
@@ -395,20 +375,20 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         /**
          * copies the content of the submitted solution (convenience method)
          */
-        public AStarSolution(AStarSolution oldSolution) {
+        public AStarSolution(AStarSolution solution) {
             this();
 
-            this.queryCollection = new LinkedList<>(oldSolution.queryCollection);
-            this.caseCollection = new LinkedList<>(oldSolution.caseCollection);
-            this.mapping = new TreeSet<>(oldSolution.mapping);
-            this.g_h_Denominator = oldSolution.g_h_Denominator;
-            this.g_Numerator += oldSolution.g_Numerator;
-            this.h_Numerator += oldSolution.h_Numerator;
+            this.queryElements = new LinkedList<>(solution.queryElements);
+            this.caseElements = new LinkedList<>(solution.caseElements);
+            this.mapping = new TreeSet<>(solution.mapping);
+            this.g_h_Denominator = solution.g_h_Denominator;
+            this.g_Numerator += solution.g_Numerator;
+            this.h_Numerator += solution.h_Numerator;
         }
 
-        private boolean containsQuery(DataObject queryItem) {
+        private boolean containsQuery(DataObject queryElement) {
             for (AStarMap map : mapping) {
-                if (map.queryItem == queryItem) {
+                if (map.queryElement == queryElement) {
                     return true;
                 }
             }

@@ -13,21 +13,22 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.nest.sequence.SMGraphDTW;
 import de.uni_trier.wi2.procake.similarity.nest.sequence.impl.SMGraphDTWImpl;
 import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
-import extension.abstraction.IMethodInvokerFunc;
-import extension.abstraction.ISimFunc;
+import extension.abstraction.IMethodInvokersFunc;
+import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
 import utils.MethodInvoker;
-import utils.MethodInvokerFunc;
-import utils.SimFunc;
+import utils.MethodInvokersFunc;
+import utils.SimilarityMeasureFunc;
 import utils.WeightFunc;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISimFunc, IWeightFunc, IMethodInvokerFunc {
-    protected SimFunc similarityToUseFunc;
+public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+
+    protected SimilarityMeasureFunc similarityToUseFunc;
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
     protected WeightFunc weightFunc = (a) -> 1;
-    protected MethodInvokerFunc methodInvokerFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setLocalSimilarityToUse(String newValue) {
@@ -36,17 +37,27 @@ public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISi
     }
 
     @Override
-    public void setSimilarityToUse(SimFunc similarityToUse){
-        similarityToUseFunc = similarityToUse;
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
+        similarityToUseFunc = similarityMeasureFunc;
     }
 
     @Override
-    public utils.SimFunc getSimilarityToUseFunc() {
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
+    }
+
+    @Override
+    public MethodInvokersFunc getMethodInvokersFunc() {
+        return methodInvokersFunc;
+    }
+
+    @Override
+    public SimilarityMeasureFunc getSimilarityMeasureFunc() {
         return similarityToUseFunc;
     }
 
     @Override
-    public void setWeightFunction(WeightFunc weightFunc) {
+    public void setWeightFunc(WeightFunc weightFunc) {
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight==null) return 1;
@@ -57,27 +68,18 @@ public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISi
     }
 
     @Override
-    public WeightFunc getWeightFunction() {
+    public WeightFunc getWeightFunc() {
         return weightFunc;
     }
 
-    @Override
-    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
-        this.methodInvokerFunc = methodInvokerFunc;
-    }
 
-    @Override
-    public MethodInvokerFunc getMethodInvokerFunc() {
-        return methodInvokerFunc;
-    }
-
-    private Similarity similarity;
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
         if (!queryObject.isNESTSequentialWorkflow() || !caseObject.isNESTSequentialWorkflow()) {
-            throw new NoSequentialGraphException("Query and case graph must be a sequential workflow",
+            throw new NoSequentialGraphException(
+                    "Query and case graph must be a sequential workflow",
                     this);
         }
 
@@ -87,49 +89,56 @@ public class SMGraphDTWImplExt extends SMGraphDTWImpl implements SMGraphDTW, ISi
         if (!new NESTSequentialWorkflowValidatorImpl(queryGraph).isValidSequentialWorkflow()) {
             throw new NoSequentialGraphException(
                     "Query graph must be a valid sequential workflow for usage of SWA measure",
-                    queryGraph.getId(), queryGraph);
+                    queryGraph.getId(),
+                    queryGraph);
         }
         if (!new NESTSequentialWorkflowValidatorImpl(caseGraph).isValidSequentialWorkflow()) {
             throw new NoSequentialGraphException(
                     "Case graph must be a valid sequential workflow for usage of SWA measure",
-                    caseGraph.getId(), caseGraph);
+                    caseGraph.getId(),
+                    caseGraph);
         }
 
         if (queryGraph.getGraphNodes(DataObject::isNESTTaskNode).isEmpty()) {
-            similarity = new SimilarityImpl(this, queryObject, caseObject, 1.0, new ArrayList<>());
-            return similarity;
+            return new SimilarityImpl(
+                    this,
+                    queryObject,
+                    caseObject,
+                    1.0,
+                    new ArrayList<>());
         }
 
         if (caseGraph.getGraphNodes(DataObject::isNESTTaskNode).isEmpty()) {
-            similarity =  new SimilarityImpl(this, queryObject, caseObject, 0.0, new ArrayList<>());
-            return similarity;
+            return new SimilarityImpl(
+                    this,
+                    queryObject,
+                    caseObject,
+                    0.0,
+                    new ArrayList<>());
         }
 
         ListObject queryList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
         ListObject caseList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
 
-        Iterator queryIt = queryGraph.getTaskNodes().iterator();
-        while (queryIt.hasNext()) {
-            queryList.addValue(  ((NESTTaskNodeObject) queryIt.next()).getSemanticDescriptor()  );
+        Iterator queryElementIterator = queryGraph.getTaskNodes().iterator();
+        while (queryElementIterator.hasNext()) {
+            queryList.addValue(  ((NESTTaskNodeObject) queryElementIterator.next()).getSemanticDescriptor()  );
         }
 
-        Iterator caseIt = caseGraph.getTaskNodes().iterator();
-        while (caseIt.hasNext()) {
-            caseList.addValue(  ((NESTTaskNodeObject) caseIt.next()).getSemanticDescriptor()  );
+        Iterator caseElementIterator = caseGraph.getTaskNodes().iterator();
+        while (caseElementIterator.hasNext()) {
+            caseList.addValue(  ((NESTTaskNodeObject) caseElementIterator.next()).getSemanticDescriptor()  );
         }
 
         SMListDTWImplExt smListDTWImplExt = new SMListDTWImplExt();
-        smListDTWImplExt.setSimilarityToUse(getSimilarityToUseFunc());
-        smListDTWImplExt.setWeightFunction(getWeightFunction());
-        smListDTWImplExt.setMethodInvokerFunc(getMethodInvokerFunc());
+        smListDTWImplExt.setSimilarityMeasureFunc(getSimilarityMeasureFunc());
+        smListDTWImplExt.setWeightFunc(getWeightFunc());
+        smListDTWImplExt.setMethodInvokersFunc(getMethodInvokersFunc());
         smListDTWImplExt.setValBelowZero(getValBelowZero());
         smListDTWImplExt.setHalvingDistancePercentage(getHalvingDistancePercentage());
         smListDTWImplExt.setForceAlignmentEndsWithQuery(getForceAlignmentEndsWithQuery());
 
-        this.similarity = smListDTWImplExt.compute(queryList, caseList, valuator);
-
-        return similarity;
-
+        return new SimilarityImpl(this, queryObject, caseObject, smListDTWImplExt.compute(queryList, caseList, valuator).getValue());
     }
 
 }

@@ -15,7 +15,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
     protected WeightFunc weightFunc = (a) -> 1;
 
     @Override
-    public void setWeightFunction(WeightFunc weightFunc) {
+    public void setWeightFunc(WeightFunc weightFunc) {
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight==null) return 1;
@@ -26,7 +26,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
     }
 
     @Override
-    public WeightFunc getWeightFunction() {
+    public WeightFunc getWeightFunc() {
         return weightFunc;
     }
 
@@ -35,8 +35,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
 
     @Override
-    public Similarity compute(
-            DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+    public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
         // cast query and case object as list objects
         ListObject queryList = (ListObject) queryObject;
@@ -57,10 +56,14 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         int countDiscordant = 0;
         double sumConcordant = 0;
         double sumDiscordant = 0;
+
         for (int indexAStar1 = 0; indexAStar1 < queryList.size() - 1; indexAStar1++) {
             DataObject aStarResult1 = queryList.elementAt(indexAStar1);
+            double weight1 = getWeightFunc().apply(aStarResult1);
+
             for (int indexAStar2 = indexAStar1 + 1; indexAStar2 < queryList.size(); indexAStar2++) {
                 DataObject aStarResult2 = queryList.elementAt(indexAStar2);
+                double weight2 = getWeightFunc().apply(aStarResult2);
 
                 // get indices to compare
                 int indexCompare1 = -1;
@@ -81,33 +84,31 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
                         || (indexAStar1 > indexAStar2 && indexCompare1 > indexCompare2)) {
                     // concordant
                     countConcordant++;
-                    sumConcordant += getWeightFunction().apply(aStarResult1) * getWeightFunction().apply(aStarResult2);
+                    sumConcordant += weight1 * weight2;
                 } else {
                     // discordant
                     countDiscordant++;
-                    sumDiscordant += getWeightFunction().apply(aStarResult1) * getWeightFunction().apply(aStarResult2);
+                    sumDiscordant += weight1 * weight2;
                 }
             }
         }
 
-        // if different elements occur in query and case, return invalid similarity (check, if there are
-        // more elements in the list than concordant and discordant pairs)
+        // if different elements occur in query and case, return invalid similarity
+        // (check, if there are more elements in the list than concordant and discordant pairs)
         if (queryList.size() > countConcordant + countDiscordant) {
             return new SimilarityImpl(this, queryObject, caseObject);
         }
 
         // compute correctness
-        double correctness =
-                (sumConcordant - sumDiscordant) / (double) (sumConcordant + sumDiscordant);
+        double correctness = (sumConcordant - sumDiscordant) / (double) (sumConcordant + sumDiscordant);
 
         // if correctness >= 0, return computed value as similarity
         if (correctness >= 0) {
-            return new SimilarityImpl(this, queryList, caseList, correctness);
+            return new SimilarityImpl(this, queryObject, caseObject, correctness);
         }
 
         // otherwise, use discordant parameter to normalize value and return similarity
-        return new SimilarityImpl(
-                this, queryList, caseList, Math.abs(correctness) * discordantParameter);
+        return new SimilarityImpl(this, queryObject, caseObject, Math.abs(correctness) * discordantParameter);
     }
 
 }

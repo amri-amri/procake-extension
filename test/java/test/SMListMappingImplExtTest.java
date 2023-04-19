@@ -58,7 +58,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.;
             return 1.;
         });
@@ -72,7 +72,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.5;
             return 1.;
         });
@@ -85,7 +85,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.5;
             return 1.;
         });
@@ -114,7 +114,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
         });
@@ -127,7 +127,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
         });
@@ -143,7 +143,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
         });
@@ -170,7 +170,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringLevenshtein");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -183,7 +183,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse("SMStringLevenshtein");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

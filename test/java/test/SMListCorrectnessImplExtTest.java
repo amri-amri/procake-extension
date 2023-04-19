@@ -58,7 +58,7 @@ public class SMListCorrectnessImplExtTest extends CollectionSimilarityTest{
         caseList.addValue(utils.createStringObject("C"));
 
         SMListCorrectnessImplExt sm = new SMListCorrectnessImplExt();
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.;
             return 1.;
         });
@@ -69,7 +69,7 @@ public class SMListCorrectnessImplExtTest extends CollectionSimilarityTest{
 
 
         sm = new SMListCorrectnessImplExt();
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
         });
@@ -80,7 +80,7 @@ public class SMListCorrectnessImplExtTest extends CollectionSimilarityTest{
 
 
         sm = new SMListCorrectnessImplExt();
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B") || ((StringObject) a).getNativeString().equals("C")) return 0.5;
             return 1.;
         });

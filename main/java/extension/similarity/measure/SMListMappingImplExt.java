@@ -11,37 +11,37 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.*;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import utils.MethodInvoker;
-import utils.MethodInvokerFunc;
-import utils.SimFunc;
+import utils.MethodInvokersFunc;
+import utils.SimilarityMeasureFunc;
 import utils.WeightFunc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-public class SMListMappingImplExt extends SMListMappingImpl implements SMCollectionIsolatedMapping, ISimFunc, IWeightFunc, IMethodInvokerFunc {
+public class SMListMappingImplExt extends SMListMappingImpl implements SMCollectionIsolatedMapping, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimFunc similarityToUseFunc;
+    protected SimilarityMeasureFunc similarityMeasureFunc;
     protected WeightFunc weightFunc = (a) -> 1;
-    protected MethodInvokerFunc methodInvokerFunc = (a, b) -> new ArrayList<MethodInvoker>();
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     @Override
     public void setSimilarityToUse(String newValue) {
         super.setSimilarityToUse(newValue);
-        similarityToUseFunc = (a, b) -> newValue;
+        this.similarityMeasureFunc = (a, b) -> newValue;
     }
 
     @Override
-    public void setSimilarityToUse(SimFunc similarityToUse){
-        similarityToUseFunc = similarityToUse;
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
+        this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
-    public utils.SimFunc getSimilarityToUseFunc() {
-        return similarityToUseFunc;
+    public SimilarityMeasureFunc getSimilarityMeasureFunc() {
+        return similarityMeasureFunc;
     }
 
     @Override
-    public void setWeightFunction(WeightFunc weightFunc) {
+    public void setWeightFunc(WeightFunc weightFunc) {
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight==null) return 1;
@@ -52,25 +52,24 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMCollect
     }
 
     @Override
-    public WeightFunc getWeightFunction() {
+    public WeightFunc getWeightFunc() {
         return weightFunc;
     }
 
     @Override
-    public void setMethodInvokerFunc(MethodInvokerFunc methodInvokerFunc) {
-        this.methodInvokerFunc = methodInvokerFunc;
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
-    public MethodInvokerFunc getMethodInvokerFunc() {
-        return methodInvokerFunc;
+    public MethodInvokersFunc getMethodInvokersFunc() {
+        return methodInvokersFunc;
     }
 
-    //private boolean containsExact = DEFAULT_CONTAINS_EXACT;
+
 
     @Override
-    public Similarity compute(
-            DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+    public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
         Similarity similarity = checkStoppingCriteria(queryObject, caseObject);
         if (similarity != null) {
@@ -80,150 +79,141 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMCollect
         if (containsExact()) {
             return computeContainsExact((ListObject) queryObject, (ListObject) caseObject, valuator);
         } else {
-            return computeContainsInexact(
-                    (ListObject) queryObject, (ListObject) caseObject, valuator, true);
+            similarity = computeContainsInexact((ListObject) queryObject, (ListObject) caseObject, valuator, true);
+            return new SimilarityImpl(this, queryObject, caseObject, similarity.getValue(), (ArrayList<Similarity>) similarity.getLocalSimilarities(), similarity.getInfo());
         }
     }
 
-    private SimilarityImpl computeContainsExact(
-            ListObject queryObject, ListObject caseObject, SimilarityValuator valuator) {
+    private SimilarityImpl computeContainsExact(ListObject queryObject, ListObject caseObject, SimilarityValuator valuator) {
 
         // if the lists have different sizes, the similarity is 0.0
         if (queryObject.size() != caseObject.size()) {
             return new SimilarityImpl(this, queryObject, caseObject, 0.0);
         }
 
-        double simSum = 0;
-        double simCount = 0;
+        double similaritySum = 0;
+        double denominator = 0;
 
         ArrayList<Similarity> localSimilarities = new ArrayList<>();
 
         // each query element is compared to the case element at the exact position
-        DataObjectIterator queryIt = (queryObject).iterator();
-        DataObjectIterator caseIt = (caseObject).iterator();
-        while (queryIt.hasNext() && caseIt.hasNext()) {
-            DataObject queryElement = (DataObject) queryIt.next();
-            DataObject caseElement = (DataObject) caseIt.next();
-            String simToUse = getSimilarityToUseFunc().apply(queryElement, caseElement);
-            double weight = getWeightFunction().apply(queryElement);
+        DataObjectIterator queryElementIterator = (queryObject).iterator();
+        DataObjectIterator caseElementIterator = (caseObject).iterator();
 
-            Similarity currentSimilarity;
+        while (queryElementIterator.hasNext() && caseElementIterator.hasNext()) {
+            DataObject queryElement = (DataObject) queryElementIterator.next();
+            DataObject caseElement = (DataObject) caseElementIterator.next();
+
+            String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
+            double weight = getWeightFunc().apply(queryElement);
+
+            Similarity similarity;
 
             if (valuator instanceof SimilarityValuatorImplExt) {
                 try {
-                    currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, simToUse, methodInvokerFunc.apply(queryElement, caseElement));
+                    similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, getMethodInvokersFunc().apply(queryElement, caseElement));
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                    currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, simToUse);
+                    similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                 }
             }
-            else currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, simToUse);
+            else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
 
-            currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), simToUse), queryElement, caseElement, currentSimilarity.getValue() * weight);
-            simSum += currentSimilarity.getValue();
-            simCount += weight;
-            localSimilarities.add(currentSimilarity);
+            similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, similarity.getValue() * weight);
+            similaritySum += similarity.getValue();
+            denominator += weight;
+            localSimilarities.add(similarity);
         }
 
-        if (simCount == 0) {
+        if (denominator == 0) {
             // simCount can't be 0.0, because for empty lists this method wouldn't be called
-            simCount = 1;
+            denominator = 1;
         }
-        return new SimilarityImpl(this, queryObject, caseObject, simSum / simCount, localSimilarities);
+        return new SimilarityImpl(this, queryObject, caseObject, similaritySum / denominator, localSimilarities);
     }
 
-    private SimilarityImpl computeContainsInexact(
+    private SimilarityImpl computeContainsInexact(ListObject largerList, ListObject smallerList, SimilarityValuator valuator, boolean queryFirst) {
 
-            ListObject largerList,
-            ListObject smallerList,
-            SimilarityValuator valuator,
-            boolean queryFirst) {
-
-
-
-        SimilarityImpl collectionSimilarity = new SimilarityImpl(this, largerList, smallerList, -1.0);
 
         if (largerList.size() > smallerList.size()) {
 
-            double maxSim = collectionSimilarity.getValue();
+            double maxSimilarityValue = -1;
             for (int i = 0; i <= (largerList.size() - smallerList.size()); i++) {
-                double simSum = 0;
-                double simCount = 0;
+                double similaritySum = 0;
+                double denominator = 0;
                 ArrayList<Similarity> localSimilarities = new ArrayList<>();
-                DataObjectIterator queryIt = (largerList).iterator();
-                DataObjectIterator caseIt = (smallerList).iterator();
-                DataObject queryElement;
+                DataObjectIterator queryElementIterator = (largerList).iterator();
+                DataObjectIterator caseElementIterator = (smallerList).iterator();
 
                 // the first elements of the query are ignored, so that there's a possible solution for each
                 // element
                 for (int j = 0; j < i; j++) {
-                    queryElement = (DataObject) queryIt.next();
+                    queryElementIterator.next();
                 }
                 // all possible matches are made
-                while (queryIt.hasNext() & caseIt.hasNext()) {
-                    queryElement = (DataObject) queryIt.next();
-                    DataObject caseElement = (DataObject) caseIt.next();
+                while (queryElementIterator.hasNext() & caseElementIterator.hasNext()) {
+                    DataObject queryElement = (DataObject) queryElementIterator.next();
+                    DataObject caseElement = (DataObject) caseElementIterator.next();
 
                     // the query has to be at the first position, because the similarity computation can be
                     // asymetric
 
                     double weight;
                     Similarity currentSimilarity;
-                    String currentSimToUse;
+                    String localSimilarityMeasure;
                     if (queryFirst) {
-                        currentSimToUse = getSimilarityToUseFunc().apply(queryElement, caseElement);
-                        weight = getWeightFunction().apply(queryElement);
+                        localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
+                        weight = getWeightFunc().apply(queryElement);
 
                         if (valuator instanceof SimilarityValuatorImplExt) {
                             try {
-                                currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, currentSimToUse, methodInvokerFunc.apply(queryElement, caseElement));
+                                currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, getMethodInvokersFunc().apply(queryElement, caseElement));
                             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                                currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, currentSimToUse);
+                                currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                             }
                         }
-                        else currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, currentSimToUse);
+                        else currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), currentSimToUse), queryElement, caseElement, currentSimilarity.getValue() * weight);
+                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, currentSimilarity.getValue() * weight);
                     } else {
-                        currentSimToUse = getSimilarityToUseFunc().apply(caseElement, queryElement);
-                        weight = getWeightFunction().apply(caseElement);
+                        localSimilarityMeasure = getSimilarityMeasureFunc().apply(caseElement, queryElement);
+                        weight = getWeightFunc().apply(caseElement);
 
                         if (valuator instanceof SimilarityValuatorImplExt) {
                             try {
-                                currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(caseElement, queryElement, currentSimToUse, methodInvokerFunc.apply(caseElement, queryElement));
+                                currentSimilarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(caseElement, queryElement, localSimilarityMeasure, getMethodInvokersFunc().apply(caseElement, queryElement));
                             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                                currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, currentSimToUse);
+                                currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, localSimilarityMeasure);
                             }
                         }
-                        else currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, currentSimToUse);
+                        else currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, localSimilarityMeasure);
 
-                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(caseElement.getDataClass(), currentSimToUse), caseElement, queryElement, currentSimilarity.getValue() * weight);
+                        currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(caseElement.getDataClass(), localSimilarityMeasure), caseElement, queryElement, currentSimilarity.getValue() * weight);
 
                     }
-                    simSum += currentSimilarity.getValue();
-                    simCount += weight;
+                    similaritySum += currentSimilarity.getValue();
+                    denominator += weight;
                     localSimilarities.add(currentSimilarity);
                 }
 
                 // adding the difference in lengths
                 //                simCount += (queryObject.size()-caseObject.size());
 
-                if (simCount == 0) {
-                    simCount = 1;
+                if (denominator == 0) {
+                    denominator = 1;
                 }
                 // if the new computed similarity is higher than the present one, it's the new maximum value
-                if ((simSum / simCount) > maxSim) {
-                    maxSim = (simSum / simCount);
+                if ((similaritySum / denominator) > maxSimilarityValue) {
+                    maxSimilarityValue = (similaritySum / denominator);
                     if (queryFirst) {
-                        collectionSimilarity =
-                                new SimilarityImpl(this, largerList, smallerList, maxSim, localSimilarities);
+                        return new SimilarityImpl(this, largerList, smallerList, maxSimilarityValue, localSimilarities);
                     } else {
-                        collectionSimilarity =
-                                new SimilarityImpl(this, smallerList, largerList, maxSim, localSimilarities);
+                        return new SimilarityImpl(this, smallerList, largerList, maxSimilarityValue, localSimilarities);
                     }
                 }
             }
-            return collectionSimilarity;
+            return new SimilarityImpl(this, largerList, smallerList, -1.0);
+
         } else if (largerList.size() < smallerList.size()) {
             // if the case is bigger than the query, the same method is called again with swapped objects,
             // so the computation was just implemented once

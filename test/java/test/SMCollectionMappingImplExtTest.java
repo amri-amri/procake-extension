@@ -35,7 +35,7 @@ public class SMCollectionMappingImplExtTest extends CollectionSimilarityTest{
                 for (int d = 0; d<7; d++) if (days[d].equals(stringValue)) return randomWeights[d];
                 return 1.;
             };
-            sm.setWeightFunction(wf);
+            sm.setWeightFunc(wf);
 
             Similarity sim = sm.compute(queryList, caseList, simVal);
             assertEquals(1., sim.getValue(), delta);
@@ -58,7 +58,7 @@ public class SMCollectionMappingImplExtTest extends CollectionSimilarityTest{
             if (stringValue.equals("Sunday")) return 0.;
             return 1.;
         };
-        sm.setWeightFunction(wf);
+        sm.setWeightFunc(wf);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
         assertEquals(1., sim.getValue(), delta);
@@ -80,7 +80,7 @@ public class SMCollectionMappingImplExtTest extends CollectionSimilarityTest{
             if (stringValue.equals("Sunday")) return 0.5;
             return 1.;
         };
-        sm.setWeightFunction(wf);
+        sm.setWeightFunc(wf);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
         assertEquals(5./6, sim.getValue(), delta);
@@ -96,7 +96,7 @@ public class SMCollectionMappingImplExtTest extends CollectionSimilarityTest{
         sm.setMaxQueueSize(-1);
         sm.setSimilarityToUse("SMStringLevenshtein");
 
-        sm.setWeightFunction(a -> 1.);
+        sm.setWeightFunc(a -> 1.);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
         assertEquals(5./7, sim.getValue(), delta);
@@ -146,7 +146,7 @@ public class SMCollectionMappingImplExtTest extends CollectionSimilarityTest{
 
         SMCollectionMappingImplExt sm = new SMCollectionMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -160,7 +160,7 @@ public class SMCollectionMappingImplExtTest extends CollectionSimilarityTest{
 
         sm = new SMCollectionMappingImplExt();
         sm.setSimilarityToUse("SMStringEqual");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

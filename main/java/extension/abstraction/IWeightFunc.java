@@ -2,7 +2,22 @@ package extension.abstraction;
 
 import utils.WeightFunc;
 
+/**
+ * An interface for every class using the WeightFunc functional interface.
+ */
 public interface IWeightFunc {
-    void setWeightFunction(WeightFunc weightFunc);
-    WeightFunc getWeightFunction();
+
+    /**
+     * sets the WeightFunc
+     *
+     * @param weightFunc  the WeightFunc to be set
+     */
+    void setWeightFunc(WeightFunc weightFunc);
+
+    /**
+     * gets the WeightFunc
+     *
+     * @return the WeightFunc
+     */
+    WeightFunc getWeightFunc();
 }

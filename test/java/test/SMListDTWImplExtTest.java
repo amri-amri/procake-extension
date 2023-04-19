@@ -69,7 +69,7 @@ public class SMListDTWImplExtTest extends CollectionSimilarityTest {
 
         SMListDTWImplExt sm = new SMListDTWImplExt();
         sm.setLocalSimilarityToUse("SMStringEqual");
-        sm.setWeightFunction(a -> {
+        sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("D")) return 0.;
             return 1.;
         });
@@ -96,7 +96,7 @@ public class SMListDTWImplExtTest extends CollectionSimilarityTest {
 
         SMListDTWImplExt sm = new SMListDTWImplExt();
         sm.setLocalSimilarityToUse("SMStringLevenshtein");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -110,7 +110,7 @@ public class SMListDTWImplExtTest extends CollectionSimilarityTest {
 
         sm = new SMListDTWImplExt();
         sm.setLocalSimilarityToUse("SMStringLevenshtein");
-        sm.setMethodInvokerFunc((a,b)->{
+        sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
