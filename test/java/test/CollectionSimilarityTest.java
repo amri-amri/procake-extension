@@ -1,15 +1,26 @@
 package test;
 
 import de.uni_trier.wi2.procake.CakeInstance;
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.model.ModelFactory;
+import de.uni_trier.wi2.procake.data.model.base.CollectionClass;
 import de.uni_trier.wi2.procake.data.model.base.ListClass;
 import de.uni_trier.wi2.procake.data.object.DataObjectUtils;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.base.impl.ListObjectImpl;
+import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
+import de.uni_trier.wi2.procake.similarity.SimilarityModel;
 import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
+import de.uni_trier.wi2.procake.similarity.base.SMObjectEqual;
+import de.uni_trier.wi2.procake.similarity.base.impl.SMObjectEqualImpl;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
+import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
+import de.uni_trier.wi2.procake.similarity.nest.sequence.SMGraphDTW;
 import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
+import extension.similarity.measure.*;
+import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.*;
 
 
@@ -68,15 +79,41 @@ public class CollectionSimilarityTest {
 
         utils = new DataObjectUtils();
 
-        simVal = SimilarityModelFactory.newSimilarityValuator();
+        simVal = new SimilarityValuatorImplExt(SimilarityModelFactory.getDefaultSimilarityModel()   );
+
+        SimilarityModel model = simVal.getSimilarityModel();
 
         SMStringLevenshtein smStringLevenshtein = (SMStringLevenshtein) simVal.getSimilarityModel().createSimilarityMeasure(SMStringLevenshtein.NAME, ModelFactory.getDefaultModel().getStringSystemClass());
         smStringLevenshtein.setCaseInsensitive();
         smStringLevenshtein.setThreshold(100);
-        simVal.getSimilarityModel().addSimilarityMeasure(smStringLevenshtein, "SMStringLevenshtein");
+        model.addSimilarityMeasure(smStringLevenshtein, "SMStringLevenshtein");
 
         SMStringEqual smStringEqual = (SMStringEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMStringEqual.NAME, ModelFactory.getDefaultModel().getStringSystemClass());
         smStringEqual.setCaseInsensitive();
-        simVal.getSimilarityModel().addSimilarityMeasure(smStringEqual, "SMStringEqual");
+        model.addSimilarityMeasure(smStringEqual, "SMStringEqual");
+
+        SMObjectEqual smObjectEqual = (SMObjectEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMObjectEqual.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
+        model.addSimilarityMeasure(smObjectEqual, SMObjectEqual.NAME);
+
+        SimilarityMeasure measure =
+                model.getSimilarityMeasure(ModelFactory.getDefaultModel().getListSystemClass(), SMObjectEqual.NAME);
+
+        //add(model, new SMObjectEqualImpl(), "SMObjectEqual");
+        add(model, new SMCollectionIsolatedMappingImplExt(), "SMCollectionIsolatedMappingExt", ModelFactory.getDefaultModel().getCollectionSystemClass());
+        add(model, new SMCollectionMappingImplExt(), "SMCollectionMappingExt", ModelFactory.getDefaultModel().getCollectionSystemClass());
+        add(model, new SMGraphDTWImplExt(), "SMGraphDTWExt", ModelFactory.getDefaultModel().getNESTGraphClass());
+        add(model, new SMGraphSWAImplExt(), "SMGraphSWAExt", ModelFactory.getDefaultModel().getNESTGraphClass());
+        add(model, new SMListCorrectnessImplExt(), "SMListCorrectnessExt", ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMListDTWImplExt(), "SMListDTWExt", ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMListSWAImplExt(), "SMListSWAExt", ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMListMappingImplExt(), "SMListMappingExt", ModelFactory.getDefaultModel().getListSystemClass());
+
+    }
+
+    public void add(SimilarityModel model, SimilarityMeasureImpl sm, String name, DataClass dataClass){
+        sm.setForceOverride(true);
+        sm.setName(name);
+        sm.setDataClass(dataClass);
+        model.addSimilarityMeasure(sm, name);
     }
 }

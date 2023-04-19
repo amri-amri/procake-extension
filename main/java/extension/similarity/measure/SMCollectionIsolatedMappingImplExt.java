@@ -68,6 +68,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         return methodInvokerFunc;
     }
 
+
     @Override
     public Similarity compute(
             DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
