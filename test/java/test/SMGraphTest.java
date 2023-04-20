@@ -6,11 +6,11 @@ import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTAbstractWorkflowModifier;
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTWorkflowBuilder;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTWorkflowBuilderImpl;
-import extension.similarity.measure.SMGraphDTWImplExt;
-import extension.similarity.measure.SMGraphSWAImplExt;
+import extension.similarity.measure.SMListDTWImplExt;
+import extension.similarity.measure.SMListSWAImplExt;
 import org.junit.Test;
 
-public class SMGraphDPImplExtTest extends CollectionSimilarityTest{
+public class SMGraphTest extends CollectionSimilarityTest{
 
     @Test
     public void test1(){
@@ -49,21 +49,17 @@ public class SMGraphDPImplExtTest extends CollectionSimilarityTest{
 
 
 
-        SMGraphSWAImplExt smGraphSWAImplExt = new SMGraphSWAImplExt();
+        SMListSWAImplExt smGraphSWAImplExt = new SMListSWAImplExt();
         smGraphSWAImplExt.setLocalSimilarityToUse("SMStringEqual");
 
         smGraphSWAImplExt.compute(queryGraph, caseGraph, simVal);
 
 
 
-        SMGraphDTWImplExt smGraphDTWImplExt = new SMGraphDTWImplExt();
+        SMListDTWImplExt smGraphDTWImplExt = new SMListDTWImplExt();
         smGraphDTWImplExt.setLocalSimilarityToUse("SMStringEqual");
 
         smGraphDTWImplExt.compute(queryGraph, caseGraph, simVal);
-
-
-
-
 
 
     }

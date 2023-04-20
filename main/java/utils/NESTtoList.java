@@ -1,0 +1,48 @@
+package utils;
+
+import de.uni_trier.wi2.procake.data.model.ModelFactory;
+import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.base.impl.ListObjectImpl;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
+import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTSequentialWorkflowValidatorImpl;
+import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
+
+import java.util.Iterator;
+
+/**
+ * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.
+ */
+public interface NESTtoList {
+
+    /**
+     * converts a valid {@link NESTSequentialWorkflowObject} to a {@link ListObject}
+     *
+     * In a sequential workflow every task node has exactly one incoming an one outgoing edge,
+     * with the first and last ones being the exception.
+     *
+     * The semantic descriptors of these task nodes are being put in a list in the order of the workflow.
+     * This list is then returned.
+     *
+     * @param workflowObject  the sequential workflow to be converted
+     * @return  the list containing the semantic descriptors of the task nodes
+     */
+    default ListObject toList(NESTSequentialWorkflowObject workflowObject){
+
+        if (!new NESTSequentialWorkflowValidatorImpl(workflowObject).isValidSequentialWorkflow()) {
+            throw new NoSequentialGraphException(
+                    "Query graph must be a valid sequential workflow for usage of SWA measure",
+                    workflowObject.getId(),
+                    workflowObject);
+        }
+
+        ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
+
+        Iterator workflowElementIterator = workflowObject.getTaskNodes().iterator();
+        while (workflowElementIterator.hasNext()) {
+            workflowList.addValue(  ((NESTTaskNodeObject) workflowElementIterator.next()).getSemanticDescriptor()  );
+        }
+
+        return workflowList;
+    }
+}

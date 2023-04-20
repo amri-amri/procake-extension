@@ -107,8 +107,6 @@ public class CollectionSimilarityTest {
         //add(model, new SMObjectEqualImpl(), "SMObjectEqual");
         add(model, new SMCollectionIsolatedMappingImplExt(), SMCollectionIsolatedMappingExt.NAME, ModelFactory.getDefaultModel().getCollectionSystemClass());
         add(model, new SMCollectionMappingImplExt(), SMCollectionMappingExt.NAME, ModelFactory.getDefaultModel().getCollectionSystemClass());
-        add(model, new SMGraphDTWImplExt(), SMGraphDTWExt.NAME, ModelFactory.getDefaultModel().getNESTGraphClass());
-        add(model, new SMGraphSWAImplExt(), SMGraphSWAExt.NAME, ModelFactory.getDefaultModel().getNESTGraphClass());
         add(model, new SMListCorrectnessImplExt(), SMListCorrectnessExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
         add(model, new SMListDTWImplExt(), SMListDTWExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
         add(model, new SMListSWAImplExt(), SMListSWAExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());

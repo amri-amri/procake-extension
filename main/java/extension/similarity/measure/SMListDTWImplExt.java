@@ -2,6 +2,7 @@ package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListDTW;
@@ -11,10 +12,7 @@ import extension.abstraction.IMethodInvokersFunc;
 import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
-import utils.MethodInvoker;
-import utils.MethodInvokersFunc;
-import utils.SimilarityMeasureFunc;
-import utils.WeightFunc;
+import utils.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ import java.util.Collection;
  *
  * //todo explanation of weighted normalization
  */
-public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, NESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityToUseFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
@@ -111,8 +109,14 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, ISi
     protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator){
 
         //prepare new arrays containing initial null-elements
-        DataObject[] queryList = ((ListObject) queryObject).getValues().toArray(DataObject[]::new);
-        DataObject[] caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
+        DataObject[] queryList, caseList;
+
+        if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
+        else queryList = ((ListObject) queryObject).getValues().toArray(DataObject[]::new);
+
+        if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
+        else caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
+
 
         DataObject[] queryArray = new DataObject[queryList.length + 1];
         DataObject[] caseArray = new DataObject[caseList.length + 1];
