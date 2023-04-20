@@ -2,12 +2,15 @@ package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
+import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionIsolatedMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IMethodInvokersFunc;
+import extension.abstraction.INESTtoList;
 import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
@@ -48,7 +51,7 @@ import java.util.ArrayList;
  * <p>For the usage of MethodInvoker objects an object of {@link SimilarityValuatorImplExt} has to be used as
  * similarity valuator!
  */
-public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
@@ -112,7 +115,17 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        Similarity similarity = checkStoppingCriteria(queryObject, caseObject);
+        CollectionObject queryCollection, caseCollection;
+
+        if (queryObject.isNESTSequentialWorkflow()) queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
+        else queryCollection = (CollectionObject) queryObject;
+
+        if (caseObject.isNESTSequentialWorkflow()) caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
+        else caseCollection = (CollectionObject) caseObject;
+
+
+
+        Similarity similarity = checkStoppingCriteria(queryCollection, caseCollection);
 
         if (similarity != null) {
             return similarity;
@@ -120,7 +133,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
         double similaritySum = 0.0;
         ArrayList<Similarity> localSimilarities = new ArrayList<>();
-        DataObjectIterator queryElementIterator = ((CollectionObject) queryObject).iterator();
+        DataObjectIterator queryElementIterator = queryCollection.iterator();
 
         double divisor = 0.0;
 
@@ -129,7 +142,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         // A case element may be mapped multiple times to different query elements.
         while (queryElementIterator.hasNext()) {
             DataObject queryElement = queryElementIterator.nextDataObject();
-            Similarity localSimilarity = this.computeLocalSimilarity(queryElement, (CollectionObject) caseObject, valuator);
+            Similarity localSimilarity = this.computeLocalSimilarity(queryElement, caseCollection, valuator);
             similaritySum += localSimilarity.getValue();
             divisor += getWeightFunc().apply(queryElement);
             localSimilarities.add(localSimilarity);

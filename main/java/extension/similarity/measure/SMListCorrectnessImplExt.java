@@ -2,10 +2,12 @@ package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListCorrectnessImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
+import extension.abstraction.INESTtoList;
 import extension.abstraction.IWeightFunc;
 import utils.WeightFunc;
 
@@ -22,7 +24,7 @@ import utils.WeightFunc;
  * d being the sum of all w(a)*w(b) with (a,b) being a discordant pair
  * the correctness is ( c - d ) / ( c + d ).
  */
-public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectnessExt, IWeightFunc {
+public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectnessExt, INESTtoList, IWeightFunc {
 
     protected WeightFunc weightFunc = (a) -> 1;
 
@@ -54,8 +56,13 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
         // cast query and case object as list objects
-        ListObject queryList = (ListObject) queryObject;
-        ListObject caseList = (ListObject) caseObject;
+        ListObject queryList, caseList;
+
+        if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject);
+        else queryList = (ListObject) queryObject;
+
+        if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
+        else caseList = (ListObject) caseObject;
 
         // if the lists have different sizes, return invalid similarity
         if (queryList.size() != caseList.size()) {

@@ -2,6 +2,7 @@ package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
  *
  * //todo explanation of weighted normalization
  */
-public class SMListMappingImplExt extends SMListMappingImpl implements SMListMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMListMappingImplExt extends SMListMappingImpl implements SMListMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
     protected WeightFunc weightFunc = (a) -> 1;
@@ -101,23 +102,31 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        Similarity similarity = checkStoppingCriteria(queryObject, caseObject);
+        ListObject queryList, caseList;
+
+        if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject);
+        else queryList = (ListObject) queryObject;
+
+        if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
+        else caseList = (ListObject) caseObject;
+
+
+        Similarity similarity = checkStoppingCriteria(queryList, caseList);
         if (similarity != null) {
             return similarity;
         }
 
         if (containsExact()) {
-            return computeContainsExact((ListObject) queryObject, (ListObject) caseObject, valuator);
+            return computeContainsExact(queryList, caseList, valuator, queryObject, caseObject);
         } else {
-            similarity = computeContainsInexact((ListObject) queryObject, (ListObject) caseObject, valuator, true);
-            return new SimilarityImpl(this, queryObject, caseObject, similarity.getValue(), (ArrayList<Similarity>) similarity.getLocalSimilarities(), similarity.getInfo());
+            return computeContainsInexact(queryList, caseList, valuator, true, queryObject, caseObject);
         }
     }
 
-    private SimilarityImpl computeContainsExact(ListObject queryObject, ListObject caseObject, SimilarityValuator valuator) {
+    private SimilarityImpl computeContainsExact(ListObject queryList, ListObject caseList, SimilarityValuator valuator, DataObject queryObject, DataObject caseObject) {
 
         // if the lists have different sizes, the similarity is 0.0
-        if (queryObject.size() != caseObject.size()) {
+        if (queryList.size() != caseList.size()) {
             return new SimilarityImpl(this, queryObject, caseObject, 0.0);
         }
 
@@ -127,8 +136,8 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
         ArrayList<Similarity> localSimilarities = new ArrayList<>();
 
         // each query element is compared to the case element at the exact position
-        DataObjectIterator queryElementIterator = (queryObject).iterator();
-        DataObjectIterator caseElementIterator = (caseObject).iterator();
+        DataObjectIterator queryElementIterator = (queryList).iterator();
+        DataObjectIterator caseElementIterator = (caseList).iterator();
 
         while (queryElementIterator.hasNext() && caseElementIterator.hasNext()) {
             DataObject queryElement = (DataObject) queryElementIterator.next();
@@ -162,9 +171,9 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
         return new SimilarityImpl(this, queryObject, caseObject, similaritySum / denominator, localSimilarities);
     }
 
-    private SimilarityImpl computeContainsInexact(ListObject largerList, ListObject smallerList, SimilarityValuator valuator, boolean queryFirst) {
+    private SimilarityImpl computeContainsInexact(ListObject largerList, ListObject smallerList, SimilarityValuator valuator, boolean queryFirst, DataObject queryObject, DataObject caseObject) {
 
-        SimilarityImpl similarity = new SimilarityImpl(this, largerList, smallerList, -1.0);
+        SimilarityImpl similarity = new SimilarityImpl(this, queryObject, caseObject, -1.0);
 
         if (largerList.size() > smallerList.size()) {
 
@@ -237,9 +246,9 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                 if ((similaritySum / denominator) > maxSimilarityValue) {
                     maxSimilarityValue = (similaritySum / denominator);
                     if (queryFirst) {
-                        similarity = new SimilarityImpl(this, largerList, smallerList, maxSimilarityValue, localSimilarities);
+                        similarity = new SimilarityImpl(this, queryObject, caseObject, maxSimilarityValue, localSimilarities);
                     } else {
-                        similarity = new SimilarityImpl(this, smallerList, largerList, maxSimilarityValue, localSimilarities);
+                        similarity = new SimilarityImpl(this, caseObject, queryObject, maxSimilarityValue, localSimilarities);
                     }
                 }
             }
@@ -248,11 +257,11 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
         } else if (largerList.size() < smallerList.size()) {
             // if the case is bigger than the query, the same method is called again with swapped objects,
             // so the computation was just implemented once
-            return computeContainsInexact(smallerList, largerList, valuator, false);
+            return computeContainsInexact(smallerList, largerList, valuator, false, caseObject, queryObject);
         }
         // if both lists have the same size, they just can match exactly, so the method for the exact
         // contains is called
-        return computeContainsExact(largerList, smallerList, valuator);
+        return computeContainsExact(largerList, smallerList, valuator, queryObject, caseObject);
     }
 
 }

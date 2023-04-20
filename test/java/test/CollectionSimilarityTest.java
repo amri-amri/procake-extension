@@ -84,40 +84,41 @@ public class CollectionSimilarityTest {
 
         SimilarityModel model = simVal.getSimilarityModel();
 
-        SMStringLevenshtein smStringLevenshtein = (SMStringLevenshtein) simVal.getSimilarityModel().createSimilarityMeasure(SMStringLevenshtein.NAME, ModelFactory.getDefaultModel().getStringSystemClass());
+        SMStringLevenshtein smStringLevenshtein = (SMStringLevenshtein) simVal.getSimilarityModel().createSimilarityMeasure(SMStringLevenshtein.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         smStringLevenshtein.setCaseInsensitive();
         smStringLevenshtein.setThreshold(100);
         model.addSimilarityMeasure(smStringLevenshtein, SMStringLevenshtein.NAME);
 
-        SMStringEqual smStringEqual = (SMStringEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMStringEqual.NAME, ModelFactory.getDefaultModel().getStringSystemClass());
+        SMStringEqual smStringEqual = (SMStringEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMStringEqual.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         smStringEqual.setCaseInsensitive();
         model.addSimilarityMeasure(smStringEqual, SMStringEqual.NAME);
 
         SMObjectEqual smObjectEqual = (SMObjectEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMObjectEqual.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         model.addSimilarityMeasure(smObjectEqual, SMObjectEqual.NAME);
 
-        SMNumericLinear smNumericLinear  = (SMNumericLinear) simVal.getSimilarityModel().createSimilarityMeasure(SMNumericLinear.NAME, ModelFactory.getDefaultModel().getIntegerSystemClass());
+        SMNumericLinear smNumericLinear  = (SMNumericLinear) simVal.getSimilarityModel().createSimilarityMeasure(SMNumericLinear.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         smNumericLinear.setForceOverride(true);
         model.addSimilarityMeasure(smNumericLinear, SMNumericLinear.NAME);
-        model.setDefaultSimilarityMeasure(ModelFactory.getDefaultModel().getIntegerSystemClass(), SMNumericLinear.NAME);
+        model.setDefaultSimilarityMeasure(ModelFactory.getDefaultModel().getDataSystemClass(), SMNumericLinear.NAME);
 
         SimilarityMeasure measure =
                 model.getSimilarityMeasure(ModelFactory.getDefaultModel().getListSystemClass(), SMObjectEqual.NAME);
 
         //add(model, new SMObjectEqualImpl(), "SMObjectEqual");
-        add(model, new SMCollectionIsolatedMappingImplExt(), SMCollectionIsolatedMappingExt.NAME, ModelFactory.getDefaultModel().getCollectionSystemClass());
-        add(model, new SMCollectionMappingImplExt(), SMCollectionMappingExt.NAME, ModelFactory.getDefaultModel().getCollectionSystemClass());
-        add(model, new SMListCorrectnessImplExt(), SMListCorrectnessExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
-        add(model, new SMListDTWImplExt(), SMListDTWExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
-        add(model, new SMListSWAImplExt(), SMListSWAExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
-        add(model, new SMListMappingImplExt(), SMListMappingExt.NAME, ModelFactory.getDefaultModel().getListSystemClass());
+        add(model, new SMCollectionIsolatedMappingImplExt(), SMCollectionIsolatedMappingExt.NAME);
+        add(model, new SMCollectionMappingImplExt(), SMCollectionMappingExt.NAME);
+        add(model, new SMListCorrectnessImplExt(), SMListCorrectnessExt.NAME);
+        add(model, new SMListDTWImplExt(), SMListDTWExt.NAME);
+        add(model, new SMListSWAImplExt(), SMListSWAExt.NAME);
+        add(model, new SMListMappingImplExt(), SMListMappingExt.NAME);
 
     }
 
-    public void add(SimilarityModel model, SimilarityMeasureImpl sm, String name, DataClass dataClass){
+    public void add(SimilarityModel model, SimilarityMeasureImpl sm, String name){
         sm.setForceOverride(true);
         sm.setName(name);
-        sm.setDataClass(dataClass);
+        sm.setDataClass(ModelFactory.getDefaultModel().getDataSystemClass());
         model.addSimilarityMeasure(sm, name);
+        model.setDefaultSimilarityMeasure(ModelFactory.getDefaultModel().getDataSystemClass(), name);
     }
 }

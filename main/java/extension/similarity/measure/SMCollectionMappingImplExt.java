@@ -2,6 +2,7 @@ package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
@@ -10,6 +11,7 @@ import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IMethodInvokersFunc;
+import extension.abstraction.INESTtoList;
 import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
@@ -53,7 +55,7 @@ import java.util.*;
  * <p>For the usage of MethodInvoker objects an object of {@link SimilarityValuatorImplExt} has to be used as
  * similarity valuator!
  */
-public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
@@ -125,11 +127,20 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+
+        CollectionObject queryCollection, caseCollection;
+
+        if (queryObject.isNESTSequentialWorkflow()) queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
+        else queryCollection = (CollectionObject) queryObject;
+
+        if (caseObject.isNESTSequentialWorkflow()) caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
+        else caseCollection = (CollectionObject) caseObject;
+
         // init cache
         mappingCache = new MultiKeyMap<>();
         weightCache = new HashMap<>();
 
-        Similarity similarity = checkStoppingCriteria(queryObject, caseObject);
+        Similarity similarity = checkStoppingCriteria(queryCollection, caseCollection);
         if (similarity != null) {
             return similarity;
         }
@@ -139,12 +150,12 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         TreeSet<AStarSolution> solutions = new TreeSet<>();
         solutions.add(
                 generateInitialSolution(
-                        (CollectionObject) queryObject, (CollectionObject) caseObject, valuator));
+                        queryCollection, caseCollection, valuator));
 
 
         // iterate as long as we dont find a finished solution
         AStarSolution topSolution;
-        int sizeQueryObject = ((CollectionObject) queryObject).size();
+        int sizeQueryObject = queryCollection.size();
         do {
             topSolution = solutions.pollFirst();
             TreeSet<AStarSolution> newSolutions = (TreeSet<AStarSolution>) expandSolution(topSolution);
