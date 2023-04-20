@@ -5,7 +5,6 @@ import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
-import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionIsolatedMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionIsolatedMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IMethodInvokersFunc;
@@ -16,39 +15,43 @@ import utils.MethodInvoker;
 import utils.MethodInvokersFunc;
 import utils.SimilarityMeasureFunc;
 import utils.WeightFunc;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
- * A similarity measure using the isolated mapping algorithm for collection objects.
+ * A similarity measure using the 'Isolated Mapping' algorithm for {@link CollectionObject}s.
  *
- * The isolated mapping algorithm assigns to each element of the query collection the case element
+ * <p>The 'Isolated Mapping' algorithm assigns to each element of the query collection the case element
  * with which the respective query element has the highest (local) weighted similarity.
  *
- * The overall similarity between query and case collection is the sum of the local weighted
+ * <p>The overall similarity between query and case collection is the sum of the local weighted
  * similarities divided by the sum of the weights.
  *
- * The weight values are depending solely on the characteristics of the query elements and can
- * be defined by a functional interface (WeightFunc).
+ * <p>The weight values are depending solely on the characteristics of the query elements and can
+ * be defined by a functional interface ({@link WeightFunc}).
  *
- * Instead of one single local similarity measure, a functional interface (SimilarityMeasureFunc)
+ * <p>For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#isolated-mapping">click here</a>.
+ *
+ * <p>Instead of one single local similarity measure, a functional interface ({@link SimilarityMeasureFunc})
  * can be defined for this similarity measure.
  * This functional interface assigns a similarity measure to each pair of query element
  * and case element.
  *
- * These similarity measures may be defined more precisely by setting their parameters via methods.
- * In order to call these methods another functional interface (MethodInvokersFunc) can be defined
+ * <p>These similarity measures may be defined more precisely by setting their parameters via methods.
+ * In order to call these methods another functional interface ({@link MethodInvokersFunc}) can be defined
  * for this similarity measure.
- * This functional interface assigns a list of MethodInvoker objects to each pair of query element
+ * This functional interface assigns a list of {@link MethodInvoker} objects to each pair of query element
  * and case element.
  *
- * The given methods are then invoked with given parameters by the respective similarity measures.
+ * <p>The given methods are then invoked with given parameters by the respective similarity measures.
+ *
+ * <p>For the usage of MethodInvoker objects an object of {@link SimilarityValuatorImplExt} has to be used as
+ * similarity valuator!
  */
 public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
-    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
 
     @Override
@@ -128,7 +131,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
             DataObject queryElement = queryElementIterator.nextDataObject();
             Similarity localSimilarity = this.computeLocalSimilarity(queryElement, (CollectionObject) caseObject, valuator);
             similaritySum += localSimilarity.getValue();
-            divisor += weightFunc.apply(queryElement);
+            divisor += getWeightFunc().apply(queryElement);
             localSimilarities.add(localSimilarity);
         }
 
@@ -154,7 +157,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
             DataObject caseElement = caseElementIterator.nextDataObject();
 
             localSimilarityMeasure = similarityMeasureFunc.apply(queryElement, caseElement);
-
+        //todo getSimilarityMeasureFunc()
             Similarity similarity;
 
             if (valuator instanceof SimilarityValuatorImplExt) {

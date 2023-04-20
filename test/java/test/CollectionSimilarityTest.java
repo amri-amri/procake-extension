@@ -14,6 +14,7 @@ import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.SMObjectEqual;
 import de.uni_trier.wi2.procake.similarity.base.impl.SMObjectEqualImpl;
+import de.uni_trier.wi2.procake.similarity.base.numeric.SMNumericLinear;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
@@ -94,6 +95,11 @@ public class CollectionSimilarityTest {
 
         SMObjectEqual smObjectEqual = (SMObjectEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMObjectEqual.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         model.addSimilarityMeasure(smObjectEqual, SMObjectEqual.NAME);
+
+        SMNumericLinear smNumericLinear  = (SMNumericLinear) simVal.getSimilarityModel().createSimilarityMeasure(SMNumericLinear.NAME, ModelFactory.getDefaultModel().getIntegerSystemClass());
+        smNumericLinear.setForceOverride(true);
+        model.addSimilarityMeasure(smNumericLinear, SMNumericLinear.NAME);
+        model.setDefaultSimilarityMeasure(ModelFactory.getDefaultModel().getIntegerSystemClass(), SMNumericLinear.NAME);
 
         SimilarityMeasure measure =
                 model.getSimilarityMeasure(ModelFactory.getDefaultModel().getListSystemClass(), SMObjectEqual.NAME);

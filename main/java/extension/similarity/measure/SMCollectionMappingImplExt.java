@@ -22,10 +22,41 @@ import utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * A similarity measure using the 'Mapping' algorithm for {@link CollectionObject}s.
+ *
+ * <p>The 'Mapping' algorithm assigns to each element of the query collection a different
+ * case element so that the overall similarity is the highest.
+ *
+ * <p>The overall similarity between query and case collection is the sum of the local weighted
+ * similarities divided by the sum of the weights.
+ *
+ * <p>The weight values are depending solely on the characteristics of the query elements and can
+ * be defined by a functional interface ({@link WeightFunc}).
+ *
+ * <p>For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#mapping">click here</a>.
+ *
+ *
+ * <p>Instead of one single local similarity measure, a functional interface ({@link SimilarityMeasureFunc})
+ * can be defined for this similarity measure.
+ * This functional interface assigns a similarity measure to each pair of query element
+ * and case element.
+ *
+ * <p>These similarity measures may be defined more precisely by setting their parameters via methods.
+ * In order to call these methods another functional interface ({@link MethodInvokersFunc}) can be defined
+ * for this similarity measure.
+ * This functional interface assigns a list of {@link MethodInvoker} objects to each pair of query element
+ * and case element.
+ *
+ * <p>The given methods are then invoked with given parameters by the respective similarity measures.
+ *
+ * <p>For the usage of MethodInvoker objects an object of {@link SimilarityValuatorImplExt} has to be used as
+ * similarity valuator!
+ */
 public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc;
-    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
 
     @Override

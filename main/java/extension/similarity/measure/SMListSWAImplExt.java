@@ -19,6 +19,33 @@ import utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+/**
+ * A similarity measure using the 'Smith-Waterman' algorithm for {@link ListObject}s.
+ *
+ * For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#smith-waterman-algorithm-swa">click here</a>.
+ *
+ *
+ * <p>Instead of one single local similarity measure, a functional interface ({@link SimilarityMeasureFunc})
+ * can be defined for this similarity measure.
+ * This functional interface assigns a similarity measure to each pair of query element
+ * and case element.
+ *
+ * <p>These similarity measures may be defined more precisely by setting their parameters via methods.
+ * In order to call these methods another functional interface ({@link MethodInvokersFunc}) can be defined
+ * for this similarity measure.
+ * This functional interface assigns a list of {@link MethodInvoker} objects to each pair of query element
+ * and case element.
+ *
+ * <p>The given methods are then invoked with given parameters by the respective similarity measures.
+ *
+ * <p>For the usage of MethodInvoker objects an object of {@link SimilarityValuatorImplExt} has to be used as
+ * similarity valuator!
+ *
+ * <p>In addition, a functional interface ({@link WeightFunc}) can be defined to assign a weight value
+ * between 0 and 1 to a query element.
+ *
+ * //todo explanation of weighted normalization
+ */
 public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityToUseFunc;
