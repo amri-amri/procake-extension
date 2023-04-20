@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.
  */
-public interface NESTtoList {
+public interface INESTtoList {
 
     /**
      * converts a valid {@link NESTSequentialWorkflowObject} to a {@link ListObject}

@@ -10,7 +10,7 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IMethodInvokersFunc;
 import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
-import extension.abstraction.NESTtoList;
+import extension.abstraction.INESTtoList;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import utils.*;
 
@@ -44,7 +44,7 @@ import java.util.ArrayList;
  *
  * //todo explanation of weighted normalization
  */
-public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, NESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
+public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityToUseFunc;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
