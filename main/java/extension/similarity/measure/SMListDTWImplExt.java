@@ -5,18 +5,17 @@ import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
-import de.uni_trier.wi2.procake.similarity.base.collection.SMListDTW;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IMethodInvokersFunc;
 import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
+import extension.abstraction.NESTtoList;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import utils.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * A similarity measure using the 'Dynamic Time Warping' algorithm for {@link ListObject}s.
