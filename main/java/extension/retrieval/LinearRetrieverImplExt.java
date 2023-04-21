@@ -3,7 +3,9 @@ package extension.retrieval;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.retrieval.Query;
+import de.uni_trier.wi2.procake.retrieval.RetrievalFactoryObject;
 import de.uni_trier.wi2.procake.retrieval.RetrievalResultList;
+import de.uni_trier.wi2.procake.retrieval.Retriever;
 import de.uni_trier.wi2.procake.retrieval.impl.LinearRetrieverImpl;
 import de.uni_trier.wi2.procake.retrieval.impl.RetrievalResultImpl;
 import de.uni_trier.wi2.procake.retrieval.impl.RetrievalResultListImpl;
@@ -43,9 +45,10 @@ import java.util.ArrayList;
  * <li>{@link #setLocalWeightFunc(WeightFunc)}</li>
  * </ul>
  */
-public class LinearRetrieverImplExt extends LinearRetrieverImpl implements RetrieverExt {
+public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retriever, RetrievalFactoryObject, RetrieverExt {
 
     protected SimilarityValuatorImplExt valuator = new SimilarityValuatorImplExt(getSimilarityModel());
+
     protected ArrayList<MethodInvoker> globalMethodInvokers;
 
     protected SimilarityMeasureFunc localSimilarityMeasureFunc;
@@ -53,6 +56,66 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     protected MethodInvokersFunc localMethodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     protected SimilarityCache similarityCache;
+
+    @Override
+    public void setGlobalSimilarityMeasure(String similarityMeasure) {
+        setInternalSimilarityMeasure(similarityMeasure);
+    }
+
+    @Override
+    public String getGlobalSimilarityMeasure() {
+        return getInternalSimilarityMeasure();
+    }
+
+    @Override
+    public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers) {
+        globalMethodInvokers = methodInvokers;
+    }
+
+    @Override
+    public ArrayList<MethodInvoker> getGlobalMethodInvokers() {
+        return globalMethodInvokers;
+    }
+
+    @Override
+    public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        this.localSimilarityMeasureFunc = similarityMeasureFunc;
+    }
+
+    @Override
+    public SimilarityMeasureFunc getLocalSimilarityMeasureFunc() {
+        return localSimilarityMeasureFunc;
+    }
+
+    @Override
+    public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.localMethodInvokersFunc = methodInvokersFunc;
+    }
+
+    @Override
+    public MethodInvokersFunc getLocalMethodInvokersFunc() {
+        return localMethodInvokersFunc;
+    }
+
+    @Override
+    public void setLocalWeightFunc(WeightFunc weightFunc) {
+        this.localWeightFunc = weightFunc;
+    }
+
+    @Override
+    public WeightFunc getLocalWeightFunc() {
+        return localWeightFunc;
+    }
+
+    @Override
+    public String getRetrieverName() {
+        return super.getRetrieverName() + "Ext";
+    }
+
+    @Override
+    protected SimilarityValuator getValuator() {
+        return valuator;
+    }
 
     @Override
     public SimilarityCache getSimilarityCache() {
@@ -144,64 +207,6 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
 
     }
 
-    @Override
-    public String getRetrieverName() {
-        return super.getRetrieverName() + "Ext";
-    }
 
 
-    @Override
-    protected SimilarityValuator getValuator() {
-        return valuator;
-    }
-
-    @Override
-    public void setGlobalSimilarityMeasure(String similarityMeasure) {
-        setInternalSimilarityMeasure(similarityMeasure);
-    }
-
-    @Override
-    public String getGlobalSimilarityMeasure() {
-        return getInternalSimilarityMeasure();
-    }
-
-    @Override
-    public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers) {
-        globalMethodInvokers = methodInvokers;
-    }
-
-    @Override
-    public ArrayList<MethodInvoker> getGlobalMethodInvokers() {
-        return globalMethodInvokers;
-    }
-
-    @Override
-    public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        this.localSimilarityMeasureFunc = similarityMeasureFunc;
-    }
-
-    @Override
-    public SimilarityMeasureFunc getLocalSimilarityMeasureFunc() {
-        return localSimilarityMeasureFunc;
-    }
-
-    @Override
-    public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.localMethodInvokersFunc = methodInvokersFunc;
-    }
-
-    @Override
-    public MethodInvokersFunc getLocalMethodInvokersFunc() {
-        return localMethodInvokersFunc;
-    }
-
-    @Override
-    public void setLocalWeightFunc(WeightFunc weightFunc) {
-        this.localWeightFunc = weightFunc;
-    }
-
-    @Override
-    public WeightFunc getLocalWeightFunc() {
-        return localWeightFunc;
-    }
 }

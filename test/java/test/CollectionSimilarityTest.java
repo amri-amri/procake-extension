@@ -96,13 +96,12 @@ public class CollectionSimilarityTest {
         SMObjectEqual smObjectEqual = (SMObjectEqual) simVal.getSimilarityModel().createSimilarityMeasure(SMObjectEqual.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
         model.addSimilarityMeasure(smObjectEqual, SMObjectEqual.NAME);
 
-        SMNumericLinear smNumericLinear  = (SMNumericLinear) simVal.getSimilarityModel().createSimilarityMeasure(SMNumericLinear.NAME, ModelFactory.getDefaultModel().getDataSystemClass());
+        SMNumericLinear smNumericLinear  = (SMNumericLinear) model.createSimilarityMeasure(SMNumericLinear.NAME, ModelFactory.getDefaultModel().getIntegerSystemClass());
         smNumericLinear.setForceOverride(true);
         model.addSimilarityMeasure(smNumericLinear, SMNumericLinear.NAME);
-        model.setDefaultSimilarityMeasure(ModelFactory.getDefaultModel().getDataSystemClass(), SMNumericLinear.NAME);
+        model.setDefaultSimilarityMeasure(ModelFactory.getDefaultModel().getIntegerSystemClass(), SMNumericLinear.NAME);
 
-        SimilarityMeasure measure =
-                model.getSimilarityMeasure(ModelFactory.getDefaultModel().getListSystemClass(), SMObjectEqual.NAME);
+        SimilarityMeasure measure = model.getSimilarityMeasure(ModelFactory.getDefaultModel().getListSystemClass(), SMObjectEqual.NAME);
 
         //add(model, new SMObjectEqualImpl(), "SMObjectEqual");
         add(model, new SMCollectionIsolatedMappingImplExt(), SMCollectionIsolatedMappingExt.NAME);

@@ -32,7 +32,7 @@ import java.util.ArrayList;
  *     and weights for different data objects through all depths of computation</li>
  * </ul></p>
  */
-public interface RetrieverExt extends Retriever {
+public interface RetrieverExt {
 
     /**
      * sets the globally used similarity measure of the extended retriever

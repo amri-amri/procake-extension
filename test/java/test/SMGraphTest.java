@@ -54,8 +54,6 @@ public class SMGraphTest extends CollectionSimilarityTest{
 
 
 
-
-
         testSimilarityMeasureDP(SMListSWAExt.NAME, queryGraph, caseGraph);
         testSimilarityMeasureDP(SMListDTWExt.NAME, queryGraph, caseGraph);
 
