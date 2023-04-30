@@ -8,19 +8,23 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.IMethodInvokersFunc;
+import extension.abstraction.INESTtoList;
 import extension.abstraction.ISimilarityMeasureFunc;
 import extension.abstraction.IWeightFunc;
-import extension.abstraction.INESTtoList;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
-import utils.*;
+import utils.MethodInvoker;
+import utils.MethodInvokersFunc;
+import utils.SimilarityMeasureFunc;
+import utils.WeightFunc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A similarity measure using the 'Dynamic Time Warping' algorithm for {@link ListObject}s.
  *
- * For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#dynamic-time-warping-dtw">click here</a>.
+ * <p>For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#dynamic-time-warping-dtw">click here</a>.
  *
  *
  * <p>Instead of one single local similarity measure, a functional interface ({@link SimilarityMeasureFunc})
@@ -96,12 +100,12 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
         return SMListDTWExt.NAME;
     }
 
-
+    ArrayList<Similarity> localSimilarities;
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-
-        return new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue( queryObject, caseObject, valuator));
+        localSimilarities = new ArrayList<>();
+        return new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue( queryObject, caseObject, valuator), localSimilarities);
 
     }
 
@@ -138,18 +142,27 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
         //the matrix keeping track of the origin cells
         int[][][] originMatrix = new int[caseArray.length][queryArray.length][2];
 
+        //the matrix keeping track of the local similarities
+        Similarity[][] localSimilarityMatrix = new Similarity[caseArray.length][queryArray.length];
+
         for (int j = 0; j< queryArray.length; j++){
             matrix[0][j] = 0;
             normalizingMatrix[0][j] = 0;
             originMatrix[0][j][0] = 0;
             originMatrix[0][j][1] = j-1;
+            localSimilarityMatrix[0][j] = new SimilarityImpl(null, queryArray[j], null, 0);
         }
-        for (int i = 1; i< caseArray.length; i++){
+        for (int i = 0; i< caseArray.length; i++){
             matrix[i][0] = 0;
             normalizingMatrix[i][0] = 0;
             originMatrix[i][0][0] = i-1;
             originMatrix[i][0][1] = 0;
+            localSimilarityMatrix[i][0] = new SimilarityImpl(null, null, caseArray[i], 0);
         }
+
+
+        originMatrix[0][0][0] = -1;
+        originMatrix[0][0][1] = -1;
 
         //compute matrix values and find maximum
         int maxCell_i = 0;
@@ -157,7 +170,7 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
 
         double wTempDenominator = 1;
 
-        if (halvingDistancePercentage>0) {
+        if (getHalvingDistancePercentage()>0) {
             for (int j = 1; j < queryArray.length; j++) {
                 wTempDenominator += getWeightFunc().apply(queryArray[j]);
             }
@@ -174,7 +187,6 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
 
             for ( int i = 1; i< caseArray.length; i++ ) {
                 String localSimilarityMeasure = getSimilarityMeasureFunc().apply( queryArray[j], caseArray[i] );
-
                 Similarity similarity;
 
                 if (valuator instanceof SimilarityValuatorImplExt) {
@@ -185,10 +197,12 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                     }
                 }
                 else similarity = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimilarityMeasure );
+                similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryArray[j].getDataClass(), localSimilarityMeasure), queryArray[j], caseArray[i], similarity.getValue() * weight);
+                localSimilarityMatrix[i][j] = similarity;
 
-                double diagonal     =   matrix[i-1][j-1]    + wTemp     * similarity.getValue()    * weight * 2;
-                double horizontal   =   matrix[i][j-1]      + wTemp     * similarity.getValue()    * weight;
-                double vertical     =   matrix[i-1][j]      + wTemp     * similarity.getValue()    * weight;
+                double diagonal     =   matrix[i-1][j-1]    + wTemp     * similarity.getValue() * 2;
+                double horizontal   =   matrix[i][j-1]      + wTemp     * similarity.getValue();
+                double vertical     =   matrix[i-1][j]      + wTemp     * similarity.getValue();
 
                 if (diagonal >= horizontal && diagonal >= vertical) {
 
@@ -227,6 +241,20 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
             }
         }
 
+
+
+        int origin_i = maxCell_i;
+        int origin_j = maxCell_j;
+        int h_i;
+
+        while (origin_i + origin_j > 0) {
+            localSimilarities.add(localSimilarityMatrix[origin_i][origin_j]);
+            h_i = originMatrix[origin_i][origin_j][0];
+            origin_j = originMatrix[origin_i][origin_j][1];
+            origin_i = h_i;
+        }
+
+        Collections.reverse(localSimilarities);
 
 
         double maxSimilarityValue = matrix[maxCell_i][maxCell_j];

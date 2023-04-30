@@ -26,15 +26,15 @@ import java.util.ArrayList;
 /**
  * Extension of the {@link LinearRetrieverImpl} class.
  *
- * This class provides functionality for using extended similarity measures
+ * <p>This class provides functionality for using extended similarity measures
  * (see {@link extension.abstraction.ISimilarityMeasureFunc}, {@link extension.abstraction.IMethodInvokersFunc}, {@link extension.abstraction.IWeightFunc})
  * they way they are intended to.
  *
- * Using an extended version of the similarity valuator implementation ({@link SimilarityValuatorImplExt})
+ * <p>Using an extended version of the similarity valuator implementation ({@link SimilarityValuatorImplExt})
  * in addition to {@link SimilarityMeasureFunc}-, {@link MethodInvoker}- and {@link WeightFunc}- objects, a more complex retrieval
  * can be performed.
  *
- * In order to properly use this retriever, five methods should be called with fitting arguments before
+ * <p>In order to properly use this retriever, five methods should be called with fitting arguments before
  * calling {@link #perform(Query)}:
  *
  * <ul>

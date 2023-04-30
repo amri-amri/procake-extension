@@ -1,8 +1,6 @@
 package utils;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
-import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
-import org.apache.lucene.search.similarities.Similarity;
 
 /**
  * Functional interface for assigning similarity measures to pairs of data objects.

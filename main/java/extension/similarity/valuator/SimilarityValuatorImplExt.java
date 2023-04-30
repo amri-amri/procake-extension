@@ -1,11 +1,9 @@
 package extension.similarity.valuator;
 
-import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
 import de.uni_trier.wi2.procake.similarity.SimilarityModel;
-import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityValuatorImpl;

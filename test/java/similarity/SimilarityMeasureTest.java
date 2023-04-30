@@ -1,25 +1,66 @@
-package test;
+package similarity;
 
-import de.uni_trier.wi2.procake.data.model.ModelFactory;
+import base.TestBase;
 import de.uni_trier.wi2.procake.data.model.nest.NESTSequentialWorkflowClass;
+import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTAbstractWorkflowModifier;
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTWorkflowBuilder;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTWorkflowBuilderImpl;
-import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
-import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
-import extension.similarity.measure.*;
+import de.uni_trier.wi2.procake.similarity.Similarity;
+import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
+import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import org.junit.Test;
-import utils.MethodInvoker;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class SMGraphTest extends CollectionSimilarityTest{
+import static org.junit.Assert.assertEquals;
+
+public abstract class SimilarityMeasureTest extends TestBase {
+
+
+    public String name;
+    public String superclassName;
 
     @Test
-    public void test1() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public void empty_lists(){
+        ListObject queryList = utils.createListObject();
+        ListObject caseList = utils.createListObject();
 
+        simVal.computeSimilarity(queryList, caseList, name);
+    }
+
+    @Test
+    public void same_as_superclass_weekdays_workdays() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        ListObject queryObject = weekdays();
+        ListObject caseObject = workdays();
+
+
+        SimilarityValuator oldSimVal = SimilarityModelFactory.newSimilarityValuator();
+        Similarity oldSim = oldSimVal.computeSimilarity(queryObject, caseObject, superclassName);
+
+        Similarity newSim = simVal.computeSimilarity(queryObject, caseObject, name);
+
+        assertEquals(oldSim.getValue(), newSim.getValue(), delta);
+    }
+
+    @Test
+    public void same_as_superclass_weekdays_weekdays() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        ListObject queryObject = weekdays();
+        ListObject caseObject = workdays();
+
+
+        SimilarityValuator oldSimVal = SimilarityModelFactory.newSimilarityValuator();
+        Similarity oldSim = oldSimVal.computeSimilarity(queryObject, caseObject, superclassName);
+
+        Similarity newSim = simVal.computeSimilarity(queryObject, caseObject, name);
+
+        assertEquals(oldSim.getValue(), newSim.getValue(), delta);
+    }
+
+    @Test
+    public void graph_as_input() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         NESTWorkflowBuilder<NESTSequentialWorkflowObject> builder = new NESTWorkflowBuilderImpl();
 
 
@@ -53,30 +94,8 @@ public class SMGraphTest extends CollectionSimilarityTest{
         caseModifier.insertNewControlflowEdge(caseTaskB, caseTaskC, null);
 
 
-
-        testSimilarityMeasureDP(SMListSWAExt.NAME, queryGraph, caseGraph);
-        testSimilarityMeasureDP(SMListDTWExt.NAME, queryGraph, caseGraph);
-
-        testSimilarityMeasure(SMCollectionIsolatedMappingExt.NAME, queryGraph, caseGraph);
-        testSimilarityMeasure(SMCollectionMappingExt.NAME, queryGraph, caseGraph);
-        testSimilarityMeasure(SMListMappingExt.NAME, queryGraph, caseGraph);
-
-        testSimilarityMeasure(SMListCorrectnessExt.NAME, queryGraph, caseGraph);
-
-
+        simVal.computeSimilarity(queryGraph, caseGraph, name);
     }
 
-    void testSimilarityMeasureDP(String measureName, NESTSequentialWorkflowObject queryGraph, NESTSequentialWorkflowObject caseGraph) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        SimilarityMeasure sm = simVal.getSimilarityModel().getSimilarityMeasure(ModelFactory.getDefaultModel().getDataSystemClass(), measureName);
-        MethodInvoker mi = new MethodInvoker("setLocalSimilarityToUse", new Class[]{String.class}, new Object[]{SMStringEqual.NAME});
-        mi.invoke(sm);
-        sm.compute(queryGraph, caseGraph, simVal).getValue();
-    }
 
-    void testSimilarityMeasure(String measureName, NESTSequentialWorkflowObject queryGraph, NESTSequentialWorkflowObject caseGraph) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        SimilarityMeasure sm = simVal.getSimilarityModel().getSimilarityMeasure(ModelFactory.getDefaultModel().getDataSystemClass(), measureName);
-        MethodInvoker mi = new MethodInvoker("setSimilarityToUse", new Class[]{String.class}, new Object[]{SMStringEqual.NAME});
-        mi.invoke(sm);
-        sm.compute(queryGraph, caseGraph, simVal).getValue();
-    }
 }

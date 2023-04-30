@@ -6,10 +6,12 @@ import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
-import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionIsolatedMapping;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import extension.abstraction.*;
+import extension.abstraction.IMethodInvokersFunc;
+import extension.abstraction.INESTtoList;
+import extension.abstraction.ISimilarityMeasureFunc;
+import extension.abstraction.IWeightFunc;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import utils.MethodInvoker;
 import utils.MethodInvokersFunc;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 /**
  * A similarity measure using the 'List Mapping' algorithm for {@link ListObject}s.
  *
- * For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#list-mapping">click here</a>.
+ * <p>For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#list-mapping">click here</a>.
  *
  *
  * <p>Instead of one single local similarity measure, a functional interface ({@link SimilarityMeasureFunc})

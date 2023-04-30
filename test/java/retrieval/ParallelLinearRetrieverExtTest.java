@@ -1,5 +1,6 @@
-package test;
+package retrieval;
 
+import base.TestBase;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.IntegerObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -14,12 +15,11 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.SMObjectEqual;
 import de.uni_trier.wi2.procake.similarity.base.numeric.SMNumericLinear;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import extension.retrieval.LinearRetrieverImplExt;
+import extension.retrieval.ParallelLinearRetrieverImplExt;
 import extension.similarity.measure.SMCollectionIsolatedMappingExt;
 import extension.similarity.measure.SMListMappingExt;
 import extension.similarity.measure.SMListMappingImplExt;
 import org.junit.Test;
-import org.junit.Assert.*;
 import utils.MethodInvoker;
 import utils.MethodInvokersFunc;
 import utils.SimilarityMeasureFunc;
@@ -27,14 +27,13 @@ import utils.WeightFunc;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-public class LinearRetrieverExtTest extends CollectionSimilarityTest {
+public class ParallelLinearRetrieverExtTest extends TestBase {
 
     @Test
-    public void test(){
+    public void ten_workers(){
         // query object Q
         StringObject q1 = utils.createStringObject("AEI");
         SetObject q2 = utils.createSetObject();
@@ -186,23 +185,25 @@ public class LinearRetrieverExtTest extends CollectionSimilarityTest {
         objectPool.store(C3);
 
 
-        LinearRetrieverImplExt linearRetrieverImplExt = new LinearRetrieverImplExt();
-        linearRetrieverImplExt.setObjectPool(objectPool);
+        ParallelLinearRetrieverImplExt parallelLinearRetrieverImplExt = new ParallelLinearRetrieverImplExt();
+        parallelLinearRetrieverImplExt.setObjectPool(objectPool);
 
         ArrayList<MethodInvoker> globalMethodInvokers = new ArrayList<>();
         globalMethodInvokers.add(new MethodInvoker("setContainsInexact", new Class[]{}, new Object[]{}));
 
-        linearRetrieverImplExt.setGlobalSimilarityMeasure(SMListMappingExt.NAME);
-        linearRetrieverImplExt.setGlobalMethodInvokers(globalMethodInvokers);
-        linearRetrieverImplExt.setLocalSimilarityMeasureFunc(similarityMeasureFunc);
-        linearRetrieverImplExt.setLocalMethodInvokersFunc(methodInvokersFunc);
-        linearRetrieverImplExt.setLocalWeightFunc(weightFunc);
+        parallelLinearRetrieverImplExt.setGlobalSimilarityMeasure(SMListMappingExt.NAME);
+        parallelLinearRetrieverImplExt.setGlobalMethodInvokers(globalMethodInvokers);
+        parallelLinearRetrieverImplExt.setLocalSimilarityMeasureFunc(similarityMeasureFunc);
+        parallelLinearRetrieverImplExt.setLocalMethodInvokersFunc(methodInvokersFunc);
+        parallelLinearRetrieverImplExt.setLocalWeightFunc(weightFunc);
 
-        Query query = linearRetrieverImplExt.newQuery();
+        parallelLinearRetrieverImplExt.setNumberOfWorkers(10);
+
+        Query query = parallelLinearRetrieverImplExt.newQuery();
         query.setQueryObject(Q);
         query.setRetrieveCases(true);
 
-        RetrievalResultList retrievalResults = linearRetrieverImplExt.perform(query);
+        RetrievalResultList retrievalResults = parallelLinearRetrieverImplExt.perform(query);
         Iterator retrievalResultIterator = retrievalResults.iterator();
 
         assertEquals("C3", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );

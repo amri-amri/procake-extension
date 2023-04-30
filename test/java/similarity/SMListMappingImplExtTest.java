@@ -1,9 +1,12 @@
-package test;
+package similarity;
 
-import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMListMapping;
+import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
+import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
+import extension.similarity.measure.SMListMappingExt;
 import extension.similarity.measure.SMListMappingImplExt;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Test;
@@ -13,7 +16,12 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-public class SMListMappingImplExtTest extends CollectionSimilarityTest{
+public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
+
+    {
+        name = SMListMappingExt.NAME;
+        superclassName = SMListMapping.NAME;
+    }
 
     @Test
     public void test1(){
@@ -21,14 +29,14 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
         ListObject caseList = weekdays();
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
         assertEquals(1.0, sim.getValue(),delta);
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
 
         sim = sm.compute(caseList, queryList, simVal);
 
@@ -37,27 +45,27 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
     @Test
     public void test2(){
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("B"));
         queryList.addValue(utils.createStringObject("C"));
 
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = utils.createListObject();
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("C"));
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
         assertEquals(2./3, sim.getValue(), delta);
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.;
             return 1.;
@@ -71,7 +79,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.5;
             return 1.;
@@ -84,7 +92,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("C")) return 0.5;
             return 1.;
@@ -98,7 +106,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
     @Test
     public void test3(){
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("B"));
@@ -106,14 +114,14 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
         queryList.addValue(utils.createStringObject("D"));
 
 
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = utils.createListObject();
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("D"));
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
@@ -126,7 +134,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
 
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
@@ -142,7 +150,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
         queryList.addValue(utils.createStringObject("E"));
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringEqual");
+        sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
             if (((StringObject) a).getNativeString().equals("B")) return 0.;
             return 1.;
@@ -158,8 +166,8 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
     public void test4(){
         SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
 
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();
+        ListObject caseList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("Abc"));
         queryList.addValue(utils.createStringObject("dEf"));
@@ -169,7 +177,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
         caseList.addValue(utils.createStringObject("dEF"));
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringLevenshtein");
+        sm.setSimilarityToUse(SMStringLevenshtein.NAME);
         sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
@@ -182,7 +190,7 @@ public class SMListMappingImplExtTest extends CollectionSimilarityTest{
         assertEquals(1./3, sim.getValue(), delta);
 
         sm = new SMListMappingImplExt();
-        sm.setSimilarityToUse("SMStringLevenshtein");
+        sm.setSimilarityToUse(SMStringLevenshtein.NAME);
         sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();

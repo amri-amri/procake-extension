@@ -2,7 +2,6 @@ package extension.similarity.measure;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
-import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
@@ -18,6 +17,7 @@ import utils.MethodInvoker;
 import utils.MethodInvokersFunc;
 import utils.SimilarityMeasureFunc;
 import utils.WeightFunc;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
@@ -169,8 +169,8 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
             DataObject caseElement = caseElementIterator.nextDataObject();
 
-            localSimilarityMeasure = similarityMeasureFunc.apply(queryElement, caseElement);
-        //todo getSimilarityMeasureFunc()
+            localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
+
             Similarity similarity;
 
             if (valuator instanceof SimilarityValuatorImplExt) {

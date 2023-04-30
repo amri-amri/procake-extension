@@ -1,9 +1,12 @@
-package test;
+package similarity;
 
-import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMListSWA;
+import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
+import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
+import extension.similarity.measure.SMListSWAExt;
 import extension.similarity.measure.SMListSWAImplExt;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Assert;
@@ -14,11 +17,16 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-public class SMListSWAImplExtTest extends CollectionSimilarityTest{
+public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
+
+    {
+        name = SMListSWAExt.NAME;
+        superclassName = SMListSWA.NAME;
+    }
 
     @Test
     public void test1(){
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();;
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("Y"));
@@ -27,7 +35,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         queryList.addValue(utils.createStringObject("M"));
         queryList.addValue(utils.createStringObject("M"));
 
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = utils.createListObject();;
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("C"));
@@ -37,7 +45,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         caseList.addValue(utils.createStringObject("H"));
 
         SMListSWAImplExt sm = new SMListSWAImplExt();
-        sm.setLocalSimilarityToUse("SMStringEqual");
+        sm.setLocalSimilarityToUse(SMStringEqual.NAME);
         sm.setDeletionScheme(a -> -0.5);
         sm.setInsertionScheme(a -> -0.5);
         sm.setHalvingDistancePercentage(-1);
@@ -50,7 +58,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
 
     @Test
     public void test2(){
-        ListObject queryList1 = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList1 = utils.createListObject();;
 
         queryList1.addValue(utils.createStringObject("A"));
         queryList1.addValue(utils.createStringObject("Y"));
@@ -60,7 +68,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         queryList1.addValue(utils.createStringObject("M"));
 
 
-        ListObject queryList2 = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList2 = utils.createListObject();;
 
         queryList2.addValue(utils.createStringObject("A"));
         queryList2.addValue(utils.createStringObject("B"));
@@ -68,7 +76,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         queryList2.addValue(utils.createStringObject("M"));
         queryList2.addValue(utils.createStringObject("M"));
 
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = utils.createListObject();;
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("C"));
@@ -78,7 +86,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         caseList.addValue(utils.createStringObject("H"));
 
         SMListSWAImplExt sm1 = new SMListSWAImplExt();
-        sm1.setLocalSimilarityToUse("SMStringEqual");
+        sm1.setLocalSimilarityToUse(SMStringEqual.NAME);
         sm1.setDeletionScheme(a -> -0.5);
         sm1.setInsertionScheme(a -> -0.5);
         sm1.setHalvingDistancePercentage(0.3);
@@ -91,7 +99,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
 
 
         SMListSWAImplExt sm2 = new SMListSWAImplExt();
-        sm2.setLocalSimilarityToUse("SMStringEqual");
+        sm2.setLocalSimilarityToUse(SMStringEqual.NAME);
         sm2.setDeletionScheme(a -> -0.5);
         sm2.setInsertionScheme(a -> -0.5);
         sm2.setHalvingDistancePercentage(0.3);
@@ -106,8 +114,8 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
     public void test3(){
         SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
 
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();;
 
         queryList.addValue(utils.createStringObject("Abc"));
         queryList.addValue(utils.createStringObject("dEf"));
@@ -117,7 +125,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         caseList.addValue(utils.createStringObject("dEf"));
 
         SMListSWAImplExt sm = new SMListSWAImplExt();
-        sm.setLocalSimilarityToUse("SMStringLevenshtein");
+        sm.setLocalSimilarityToUse(SMStringLevenshtein.NAME);
         sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
@@ -130,7 +138,7 @@ public class SMListSWAImplExtTest extends CollectionSimilarityTest{
         assertEquals(0.5, sim.getValue(), delta);
 
         sm = new SMListSWAImplExt();
-        sm.setLocalSimilarityToUse("SMStringLevenshtein");
+        sm.setLocalSimilarityToUse(SMStringLevenshtein.NAME);
         sm.setMethodInvokersFunc((a, b)->{
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();

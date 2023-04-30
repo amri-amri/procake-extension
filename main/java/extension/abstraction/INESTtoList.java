@@ -18,10 +18,10 @@ public interface INESTtoList {
     /**
      * converts a valid {@link NESTSequentialWorkflowObject} to a {@link ListObject}
      *
-     * In a sequential workflow every task node has exactly one incoming an one outgoing edge,
+     * <p>In a sequential workflow every task node has exactly one incoming an one outgoing edge,
      * with the first and last ones being the exception.
      *
-     * The semantic descriptors of these task nodes are being put in a list in the order of the workflow.
+     * <p>The semantic descriptors of these task nodes are being put in a list in the order of the workflow.
      * This list is then returned.
      *
      * @param workflowObject  the sequential workflow to be converted

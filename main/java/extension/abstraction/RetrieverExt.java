@@ -1,6 +1,5 @@
 package extension.abstraction;
 
-import de.uni_trier.wi2.procake.retrieval.Retriever;
 import de.uni_trier.wi2.procake.retrieval.impl.LinearRetrieverImpl;
 import utils.MethodInvoker;
 import utils.MethodInvokersFunc;
@@ -37,7 +36,7 @@ public interface RetrieverExt {
     /**
      * sets the globally used similarity measure of the extended retriever
      *
-     * The similarity measure whose name is set by this method will be used to compare
+     * <p>The similarity measure whose name is set by this method will be used to compare
      * the query object to all case objects respectively.
      *
      * @param similarityMeasure  the name of the globally used similarity measure
@@ -48,7 +47,7 @@ public interface RetrieverExt {
     /**
      * sets the globally used method invokers of the extended retriever
      *
-     * The MethodInvoker objects in the list set by this method will be applied to
+     * <p>The MethodInvoker objects in the list set by this method will be applied to
      * the globally defined similarity measure.
      *
      * @param methodInvokers  the list of methods to be invoked by the global similarity measure
@@ -59,7 +58,7 @@ public interface RetrieverExt {
     /**
      * sets the locally used SimilarityMeasureFunc of the extended retriever
      *
-     * For every data object that is not query or case but a part of such (see collection objects)
+     * <p>For every data object that is not query or case but a part of such (see collection objects)
      * the SimilarityMeasureFunc is applied to define different similarity measures for
      * different pairs of data objects through all depths of similarity computation.
      *
@@ -71,10 +70,10 @@ public interface RetrieverExt {
     /**
      * sets the locally used MethodInvokersFunc of the extended retriever
      *
-     * A local similarity measure used in the similarity computation may require parameters to
+     * <p>A local similarity measure used in the similarity computation may require parameters to
      * be set by invoking methods.
      *
-     * The MethodInvokersFunc set by this method will provide a list of methods to be invoked
+     * <p>The MethodInvokersFunc set by this method will provide a list of methods to be invoked
      * for every pair of data objects which are not query or case objects.
      *
      * @param methodInvokersFunc  the locally used function assigning methods to be invoked by similarity measures
@@ -85,10 +84,10 @@ public interface RetrieverExt {
     /**
      * sets the locally used WeightFunc of the extended retriever
      *
-     * For every part of the query object (if its an object of collection type) a weight can be
+     * <p>For every part of the query object (if its an object of collection type) a weight can be
      * defined to model its importance in the similarity computation.
      *
-     * The 'part of the query object' can simply be an element of the query object of
+     * <p>The 'part of the query object' can simply be an element of the query object of
      * an element of an element of the query object if the query object contains collection
      * objects as elements and so fort.
      *

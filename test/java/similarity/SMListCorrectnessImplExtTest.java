@@ -1,26 +1,32 @@
-package test;
+package similarity;
 
-import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
+import de.uni_trier.wi2.procake.similarity.base.collection.SMListCorrectness;
+import extension.similarity.measure.SMListCorrectnessExt;
 import extension.similarity.measure.SMListCorrectnessImplExt;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class SMListCorrectnessImplExtTest extends CollectionSimilarityTest{
+public class SMListCorrectnessImplExtTest extends SimilarityMeasureTest {
+
+    {
+        name = SMListCorrectnessExt.NAME;
+        superclassName = SMListCorrectness.NAME;
+    }
 
     @Test
     public void test1(){
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();;
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("B"));
         queryList.addValue(utils.createStringObject("C"));
         queryList.addValue(utils.createStringObject("D"));
 
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = utils.createListObject();;
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("D"));
@@ -44,14 +50,14 @@ public class SMListCorrectnessImplExtTest extends CollectionSimilarityTest{
 
     @Test
     public void test2(){
-        ListObject queryList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject queryList = utils.createListObject();;
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("B"));
         queryList.addValue(utils.createStringObject("C"));
         queryList.addValue(utils.createStringObject("D"));
 
-        ListObject caseList = (ListObject) ModelFactory.getDefaultModel().createObject(LIST_CLASS_NAME);
+        ListObject caseList = utils.createListObject();;
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("D"));

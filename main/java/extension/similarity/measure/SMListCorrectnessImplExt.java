@@ -14,12 +14,12 @@ import utils.WeightFunc;
 /**
  * A similarity measure using the 'List Correctness' algorithm for {@link ListObject}s.
  *
- * For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#dynamic-time-warping-dtw">click here</a>.
+ * <p>For more info on the algorithm <a href="https://wi2.pages.gitlab.rlp.net/procake/procake-wiki/sim/collections/#dynamic-time-warping-dtw">click here</a>.
  *
- * For every data object occurring in the query or case list, a weight can be defined by using
+ * <p>For every data object occurring in the query or case list, a weight can be defined by using
  * a functional interface ({@link WeightFunc}).
  *
- * With
+ * <p>With
  * c being the sum of all w(a)*w(b) with (a,b) being a concordant pair and
  * d being the sum of all w(a)*w(b) with (a,b) being a discordant pair
  * the correctness is ( c - d ) / ( c + d ).
