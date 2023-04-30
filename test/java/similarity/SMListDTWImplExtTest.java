@@ -8,6 +8,7 @@ import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
 import extension.similarity.measure.SMListDTWExt;
 import extension.similarity.measure.SMListDTWImplExt;
+import org.junit.Ignore;
 import org.junit.Test;
 import utils.MethodInvoker;
 
@@ -127,9 +128,11 @@ public class SMListDTWImplExtTest extends ISimilarityMeasureFuncTest {
         assertEquals(1., sim.getValue(), delta);
     }
 
+    @Ignore
+    @Test
     @Override
     public void same_as_superclass_weekdays_workdays() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        //todo the extended algorithm normalizes raw scores differently to the original
+        //todo: the extended algorithm normalizes raw scores differently to the original
         // so here, raw scores should be compared instead of normalized ones
 
     }
