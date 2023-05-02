@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE weight-function SYSTEM "/Users/karimamri/Desktop/procake-extension/src/main/resources/schema/weight-function.dtd">
+<weight-function>
+    <if>
+        <or>
+            <and>
+                <instance-of>
+                    <q/>
+                    <string value="de.uni_trier.wi2.procake.data.object.base.IntegerObject"/>
+                </instance-of>
+                <equals>
+                    <double value="2"/>
+                    <method-return-value>
+                        <q/>
+                        <method name="getNativeInteger"></method>
+                    </method-return-value>
+                </equals>
+            </and>
+            <and>
+                <instance-of>
+                    <q/>
+                    <string value="de.uni_trier.wi2.procake.data.object.base.BooleanObject"/>
+                </instance-of>
+                <not>
+                    <same-object-as>
+                        <boolean value="false"/>
+                        <method-return-value>
+                            <q/>
+                            <method name="getNativeBoolean"></method>
+                        </method-return-value>
+                    </same-object-as>
+                </not>
+            </and>
+        </or>
+        <double value="0.3"/>
+    </if>
+    <if>
+        <and>
+            <instance-of>
+                <q/>
+                <string value="de.uni_trier.wi2.procake.data.object.base.StringObject"/>
+            </instance-of>
+            <regex>
+                <string value="ab(c)*d"/>
+                <method-return-value>
+                    <q/>
+                    <method name="getNativeString"></method>
+                </method-return-value>
+            </regex>
+        </and>
+        <double value="0.4"/>
+    </if>
+</weight-function>

@@ -47,9 +47,9 @@ public class MethodInvoker {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    public void invoke(Object o) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Object invoke(Object o) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = o.getClass().getMethod(methodName, argTypes);
-        method.invoke(o, argValues);
+        return method.invoke(o, argValues);
     }
 
     public String getMethodName() {
