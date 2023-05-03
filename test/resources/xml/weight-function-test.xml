@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE weight-function SYSTEM "/Users/karimamri/Desktop/procake-extension/src/main/resources/schema/weight-function.dtd">
+<!DOCTYPE weight-function SYSTEM "../../../../procake-extension/main/resources/schema/weight-function.dtd">
 <weight-function>
     <if>
         <or>
