@@ -12,7 +12,7 @@
                     <double value="2"/>
                     <method-return-value>
                         <q/>
-                        <method name="getNativeInteger"></method>
+                        <method name="getNativeInteger"/>
                     </method-return-value>
                 </equals>
             </and>
@@ -26,7 +26,7 @@
                         <boolean value="false"/>
                         <method-return-value>
                             <q/>
-                            <method name="getNativeBoolean"></method>
+                            <method name="getNativeBoolean"/>
                         </method-return-value>
                     </same-object-as>
                 </not>
@@ -44,7 +44,7 @@
                 <string value="ab(c)*d"/>
                 <method-return-value>
                     <q/>
-                    <method name="getNativeString"></method>
+                    <method name="getNativeString"/>
                 </method-return-value>
             </regex>
         </and>
