@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!ELEMENT weight-function (if)* >
+<!ELEMENT method-invokers-function (if)* >
 
 <!ELEMENT if ((and | or | not | equals | same-object-as | instance-of | regex), method-list) >
 

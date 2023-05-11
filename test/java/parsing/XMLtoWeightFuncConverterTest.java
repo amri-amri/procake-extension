@@ -12,11 +12,11 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class XMLtoWeightFuncParserTest extends TestBase {
+public class XMLtoWeightFuncConverterTest extends TestBase {
 
     @Test
     public void testAllNodes() throws ParserConfigurationException, IOException, SAXException {
-        WeightFunc weightFunc = XMLtoWeightFuncParser.getWeightFunc(new File("test/resources/xml/weight-function-test.xml"));
+        WeightFunc weightFunc = XMLtoWeightFuncConverter.getWeightFunc(new File("test/resources/xml/weight-function-test.xml"));
 
         DataObject q = utils.createIntegerObject(2);
 
