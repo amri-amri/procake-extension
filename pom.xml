@@ -14,7 +14,7 @@
         <dependency>
             <groupId>de.uni-trier.wi2</groupId>
             <artifactId>procake-framework</artifactId>
-            <version>3.0.0</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
