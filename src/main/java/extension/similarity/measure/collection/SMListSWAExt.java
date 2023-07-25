@@ -1,4 +1,4 @@
-package extension.similarity.measure;
+package extension.similarity.measure.collection;
 
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListSWA;
 

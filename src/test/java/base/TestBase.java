@@ -16,7 +16,7 @@ import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinI
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 import de.uni_trier.wi2.procake.utils.exception.NameAlreadyExistsException;
 import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
-import extension.similarity.measure.*;
+import extension.similarity.measure.collection.*;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Before;
 

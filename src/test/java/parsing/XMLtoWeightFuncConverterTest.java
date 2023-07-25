@@ -16,7 +16,7 @@ public class XMLtoWeightFuncConverterTest extends TestBase {
 
     @Test
     public void testAllNodes() throws ParserConfigurationException, IOException, SAXException {
-        WeightFunc weightFunc = XMLtoWeightFuncConverter.getWeightFunc(new File("test/resources/xml/weight-function-test.xml"));
+        WeightFunc weightFunc = XMLtoWeightFuncConverter.getWeightFunc(new File("src/test/resources/xml/weight-function-test.xml"));
 
         DataObject q = utils.createIntegerObject(2);
 

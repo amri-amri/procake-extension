@@ -1,6 +1,7 @@
-package extension.similarity.measure;
+package extension.similarity.measure.collection;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
+import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
@@ -20,6 +21,8 @@ import utils.WeightFunc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject;
 
 /**
  * A similarity measure using the 'List Mapping' algorithm for {@link ListObject}s.
@@ -103,6 +106,14 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) {
+            queryObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        }
+
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) {
+            caseObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        }
 
         ListObject queryList, caseList;
 

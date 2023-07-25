@@ -24,14 +24,11 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      *
      * @param file  the XML file whose content represents the MethodInvokersFunc
      * @return  the MethodInvokersFunc generated from the XML file
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
-     * @throws IOException
-     * @throws SAXException
+     * @throws IOException if any IO error occurs with the file
+     * @throws SAXException if any parse error occurs with the file
      * @throws ParserConfigurationException
      */
-    public static MethodInvokersFunc getMethodInvokersFunc(File file) throws ParserConfigurationException, IOException, SAXException, IOException, SAXException, ParserConfigurationException {
+    public static MethodInvokersFunc getMethodInvokersFunc(File file) throws IOException, SAXException, ParserConfigurationException {
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
 

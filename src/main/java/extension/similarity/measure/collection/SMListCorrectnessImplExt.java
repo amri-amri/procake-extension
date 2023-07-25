@@ -1,6 +1,7 @@
-package extension.similarity.measure;
+package extension.similarity.measure.collection;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
+import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
@@ -10,6 +11,8 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import extension.abstraction.INESTtoList;
 import extension.abstraction.IWeightFunc;
 import utils.WeightFunc;
+
+import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject;
 
 /**
  * A similarity measure using the 'List Correctness' algorithm for {@link ListObject}s.
@@ -54,6 +57,14 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) {
+            queryObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        }
+
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) {
+            caseObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        }
 
         // cast query and case object as list objects
         ListObject queryList, caseList;
