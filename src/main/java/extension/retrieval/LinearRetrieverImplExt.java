@@ -11,6 +11,7 @@ import de.uni_trier.wi2.procake.retrieval.impl.RetrievalResultImpl;
 import de.uni_trier.wi2.procake.retrieval.impl.RetrievalResultListImpl;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityCache;
+import de.uni_trier.wi2.procake.similarity.SimilarityModel;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import extension.abstraction.RetrieverExt;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
@@ -47,7 +48,7 @@ import java.util.ArrayList;
  */
 public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retriever, RetrievalFactoryObject, RetrieverExt {
 
-    protected SimilarityValuatorImplExt valuator = new SimilarityValuatorImplExt(getSimilarityModel());
+    protected SimilarityValuatorImplExt valuator;
 
     protected ArrayList<MethodInvoker> globalMethodInvokers;
 
@@ -128,6 +129,12 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
+    public void setSimilarityModel(SimilarityModel similarityModel){
+        super.setSimilarityModel(similarityModel);
+        valuator = new SimilarityValuatorImplExt(getSimilarityModel());
+    }
+
+    @Override
     public RetrievalResultList perform(Query query) {
 
         StopWatch stopWatch = new StopWatch();
@@ -177,7 +184,7 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
             if (sim.isValidValue()) {
                 if (sim.getValue() >= query.getMinSimilarity()) {
                     if (rrl.size() >= query.getNumberOfResults()) {
-                        if (rrl.getLast().getSimilarity().isLessThan(sim)) {
+                        if (rrl.getLast()!=null && rrl.getLast().getSimilarity().isLessThan(sim)) {
                             rrl.removeLast();
                         } else {
                             stopWatchLocal.reset();
