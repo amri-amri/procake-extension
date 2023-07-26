@@ -1,6 +1,6 @@
 package similarity;
 
-import base.TestBase;
+import base.SimpleTestBase;
 import de.uni_trier.wi2.procake.data.model.nest.NESTSequentialWorkflowClass;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
@@ -17,7 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.Assert.assertEquals;
 
-public abstract class SimilarityMeasureTest extends TestBase {
+public abstract class SimilarityMeasureTest extends SimpleTestBase {
 
 
     public String name;

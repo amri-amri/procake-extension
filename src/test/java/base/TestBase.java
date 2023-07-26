@@ -14,16 +14,14 @@ import de.uni_trier.wi2.procake.similarity.base.numeric.impl.SMNumericLinearImpl
 import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringEqualImpl;
 import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
+import de.uni_trier.wi2.procake.similarity.impl.SimilarityModelImpl;
 import de.uni_trier.wi2.procake.utils.exception.NameAlreadyExistsException;
 import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
 import extension.similarity.measure.collection.*;
 import extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Before;
 
-
 public abstract class TestBase {
-
-
 
     public static DataObjectUtils utils;
     public static SimilarityModel similarityModel;
@@ -38,50 +36,9 @@ public abstract class TestBase {
         CakeInstance.start(ResourcePaths.PATH_COMPOSITION);
 
         utils = new DataObjectUtils();
-        similarityModel = SimilarityModelFactory.getDefaultSimilarityModel();
+        similarityModel = new SimilarityModelImpl();
         simVal = new SimilarityValuatorImplExt(similarityModel);
         model = ModelFactory.getDefaultModel();
-
-        /*
-            similarity measures:
-
-            Name                                        |   DataClass(es)
-            --------------------------------------------|-------------------------------------------
-            · ObjectEqual                               |   Data
-                                                        |
-            · StringEqual                               |   String
-            · Levenshtein                               |   String
-                                                        |
-            · NumericLinear                             |   Integer
-                                                        |
-            · Isolated Mapping  (original & extended)   |   Collection, NESTSequentialWorkflow
-            · Mapping  (original & extended)            |   Collection, NESTSequentialWorkflow
-            · List Mapping  (original & extended)       |   List, NESTSequentialWorkflow
-            · SWA  (original & extended)                |   List, NESTSequentialWorkflow
-            · DTW  (original & extended)                |   List, NESTSequentialWorkflow
-            · List Correctness  (original & extended)   |   List, NESTSequentialWorkflow
-         */
-
-        addSimilarityMeasureToSimilarityModel(new SMObjectEqualImpl(),                  model.getDataSystemClass());
-
-        addSimilarityMeasureToSimilarityModel(new SMStringEqualImpl(),                  model.getStringSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMStringLevenshteinImpl(),            model.getStringSystemClass());
-
-        addSimilarityMeasureToSimilarityModel(new SMNumericLinearImpl(),                model.getIntegerSystemClass());
-
-        addSimilarityMeasureToSimilarityModel(new SMCollectionIsolatedMappingImpl(),    model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMCollectionMappingImpl(),            model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListMappingImpl(),                  model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListSWAImpl(),                      model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListDTWImpl(),                      model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListCorrectnessImpl(),              model.getDataSystemClass());
-
-        addSimilarityMeasureToSimilarityModel(new SMCollectionIsolatedMappingImplExt(), model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMCollectionMappingImplExt(),         model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListMappingImplExt(),               model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListSWAImplExt(),                   model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListDTWImplExt(),                   model.getDataSystemClass());
-        addSimilarityMeasureToSimilarityModel(new SMListCorrectnessImplExt(),           model.getDataSystemClass());
 
     }
 
@@ -129,8 +86,6 @@ public abstract class TestBase {
 
         return workdays;
     }
-
-
 
 
 }

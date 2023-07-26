@@ -12,6 +12,7 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
+import de.uni_trier.wi2.procake.similarity.impl.SimilarityValuatorImpl;
 import org.junit.Test;
 import utils.MethodInvoker;
 import utils.SimilarityMeasureFunc;
@@ -29,7 +30,7 @@ public abstract class ISimilarityMeasureFuncTest extends SimilarityMeasureTest {
         ListObject caseObject = workdays();
 
 
-        SimilarityValuator oldSimVal = SimilarityModelFactory.newSimilarityValuator();
+        SimilarityValuator oldSimVal = new SimilarityValuatorImpl(similarityModel);
         Similarity oldSim = oldSimVal.computeSimilarity(queryObject, caseObject, superclassName);
 
         ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
@@ -55,7 +56,7 @@ public abstract class ISimilarityMeasureFuncTest extends SimilarityMeasureTest {
         ListObject caseObject = weekdays();
 
 
-        SimilarityValuator oldSimVal = SimilarityModelFactory.newSimilarityValuator();
+        SimilarityValuator oldSimVal = new SimilarityValuatorImpl(similarityModel);
         Similarity oldSim = oldSimVal.computeSimilarity(queryObject, caseObject, superclassName);
 
         ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();

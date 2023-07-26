@@ -1,6 +1,6 @@
 package retrieval;
 
-import base.TestBase;
+import base.SimpleTestBase;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.IntegerObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -30,7 +30,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 
-public class LinearRetrieverExtTest extends TestBase {
+public class LinearRetrieverExtTest extends SimpleTestBase {
 
     @Test
     public void correctness_of_retrieval(){
@@ -186,6 +186,7 @@ public class LinearRetrieverExtTest extends TestBase {
 
 
         LinearRetrieverImplExt linearRetrieverImplExt = new LinearRetrieverImplExt();
+        linearRetrieverImplExt.setSimilarityModel(similarityModel);
         linearRetrieverImplExt.setObjectPool(objectPool);
 
         ArrayList<MethodInvoker> globalMethodInvokers = new ArrayList<>();

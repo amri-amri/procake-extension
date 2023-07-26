@@ -1,6 +1,6 @@
 package parsing;
 
-import base.TestBase;
+import base.SimpleTestBase;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class XMLtoWeightFuncConverterTest extends TestBase {
+public class XMLtoWeightFuncConverterTest extends SimpleTestBase {
 
     @Test
     public void testAllNodes() throws ParserConfigurationException, IOException, SAXException {
