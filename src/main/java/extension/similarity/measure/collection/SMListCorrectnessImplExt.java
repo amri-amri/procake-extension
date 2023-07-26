@@ -2,6 +2,7 @@ package extension.similarity.measure.collection;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
+import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
@@ -57,22 +58,16 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) {
-            queryObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
-        }
-
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) {
-            caseObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
-        }
-
+        
         // cast query and case object as list objects
         ListObject queryList, caseList;
 
-        if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        else if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject);
         else queryList = (ListObject) queryObject;
 
-        if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
         else caseList = (ListObject) caseObject;
 
         // if the lists have different sizes, return invalid similarity

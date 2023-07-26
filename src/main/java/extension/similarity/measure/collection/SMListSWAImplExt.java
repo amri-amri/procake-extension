@@ -107,14 +107,6 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) {
-            queryObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
-        }
-
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) {
-            caseObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
-        }
-
         return new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue(queryObject, caseObject, valuator));
 
     }
@@ -125,10 +117,12 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
         //prepare new arrays containing initial null-elements
         DataObject[] queryList, caseList;
 
-        if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryList = ((ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject)).getValues().toArray(DataObject[]::new);
+        else if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
         else queryList = ((ListObject) queryObject).getValues().toArray(DataObject[]::new);
 
-        if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseList = ((ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject)).getValues().toArray(DataObject[]::new);
+        else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
         else caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
 
 
@@ -188,6 +182,7 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
 
             for ( int i = 1; i< caseArray.length; i++ ) {
                 String localSimilarityMeasure = getSimilarityMeasureFunc().apply( queryArray[j], caseArray[i] );
+                if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryArray[j], caseArray[i]).getSystemName();
 
                 Similarity similarity;
 

@@ -118,20 +118,14 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) {
-            queryObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
-        }
-
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) {
-            caseObject = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
-        }
-
         CollectionObject queryCollection, caseCollection;
 
-        if (queryObject.isNESTSequentialWorkflow()) queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        else if (queryObject.isNESTSequentialWorkflow()) queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
-        if (caseObject.isNESTSequentialWorkflow()) caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        else if (caseObject.isNESTSequentialWorkflow()) caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
         else caseCollection = (CollectionObject) caseObject;
 
 
@@ -181,6 +175,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
             DataObject caseElement = caseElementIterator.nextDataObject();
 
             localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
+            if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
             Similarity similarity;
 
