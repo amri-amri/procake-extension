@@ -50,18 +50,13 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
 
     protected SimilarityValuatorImplExt valuator;
 
-    protected ArrayList<MethodInvoker> globalMethodInvokers;
+    protected ArrayList<MethodInvoker> globalMethodInvokers = new ArrayList<MethodInvoker>();
 
-    protected SimilarityMeasureFunc localSimilarityMeasureFunc;
+    protected SimilarityMeasureFunc localSimilarityMeasureFunc = (a,b) -> null;
     protected WeightFunc localWeightFunc = (a) -> 1;
     protected MethodInvokersFunc localMethodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     protected SimilarityCache similarityCache;
-
-    @Override
-    public void setGlobalSimilarityMeasure(String similarityMeasure) {
-        setInternalSimilarityMeasure(similarityMeasure);
-    }
 
     @Override
     public String getGlobalSimilarityMeasure() {
@@ -69,8 +64,8 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers) {
-        globalMethodInvokers = methodInvokers;
+    public void setGlobalSimilarityMeasure(String similarityMeasure) {
+        setInternalSimilarityMeasure(similarityMeasure);
     }
 
     @Override
@@ -79,8 +74,8 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        this.localSimilarityMeasureFunc = similarityMeasureFunc;
+    public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers) {
+        globalMethodInvokers = methodInvokers;
     }
 
     @Override
@@ -89,8 +84,8 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.localMethodInvokersFunc = methodInvokersFunc;
+    public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        this.localSimilarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
@@ -99,13 +94,18 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    public void setLocalWeightFunc(WeightFunc weightFunc) {
-        this.localWeightFunc = weightFunc;
+    public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.localMethodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getLocalWeightFunc() {
         return localWeightFunc;
+    }
+
+    @Override
+    public void setLocalWeightFunc(WeightFunc weightFunc) {
+        this.localWeightFunc = weightFunc;
     }
 
     @Override
@@ -129,7 +129,7 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    public void setSimilarityModel(SimilarityModel similarityModel){
+    public void setSimilarityModel(SimilarityModel similarityModel) {
         super.setSimilarityModel(similarityModel);
         valuator = new SimilarityValuatorImplExt(getSimilarityModel());
     }
@@ -150,11 +150,22 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
         DataObject queryObject = query.getQueryObject();
         StopWatch stopWatchLocal = new StopWatch();
 
-        if (globalMethodInvokers !=null) {
+        MethodInvokersFunc methodInvokersFunc = getLocalMethodInvokersFunc();
+
+        setLocalMethodInvokersFunc((q, c) -> {
+            ArrayList<MethodInvoker> methodInvokers = methodInvokersFunc.apply(q, c);
+            if (methodInvokers == null) methodInvokers = new ArrayList<>();
+            methodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
+            methodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{this}));
+            methodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
+            return methodInvokers;
+        });
+
+
             globalMethodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
             globalMethodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{getLocalMethodInvokersFunc()}));
             globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
-        }
+
 
         for (DataObjectIterator iter = getObjectPool().iterator(); iter.hasNext(); ) {
 
@@ -184,7 +195,7 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
             if (sim.isValidValue()) {
                 if (sim.getValue() >= query.getMinSimilarity()) {
                     if (rrl.size() >= query.getNumberOfResults()) {
-                        if (rrl.getLast()!=null && rrl.getLast().getSimilarity().isLessThan(sim)) {
+                        if (rrl.getLast() != null && rrl.getLast().getSimilarity().isLessThan(sim)) {
                             rrl.removeLast();
                         } else {
                             stopWatchLocal.reset();
@@ -213,7 +224,6 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
         return rrl;
 
     }
-
 
 
 }
