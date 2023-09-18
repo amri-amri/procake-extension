@@ -13,7 +13,7 @@
 
 <!ELEMENT instance-of ((q | method-return-value),(string)) >
 
-<!ELEMENT regex (string, (string | method-return-value)) >
+<!ELEMENT regex ((string | method-return-value), (string | method-return-value)) >
 
 <!ELEMENT q EMPTY >
 
