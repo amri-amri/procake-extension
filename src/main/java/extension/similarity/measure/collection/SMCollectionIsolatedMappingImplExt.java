@@ -56,7 +56,7 @@ import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttribut
  */
 public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMappingImpl implements SMCollectionIsolatedMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimilarityMeasureFunc similarityMeasureFunc;
+    protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
 
@@ -67,18 +67,13 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     }
 
     @Override
-    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
-        this.similarityMeasureFunc = similarityMeasureFunc;
-    }
-
-    @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
         return similarityMeasureFunc;
     }
 
     @Override
-    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.methodInvokersFunc = methodInvokersFunc;
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
@@ -87,19 +82,24 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     }
 
     @Override
-    public void setWeightFunc(WeightFunc weightFunc) {
-        this.weightFunc = (q) -> {
-            Double weight = weightFunc.apply(q);
-            if (weight==null) return 1;
-            if (weight<0) return 0;
-            if (weight>1) return 1;
-            return weight;
-        };
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
         return weightFunc;
+    }
+
+    @Override
+    public void setWeightFunc(WeightFunc weightFunc) {
+        this.weightFunc = (q) -> {
+            Double weight = weightFunc.apply(q);
+            if (weight == null) return 1;
+            if (weight < 0) return 0;
+            if (weight > 1) return 1;
+            return weight;
+        };
     }
 
     public String getSystemName() {
@@ -110,9 +110,9 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     /**
      * Computes the isolated mapping similarity between a given query- and case- object of type Collection.
      *
-     * @param queryObject  the query object of type Collection
+     * @param queryObject the query object of type Collection
      * @param caseObject  the case object of type Collection
-     * @param valuator  the similarity valuator used for computation
+     * @param valuator    the similarity valuator used for computation
      * @return similarity object containing local similarities
      */
     @Override
@@ -120,14 +120,17 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
         CollectionObject queryCollection, caseCollection;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
-        else if (queryObject.isNESTSequentialWorkflow()) queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass")))
+            queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        else if (queryObject.isNESTSequentialWorkflow())
+            queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
-        else if (caseObject.isNESTSequentialWorkflow()) caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass")))
+            caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        else if (caseObject.isNESTSequentialWorkflow())
+            caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
         else caseCollection = (CollectionObject) caseObject;
-
 
 
         Similarity similarity = checkStoppingCriteria(queryCollection, caseCollection);
@@ -175,7 +178,8 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
             DataObject caseElement = caseElementIterator.nextDataObject();
 
             localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
-            if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
+            if (localSimilarityMeasure == null)
+                localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
             Similarity similarity;
 
@@ -185,11 +189,16 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                     similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                 }
-            }
-            else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
+            } else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
             //Application of the weight function
-            similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, similarity.getValue()*weight, (ArrayList<Similarity>) similarity.getLocalSimilarities(), similarity.getInfo());
+            similarity = new SimilarityImpl(
+                    valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure),
+                    queryElement,
+                    caseElement,
+                    similarity.getValue() * weight,
+                    (ArrayList<Similarity>) similarity.getLocalSimilarities(),
+                    similarity.getInfo());
 
             if (similarity.isValidValue() && similarity.getValue() > maxSimilarity.getValue()) {
                 maxSimilarity = similarity;

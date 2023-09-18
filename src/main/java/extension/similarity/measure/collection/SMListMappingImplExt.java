@@ -48,12 +48,12 @@ import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttribut
  *
  * <p>In addition, a functional interface ({@link WeightFunc}) can be defined to assign a weight value
  * between 0 and 1 to a query element.
- *
+ * <p>
  * //todo explanation of weighted normalization
  */
 public class SMListMappingImplExt extends SMListMappingImpl implements SMListMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimilarityMeasureFunc similarityMeasureFunc;
+    protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
     protected WeightFunc weightFunc = (a) -> 1;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
@@ -64,24 +64,13 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
     }
 
     @Override
-    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
-        this.similarityMeasureFunc = similarityMeasureFunc;
-    }
-
-    @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
         return similarityMeasureFunc;
     }
 
     @Override
-    public void setWeightFunc(WeightFunc weightFunc) {
-        this.weightFunc = (q) -> {
-            Double weight = weightFunc.apply(q);
-            if (weight==null) return 1;
-            if (weight<0) return 0;
-            if (weight>1) return 1;
-            return weight;
-        };
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
@@ -90,13 +79,24 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
     }
 
     @Override
-    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.methodInvokersFunc = methodInvokersFunc;
+    public void setWeightFunc(WeightFunc weightFunc) {
+        this.weightFunc = (q) -> {
+            Double weight = weightFunc.apply(q);
+            if (weight == null) return 1;
+            if (weight < 0) return 0;
+            if (weight > 1) return 1;
+            return weight;
+        };
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
         return methodInvokersFunc;
+    }
+
+    @Override
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
     }
 
     public String getSystemName() {
@@ -109,11 +109,13 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
 
         ListObject queryList, caseList;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESListClass")))
+            queryList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
         else if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject);
         else queryList = (ListObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESListClass")))
+            caseList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
         else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
         else caseList = (ListObject) caseObject;
 
@@ -151,7 +153,8 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             DataObject caseElement = (DataObject) caseElementIterator.next();
 
             String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
-            if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
+            if (localSimilarityMeasure == null)
+                localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
             double weight = getWeightFunc().apply(queryElement);
 
@@ -163,8 +166,7 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                     similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                 }
-            }
-            else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
+            } else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
 
             similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, similarity.getValue() * weight);
@@ -212,7 +214,8 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                     String localSimilarityMeasure;
                     if (queryFirst) {
                         localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
-                        if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
+                        if (localSimilarityMeasure == null)
+                            localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
                         weight = getWeightFunc().apply(queryElement);
 
@@ -222,13 +225,14 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                                 currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                             }
-                        }
-                        else currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
+                        } else
+                            currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
                         currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, currentSimilarity.getValue() * weight);
                     } else {
                         localSimilarityMeasure = getSimilarityMeasureFunc().apply(caseElement, queryElement);
-                        if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
+                        if (localSimilarityMeasure == null)
+                            localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
                         weight = getWeightFunc().apply(caseElement);
 
@@ -238,8 +242,8 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                                 currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, localSimilarityMeasure);
                             }
-                        }
-                        else currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, localSimilarityMeasure);
+                        } else
+                            currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, localSimilarityMeasure);
 
                         currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(caseElement.getDataClass(), localSimilarityMeasure), caseElement, queryElement, currentSimilarity.getValue() * weight);
 

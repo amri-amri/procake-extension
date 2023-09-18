@@ -2,7 +2,6 @@ package extension.similarity.measure.collection;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
-import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
@@ -31,42 +30,41 @@ import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttribut
 public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements SMListCorrectnessExt, INESTtoList, IWeightFunc {
 
     protected WeightFunc weightFunc = (a) -> 1;
-
-    @Override
-    public void setWeightFunc(WeightFunc weightFunc) {
-        this.weightFunc = (q) -> {
-            Double weight = weightFunc.apply(q);
-            if (weight==null) return 1;
-            if (weight<0) return 0;
-            if (weight>1) return 1;
-            return weight;
-        };
-    }
+    private double discordantParameter = DEFAULT_DISCORDANT_PARAMETER;
 
     @Override
     public WeightFunc getWeightFunc() {
         return weightFunc;
     }
 
+    @Override
+    public void setWeightFunc(WeightFunc weightFunc) {
+        this.weightFunc = (q) -> {
+            Double weight = weightFunc.apply(q);
+            if (weight == null) return 1;
+            if (weight < 0) return 0;
+            if (weight > 1) return 1;
+            return weight;
+        };
+    }
+
     public String getSystemName() {
         return SMListCorrectnessExt.NAME;
     }
 
-
-    private double discordantParameter = DEFAULT_DISCORDANT_PARAMETER;
-
-
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        
+
         // cast query and case object as list objects
         ListObject queryList, caseList;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESListClass")))
+            queryList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
         else if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject);
         else queryList = (ListObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESListClass")))
+            caseList = (ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
         else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
         else caseList = (ListObject) caseObject;
 
@@ -129,7 +127,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         }
 
         // compute correctness
-        double correctness = (sumConcordant - sumDiscordant) / (double) (sumConcordant + sumDiscordant);
+        double correctness = (sumConcordant - sumDiscordant) / (sumConcordant + sumDiscordant);
 
         // if correctness >= 0, return computed value as similarity
         if (correctness >= 0) {
@@ -138,6 +136,16 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
         // otherwise, use discordant parameter to normalize value and return similarity
         return new SimilarityImpl(this, queryObject, caseObject, Math.abs(correctness) * discordantParameter);
+    }
+
+    public void setDiscordantParameter(double discordantParameter) {
+        if (discordantParameter > 1.0) {
+            this.discordantParameter = 1.0;
+        } else if (discordantParameter < 0.0) {
+            this.discordantParameter = 0.0;
+        } else {
+            this.discordantParameter = discordantParameter;
+        }
     }
 
 }

@@ -47,12 +47,12 @@ import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttribut
  *
  * <p>In addition, a functional interface ({@link WeightFunc}) can be defined to assign a weight value
  * between 0 and 1 to a query element.
- *
+ * <p>
  * //todo explanation of weighted normalization
  */
 public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimilarityMeasureFunc similarityToUseFunc;
+    protected SimilarityMeasureFunc similarityToUseFunc = (a, b) -> null;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
     protected WeightFunc weightFunc = (a) -> 1;
 
@@ -63,18 +63,13 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     }
 
     @Override
-    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
-        similarityToUseFunc = similarityMeasureFunc;
-    }
-
-    @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
         return similarityToUseFunc;
     }
 
     @Override
-    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.methodInvokersFunc = methodInvokersFunc;
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        similarityToUseFunc = similarityMeasureFunc;
     }
 
     @Override
@@ -83,14 +78,8 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     }
 
     @Override
-    public void setWeightFunc(WeightFunc weightFunc) {
-        this.weightFunc = (q) -> {
-            Double weight = weightFunc.apply(q);
-            if (weight==null) return 1;
-            if (weight<0) return 0;
-            if (weight>1) return 1;
-            return weight;
-        };
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
@@ -98,10 +87,20 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
         return weightFunc;
     }
 
+    @Override
+    public void setWeightFunc(WeightFunc weightFunc) {
+        this.weightFunc = (q) -> {
+            Double weight = weightFunc.apply(q);
+            if (weight == null) return 1;
+            if (weight < 0) return 0;
+            if (weight > 1) return 1;
+            return weight;
+        };
+    }
+
     public String getSystemName() {
         return SMListSWAExt.NAME;
     }
-
 
 
     @Override
@@ -111,18 +110,22 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
 
     }
 
-    protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator){
+    protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
 
         //prepare new arrays containing initial null-elements
         DataObject[] queryList, caseList;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryList = ((ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject)).getValues().toArray(DataObject[]::new);
-        else if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESListClass")))
+            queryList = ((ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject)).getValues().toArray(DataObject[]::new);
+        else if (queryObject.isNESTSequentialWorkflow())
+            queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
         else queryList = ((ListObject) queryObject).getValues().toArray(DataObject[]::new);
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseList = ((ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject)).getValues().toArray(DataObject[]::new);
-        else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESListClass")))
+            caseList = ((ListObject) getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject)).getValues().toArray(DataObject[]::new);
+        else if (caseObject.isNESTSequentialWorkflow())
+            caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
         else caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
 
 
@@ -132,8 +135,8 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
         queryArray[0] = null;
         caseArray[0] = null;
 
-        for (int n = 0; n < queryList.length; n++)  queryArray[n+1] = queryList[n];
-        for (int n = 0; n < caseList.length; n++)   caseArray[n+1]   = caseList[n];
+        System.arraycopy(queryList, 0, queryArray, 1, queryList.length);
+        System.arraycopy(caseList, 0, caseArray, 1, caseList.length);
 
 
         // - initializing the matrices -
@@ -144,14 +147,14 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
         //the matrix keeping track of the origin cells
         int[][][] origins = new int[caseArray.length][queryArray.length][2];
 
-        for (int j = 0; j< queryArray.length; j++){
+        for (int j = 0; j < queryArray.length; j++) {
             matrix[0][j] = 0;
             origins[0][j][0] = 0;
-            origins[0][j][1] = j-1;
+            origins[0][j][1] = j - 1;
         }
-        for (int i = 1; i< caseArray.length; i++){
+        for (int i = 1; i < caseArray.length; i++) {
             matrix[i][0] = 0;
-            origins[i][0][0] = i-1;
+            origins[i][0][0] = i - 1;
             origins[i][0][1] = 0;
         }
 
@@ -163,26 +166,27 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
 
         double wTempDenominator = 1;
 
-        if (halvingDistancePercentage>0) {
+        if (halvingDistancePercentage > 0) {
             for (int j = 1; j < queryArray.length; j++) {
                 wTempDenominator += weightFunc.apply(queryArray[j]);
             }
         }
 
-        for ( int j = 1; j< queryArray.length; j++ ) {
+        for (int j = 1; j < queryArray.length; j++) {
 
-            double weight = getWeightFunc().apply( queryArray[j] );
+            double weight = getWeightFunc().apply(queryArray[j]);
             double wTemp = 1;
-            if (getHalvingDistancePercentage()>0) {
+            if (getHalvingDistancePercentage() > 0) {
                 wTempDenominator -= weight;
                 wTemp = getHalvingDistancePercentage() / (2 * wTempDenominator);
             }
 
             denominator += weight * wTemp;
 
-            for ( int i = 1; i< caseArray.length; i++ ) {
-                String localSimilarityMeasure = getSimilarityMeasureFunc().apply( queryArray[j], caseArray[i] );
-                if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryArray[j], caseArray[i]).getSystemName();
+            for (int i = 1; i < caseArray.length; i++) {
+                String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryArray[j], caseArray[i]);
+                if (localSimilarityMeasure == null)
+                    localSimilarityMeasure = valuator.getSimilarityMeasure(queryArray[j], caseArray[i]).getSystemName();
 
                 Similarity similarity;
 
@@ -190,32 +194,31 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
                     try {
                         similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryArray[j], caseArray[i], localSimilarityMeasure, getMethodInvokersFunc().apply(queryArray[j], caseArray[i]));
                     } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                        similarity = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimilarityMeasure );
+                        similarity = valuator.computeSimilarity(queryArray[j], caseArray[i], localSimilarityMeasure);
                     }
-                }
-                else similarity = valuator.computeSimilarity( queryArray[j], caseArray[i], localSimilarityMeasure );
+                } else similarity = valuator.computeSimilarity(queryArray[j], caseArray[i], localSimilarityMeasure);
 
-                double diagonal =   matrix[i-1][j-1]    + wTemp     * similarity.getValue()                         * weight;
-                double horizontal = matrix[i][j-1]      + wTemp     * getInsertionScheme().apply(caseArray[i])      * weight;
-                double vertical =   matrix[i-1][j]      + wTemp     * getDeletionScheme().apply(queryArray[j])      * weight;
+                double diagonal = matrix[i - 1][j - 1] + wTemp * similarity.getValue() * weight;
+                double horizontal = matrix[i][j - 1] + wTemp * getInsertionScheme().apply(caseArray[i]) * weight;
+                double vertical = matrix[i - 1][j] + wTemp * getDeletionScheme().apply(queryArray[j]) * weight;
 
                 if (diagonal >= horizontal && diagonal >= vertical) {
 
-                    origins[i][j][0] = i-1;
-                    origins[i][j][1] = j-1;
+                    origins[i][j][0] = i - 1;
+                    origins[i][j][1] = j - 1;
 
                     matrix[i][j] = diagonal;
 
                 } else if (horizontal > diagonal && horizontal >= vertical) {
 
                     origins[i][j][0] = i;
-                    origins[i][j][1] = j-1;
+                    origins[i][j][1] = j - 1;
 
                     matrix[i][j] = horizontal;
 
                 } else if (vertical > diagonal && vertical >= horizontal) {
 
-                    origins[i][j][0] = i-1;
+                    origins[i][j][0] = i - 1;
                     origins[i][j][1] = j;
 
                     matrix[i][j] = vertical;
@@ -223,7 +226,7 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
                 }
 
                 if (matrix[i][j] >= matrix[maxCell_i][maxCell_j]
-                    && (!getForceAlignmentEndsWithQuery() || j == queryArray.length-1)) {
+                        && (!getForceAlignmentEndsWithQuery() || j == queryArray.length - 1)) {
                     maxCell_i = i;
                     maxCell_j = j;
                 }

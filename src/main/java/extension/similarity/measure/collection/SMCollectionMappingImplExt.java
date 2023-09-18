@@ -60,9 +60,26 @@ import static extension.abstraction.XESBaseToSystemClass.getXESAggregateAttribut
  */
 public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimilarityMeasureFunc similarityMeasureFunc;
+    protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
+    /**
+     * keeps a list of maximum similarities, which can be achieved if there would be no mapping
+     * involved
+     */
+    private final Map<DataObject, Double> maxQueryElementSimilaritiyValues = new HashMap<>();
+    /**
+     * This cache stores calculated mappings of collection items.
+     */
+    private MultiKeyMap<DataObject, Similarity> mappingCache;
+    /**
+     * This cache stores calculated weights of collection items.
+     */
+    private Map<DataObject, Double> weightCache;
+    /**
+     * uniqueID-counter
+     */
+    private int IDCounter = 0;
 
     @Override
     public void setSimilarityToUse(String newValue) {
@@ -71,18 +88,13 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     @Override
-    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc){
-        this.similarityMeasureFunc = similarityMeasureFunc;
-    }
-
-    @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
         return similarityMeasureFunc;
     }
 
     @Override
-    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.methodInvokersFunc = methodInvokersFunc;
+    public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
@@ -91,14 +103,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     @Override
-    public void setWeightFunc(WeightFunc weightFunc) {
-        this.weightFunc = (q) -> {
-            Double weight = weightFunc.apply(q);
-            if (weight==null) return 1;
-            if (weight<0) return 0;
-            if (weight>1) return 1;
-            return weight;
-        };
+    public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
@@ -106,39 +112,36 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         return weightFunc;
     }
 
+    @Override
+    public void setWeightFunc(WeightFunc weightFunc) {
+        this.weightFunc = (q) -> {
+            Double weight = weightFunc.apply(q);
+            if (weight == null) return 1;
+            if (weight < 0) return 0;
+            if (weight > 1) return 1;
+            return weight;
+        };
+    }
+
     public String getSystemName() {
         return SMCollectionMappingExt.NAME;
     }
-
-
-
-    /**
-     * keeps a list of maximum similarities, which can be achieved if there would be no mapping
-     * involved
-     */
-    private Map<DataObject, Double> maxQueryElementSimilaritiyValues = new HashMap<>();
-
-    /**
-     * This cache stores calculated mappings of collection items.
-     */
-    private MultiKeyMap<DataObject, Similarity> mappingCache;
-
-    /**
-     * This cache stores calculated weights of collection items.
-     */
-    private Map<DataObject, Double> weightCache;
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
         CollectionObject queryCollection, caseCollection;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
-        else if (queryObject.isNESTSequentialWorkflow()) queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass")))
+            queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        else if (queryObject.isNESTSequentialWorkflow())
+            queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
-        else if (caseObject.isNESTSequentialWorkflow()) caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass")))
+            caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        else if (caseObject.isNESTSequentialWorkflow())
+            caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
         else caseCollection = (CollectionObject) caseObject;
 
         // init cache
@@ -289,7 +292,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
         for (DataObject caseElement : caseElements) {
             String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
-            if (localSimilarityMeasure == null) localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
+            if (localSimilarityMeasure == null)
+                localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
             Similarity similarity;
             if (valuator instanceof SimilarityValuatorImplExt) {
@@ -298,10 +302,9 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                     similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
                 }
-            }
-            else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
+            } else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-            similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure),queryElement, caseElement, weight * similarity.getValue());
+            similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, weight * similarity.getValue());
 
             // fill cache
             mappingCache.put(queryElement, caseElement, similarity);
@@ -337,12 +340,6 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         super.initializeBasedOn(base);
         this.setMaxQueueSize(((SMCollectionMapping) base).getMaxQueueSize());
     }
-
-
-    /**
-     * uniqueID-counter
-     */
-    private int IDCounter = 0;
 
     /**
      * retrieves the next ID
