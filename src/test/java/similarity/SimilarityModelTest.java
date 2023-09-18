@@ -116,4 +116,36 @@ public class SimilarityModelTest extends SimilarityModelTestBase {
         assertEquals(0.2, simVal.computeSimilarity(a1, a3).getValue(), delta);
     }
 
+    @Test
+    public void test_different_subclass_same_similarity_measure(){
+        SimilarityMeasureImpl sms3 = new SimilarityMeasureImpl() {
+            @Override
+            public boolean isSimilarityFor(DataClass dataClass, String s) {
+                return dataClass.isSubclassOf(model.getStringSystemClass());
+            }
+
+            @Override
+            public Similarity compute(DataObject dataObject, DataObject dataObject1, SimilarityValuator similarityValuator) {
+                return new SimilarityImpl(this, dataObject, dataObject1, 0.7);
+            }
+
+            @Override
+            public String getSystemName() {
+                return "SMS3";
+            }
+        };
+
+        addSimilarityMeasureToSimilarityModel(sms3, model.getClass("SC1"));
+        addSimilarityMeasureToSimilarityModel(sms3, model.getClass("SC2"));
+
+        StringObject s5 = model.createObject("SC1");
+        StringObject s6 = model.createObject("SC2");
+
+        assertEquals(0.1, simVal.computeSimilarity(s5, s6).getValue(), delta);
+
+        // Even though SMS3 is defined for both classes SC1 and SC2, SMS0 is chosen as similarity measure.
+        // That is because the similarity valuator first looks for the next common class of s5 and s6 on which a
+        // similarity measure is defined. In this case it is the string system class.
+    }
+
 }
