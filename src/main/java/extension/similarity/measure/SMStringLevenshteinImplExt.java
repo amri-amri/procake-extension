@@ -1,5 +1,6 @@
 package extension.similarity.measure;
 
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
@@ -15,17 +16,22 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
     }
 
     @Override
+    public boolean isSimilarityFor(DataClass dataclass, String orderName) {
+        return super.isSimilarityFor(dataclass, orderName) || dataclass.isSubclassOf(dataclass.getModel().getClass("XESLiteralClass"));
+    }
+
+    @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
         StringObject queryString, caseString;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass"))) {
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESLiteralClass"))) {
             queryString = (StringObject) ((AggregateObject) queryObject).getAttributeValue("value");
         } else {
             queryString = (StringObject) queryObject;
         }
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass"))) {
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESLiteralClass"))) {
             caseString = (StringObject) ((AggregateObject) caseObject).getAttributeValue("value");
         } else {
             caseString = (StringObject) caseObject;
