@@ -93,7 +93,6 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
     public static MethodInvokersFunc getMethodInvokersFunc(String str) throws IOException, SAXException, ParserConfigurationException {
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
-        if (str == null) return (q, c) -> null;
 
         // Parse the XML file
         Document doc = dBuilder.parse(IOUtils.toInputStream(str, StandardCharsets.UTF_8));
