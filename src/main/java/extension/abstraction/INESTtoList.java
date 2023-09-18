@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 /**
  * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.
+ * Implementing this interface can be useful for similarity measures.
  */
 public interface INESTtoList {
 
@@ -31,7 +32,7 @@ public interface INESTtoList {
 
         if (!new NESTSequentialWorkflowValidatorImpl(workflowObject).isValidSequentialWorkflow()) {
             throw new NoSequentialGraphException(
-                    "Query graph must be a valid sequential workflow for usage of SWA measure",
+                    "NESTSequentialWorkflowObject is not valid.",
                     workflowObject.getId(),
                     workflowObject);
         }

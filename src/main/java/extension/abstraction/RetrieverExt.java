@@ -84,10 +84,10 @@ public interface RetrieverExt {
     /**
      * sets the locally used WeightFunc of the extended retriever
      *
-     * <p>For every part of the query object (if its an object of collection type) a weight can be
+     * <p>For every part of the query object (if it is an object of collection type) a weight can be
      * defined to model its importance in the similarity computation.
      *
-     * <p>The 'part of the query object' can simply be an element of the query object of
+     * <p>The 'part of the query object' can simply be an element of the query object or
      * an element of an element of the query object if the query object contains collection
      * objects as elements and so fort.
      *

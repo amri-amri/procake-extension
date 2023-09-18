@@ -1,19 +1,14 @@
 package extension.abstraction;
 
-import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.DataObjectUtils;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.SetObject;
-import de.uni_trier.wi2.procake.data.object.base.impl.SetObjectImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public interface XESBaseToSystemClass {
 
-    public static CollectionObject getXESAggregateAttributesAsSystemCollectionObject(AggregateObject o){
+    static CollectionObject getXESAggregateAttributesAsSystemCollectionObject(AggregateObject o) throws XESBaseToSystemClassException {
 
         if (! (o.getDataClass().isSubclassOf(o.getModel().getClass("XESBaseClass")))) throw new XESBaseToSystemClassException("Aggregate's DataClass is not subclass of \"XESBaseClass\".");
 
