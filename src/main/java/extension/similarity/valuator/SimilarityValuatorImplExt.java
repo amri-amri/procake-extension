@@ -30,7 +30,7 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
     private final Logger logger = LoggerFactory.getLogger(SimilarityMeasureImpl.class);
 
     /**
-     * computes the similarity after setting the parameters of the given similarity measure
+     * Computes the similarity after setting the parameters of the given similarity measure
      * according to the list of method invokers
      *
      * @param queryObject  the query object
@@ -60,7 +60,11 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
             similarityMeasure = createNewInstance(similarityMeasure);
         }
 
-        if (methodInvokers!= null) for (MethodInvoker methodInvoker : methodInvokers) methodInvoker.invoke(similarityMeasure);
+        if (methodInvokers!= null) for (MethodInvoker methodInvoker : methodInvokers) {
+            try {
+                methodInvoker.invoke(similarityMeasure);
+            } catch (Exception ignored){}
+        }
 
         return similarityMeasure.compute(queryObject, caseObject, this);
     }
