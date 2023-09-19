@@ -15,4 +15,8 @@ public interface SimilarityMeasureFunc {
      * @return the assigned name of the similarity measure
      */
     String apply(DataObject q, DataObject c);
+
+    static SimilarityMeasureFunc getDefault(){
+        return (q, c) -> null;
+    }
 }

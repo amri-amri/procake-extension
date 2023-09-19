@@ -17,4 +17,8 @@ public interface MethodInvokersFunc {
      * @return  the assigned list of MethodInvoker objects
      */
     ArrayList<MethodInvoker> apply(DataObject q, DataObject c);
+
+    static MethodInvokersFunc getDefault(){
+        return (q, c) -> new ArrayList<>();
+    }
 }

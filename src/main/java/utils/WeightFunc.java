@@ -14,4 +14,8 @@ public interface WeightFunc {
      * @return the assigned weight value
      */
     double apply(DataObject q);
+
+    static WeightFunc getDefault(){
+        return (q) -> 1;
+    }
 }
