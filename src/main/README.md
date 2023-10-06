@@ -42,10 +42,6 @@ tries to provide solutions:
 classes.
 2. Setting parameters of similarity measures.
 3. Using weights for elements of collection objects.
-* <span style="color:red">TODO: SMs have to work on
-XES-Classes. Maybe Reference to Converter Doc later</span>
-
-[comment]: <> (see TODO above)
 
 Instead of a `SimilarityValuatorImpl`-object or a
 `RetrieverImpl`-object, a `SimilarityValuatorImplExt`- or
@@ -100,18 +96,20 @@ It can be used by similarity measures.
 
 ## XESBaseToSystemClass
 
-* <span style="color:red">TODO: EDIT AFTER DOC FOR CONVERTER IS FINISHED!
+A 'NESTWorkflow' that has been obtained by using the
+**XEStoWorkflowConverter** classes contains TaskNodes which
+contain so called `XESEventClass`-objects as semantic descriptors.
+These objects are ProCAKE-`AggregateObject`s which can contain
+other `AggregateObject`s which all are (ProCAKE-)subclasses of
+`XESBaseClass`.
+In order to convert these `XESBaseClass`-objects (Java class:
+`AggregateObject`, ProCAKE DataClass: `XESBaseClass`!!) to
+`de.uni_trier.wi2.procake.data.object.base.CollectionObject`s,
+the simple interface `XESBaseToSystemClass` provides a default
+method.
 
-[comment]: <> (see TODO above)
-
-~~The data classes of the semantic descriptors of `TaskNode`s of
-`NESTSequentialWorkflow`s produced by the `XEStoWorkflowConverter`
-all inherit from `XESBaseClass` (WRONG).
-In order for similarity measures to work on such workflow
-objects this interface should be implemented.
-The method `static CollectionObject getXESAggregateAttributesAsSystemCollectionObject(AggregateObject o)`
-can be applied on the semantic descriptors in order to get
-ProCAKE's `CollectionObject`s.~~
+The extended similarity measures working on collections implement
+this interface and thus also work on these `XESBaseClass`es.
 
 ## SimilarityValuatorImplExt
 
