@@ -4,8 +4,8 @@ import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListCorrectness;
-import extension.similarity.measure.collection.SMListCorrectnessExt;
-import extension.similarity.measure.collection.SMListCorrectnessImplExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListCorrectnessExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListCorrectnessImplExt;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

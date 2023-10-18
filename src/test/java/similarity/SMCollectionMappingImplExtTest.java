@@ -6,12 +6,12 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMCollectionMapping;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import extension.similarity.measure.collection.SMCollectionMappingExt;
-import extension.similarity.measure.collection.SMCollectionMappingImplExt;
-import extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMCollectionMappingExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMCollectionMappingImplExt;
+import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Test;
-import utils.MethodInvoker;
-import utils.WeightFunc;
+import de.uni_trier.wi2.utils.MethodInvoker;
+import de.uni_trier.wi2.utils.WeightFunc;
 
 import java.util.ArrayList;
 

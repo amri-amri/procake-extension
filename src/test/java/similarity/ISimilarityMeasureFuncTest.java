@@ -9,13 +9,12 @@ import de.uni_trier.wi2.procake.data.object.nest.utils.NESTAbstractWorkflowModif
 import de.uni_trier.wi2.procake.data.object.nest.utils.NESTWorkflowBuilder;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTWorkflowBuilderImpl;
 import de.uni_trier.wi2.procake.similarity.Similarity;
-import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityValuatorImpl;
 import org.junit.Test;
-import utils.MethodInvoker;
-import utils.SimilarityMeasureFunc;
+import de.uni_trier.wi2.utils.MethodInvoker;
+import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

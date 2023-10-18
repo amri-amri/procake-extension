@@ -5,9 +5,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>de.uni-trier.wi2</groupId>
     <artifactId>procake-extension</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <dependencies>
 
@@ -23,8 +23,15 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -37,5 +44,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>onkocasebackend</id>
+            <url>https://gitlab.rlp.net/api/v4/projects/36008/packages/maven</url>
+        </repository>
+        <snapshotRepository>
+            <id>procake-extension</id>
+            <url>https://gitlab.rlp.net/api/v4/projects/35164/packages/maven</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 
 </project>

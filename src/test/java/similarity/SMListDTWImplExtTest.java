@@ -6,11 +6,11 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListDTW;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import extension.similarity.measure.collection.SMListDTWExt;
-import extension.similarity.measure.collection.SMListDTWImplExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListDTWExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListDTWImplExt;
 import org.junit.Ignore;
 import org.junit.Test;
-import utils.MethodInvoker;
+import de.uni_trier.wi2.utils.MethodInvoker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

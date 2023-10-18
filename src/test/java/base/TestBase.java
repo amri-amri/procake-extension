@@ -7,18 +7,11 @@ import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.DataObjectUtils;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.similarity.SimilarityModel;
-import de.uni_trier.wi2.procake.similarity.SimilarityModelFactory;
-import de.uni_trier.wi2.procake.similarity.base.collection.impl.*;
-import de.uni_trier.wi2.procake.similarity.base.impl.SMObjectEqualImpl;
-import de.uni_trier.wi2.procake.similarity.base.numeric.impl.SMNumericLinearImpl;
-import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringEqualImpl;
-import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityModelImpl;
 import de.uni_trier.wi2.procake.utils.exception.NameAlreadyExistsException;
 import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
-import extension.similarity.measure.collection.*;
-import extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Before;
 
 public abstract class TestBase {

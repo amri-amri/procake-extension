@@ -1,10 +1,11 @@
 package parsing;
 
 import base.SimpleTestBase;
+import de.uni_trier.wi2.parsing.XMLtoWeightFuncConverter;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import org.junit.Test;
 import org.xml.sax.SAXException;
-import utils.WeightFunc;
+import de.uni_trier.wi2.utils.WeightFunc;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
