@@ -450,7 +450,8 @@ For the three central functional interfaces of this extension
 ([SimilarityMeasureFunc, MethodInvokersFunc, WeightFunc](#similaritymeasurefunc-methodinvoker-methodinvokersfunc--weightfunc))
 Document Type Definitions (.dtd) have been defined to schematize
 this Java-like XML format. The DTD files can be found under
-`src/main/resources/schema`. I will explain the components on
+`src/main/resources/de/uni_trier/wi2/schema` or at
+https://karim-amri.de/dtd/. I will explain the components on
 the example of `methodinvokers-function.dtd`:
 
 The root element in this case is the `<method-invokers-function>`
@@ -585,12 +586,12 @@ there is no need for the `<c>` element to exist in that DTD.
 
 The three inheritors of the abstract class `XMLtoFunctionConverter`
 - `XMLtoMethodInvokersFuncConverter`,
-- `XMLtoSimilarityMeasureFuncConverter`, & 
+- `XMLtoSimilarityMeasureFuncConverter`, and
 - `XMLtoWeightFuncConverter`
 
 implement the functions
 - `public static MethodInvokersFunc getMethodInvokersFunc(String str)`,
-- `public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str)`, &  
+- `public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str)`, and 
 - `public static WeightFunc getSimilarityMeasureFunc(String str)`
 
 respectively, as well as the same functions but taking a `File`
@@ -599,13 +600,16 @@ object as an argument.
 These functions convert a given XML file/string to the
 respective object. The XML should be valid against the respective
 DTD, of course.
+It is necessary that the `<!DOCTYPE ...` tag is given. Use
+the URL https://karim-amri.de/dtd/ if you want to avoid errors
+(see example below).
 
 ### Example
 Take a look at the following XML
 `src/test/resources/xml/weight-function-test.xml`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE weight-function SYSTEM "../../../../src/main/resources/schema/weight-function.dtd">
+<!DOCTYPE weight-function SYSTEM "https://karim-amri.de/dtd/weight-function.dtd">
 <weight-function>
     <if>
         <or>
