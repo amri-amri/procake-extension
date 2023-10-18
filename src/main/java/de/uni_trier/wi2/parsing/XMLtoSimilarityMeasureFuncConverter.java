@@ -1,5 +1,6 @@
 package de.uni_trier.wi2.parsing;
 
+import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -7,6 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.print.Doc;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
@@ -32,52 +34,15 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws ParserConfigurationException
      */
     public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException {
+        if (file == null) SimilarityMeasureFunc.getDefault();
+
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
-        if (file == null) SimilarityMeasureFunc.getDefault();
 
         // Parse the XML file
         Document doc = dBuilder.parse(file);
 
-        // Get root element
-        Node root = doc.getElementsByTagName("similarity-measure-function").item(0);
-
-        // Get rid of unnecessary whitespace
-        root.normalize();
-
-        // Get all the child elements of the root element (should all be "if" nodes)
-        NodeList ifStatements = root.getChildNodes();
-
-        // Define the SimilarityMeasureFunc which computes the output according to the DOM
-        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
-
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the xml file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
-
-            for (int i = 0; i < ifStatements.getLength(); i++){
-
-                // If the evaluation of the first child element of the "if" node (should be a node which represents a
-                //  logical operation/test) returns true, the second child of the "if" node, a "string" node, is
-                //  evaluated and the generated String object is returned.
-
-                Node ifStatement = ifStatements.item(i);
-
-                Node condition = ifStatement.getChildNodes().item(0);
-                Node returnValue = ifStatement.getChildNodes().item(1);
-
-                try {
-                    if ((boolean) evaluate(condition, q, c)) return (String) evaluate(returnValue, q, c);
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-            return "";
-        };
-
-        return similarityMeasureFunc;
+        return getSimilarityMeasureFunc(doc);
     }
 
     /**
@@ -97,13 +62,23 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws ParserConfigurationException
      */
     public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException {
+        if (str == null) SimilarityMeasureFunc.getDefault();
+
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
-        if (str == null) SimilarityMeasureFunc.getDefault();
 
         // Parse the XML file
         Document doc = dBuilder.parse(IOUtils.toInputStream(str, StandardCharsets.UTF_8));
 
+        return getSimilarityMeasureFunc(doc);
+    }
+
+    /**
+     * <p>Converts the passed {@link Document} to a {@link SimilarityMeasureFunc}
+     * @param doc  the Document which is to be converted into a SimilarityMeasureFunc
+     * @return  the SimilarityMeasureFunc generated from the Document
+     */
+    private static SimilarityMeasureFunc getSimilarityMeasureFunc(Document doc){
         // Get root element
         Node root = doc.getElementsByTagName("similarity-measure-function").item(0);
 
