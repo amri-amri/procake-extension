@@ -1,6 +1,6 @@
-package retrieval;
+package de.uni_trier.wi2.retrieval;
 
-import base.SimpleTestBase;
+import de.uni_trier.wi2.base.SimpleTestBase;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.IntegerObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;

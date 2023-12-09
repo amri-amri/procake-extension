@@ -1,4 +1,4 @@
-package similarity;
+package de.uni_trier.wi2.similarity;
 
 import de.uni_trier.wi2.procake.data.model.nest.NESTSequentialWorkflowClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;

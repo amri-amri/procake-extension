@@ -1,4 +1,4 @@
-package base;
+package de.uni_trier.wi2.base;
 
 import de.uni_trier.wi2.procake.CakeInstance;
 import de.uni_trier.wi2.procake.data.model.DataClass;

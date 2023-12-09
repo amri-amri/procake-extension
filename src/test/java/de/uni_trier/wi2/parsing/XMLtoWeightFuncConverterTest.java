@@ -1,6 +1,6 @@
-package parsing;
+package de.uni_trier.wi2.parsing;
 
-import base.SimpleTestBase;
+import de.uni_trier.wi2.base.SimpleTestBase;
 import de.uni_trier.wi2.parsing.XMLtoWeightFuncConverter;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import org.junit.Test;

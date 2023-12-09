@@ -1,6 +1,6 @@
-package similarity;
+package de.uni_trier.wi2.similarity;
 
-import base.SimpleTestBase;
+import de.uni_trier.wi2.base.SimpleTestBase;
 import de.uni_trier.wi2.procake.data.model.nest.NESTSequentialWorkflowClass;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
