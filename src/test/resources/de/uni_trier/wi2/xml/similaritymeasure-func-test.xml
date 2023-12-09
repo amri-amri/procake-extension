@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE similarity-measure-function SYSTEM "https://karim-amri.de/dtd/similaritymeasure-function.dtd">
+<similarity-measure-function>
+    <if>
+        <and>
+            <equals>
+                <method-return-value>
+                    <q/>
+                    <method name="getDataClass"></method>
+                </method-return-value>
+                <string value="XESEventClass"/>
+            </equals>
+            <equals>
+                <method-return-value>
+                    <c/>
+                    <method name="getDataClass"></method>
+                </method-return-value>
+                <string value="XESEventClass"/>
+            </equals>
+        </and>
+        <string value="CollectionIsolatedMappingExt"/>
+    </if>
+</similarity-measure-function>
