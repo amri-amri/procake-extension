@@ -2,6 +2,8 @@ package de.uni_trier.wi2.utils;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 
+import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+
 /**
  * Functional interface for assigning weights to data objects.
  */
@@ -16,6 +18,7 @@ public interface WeightFunc {
     double apply(DataObject q);
 
     static WeightFunc getDefault(){
+        METHOD_CALL.info("static WeightFunc procake-extension.utils.WeightFunc.getDefault()...");
         return (q) -> 1;
     }
 }

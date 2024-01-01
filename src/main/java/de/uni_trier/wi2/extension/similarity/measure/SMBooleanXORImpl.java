@@ -9,6 +9,9 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 
+import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
+
 public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBooleanXOR {
     public String getSystemName() {
         return NAME;
@@ -16,11 +19,23 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
 
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
-        return dataclass.isBoolean() || dataclass.isSubclassOf(dataclass.getModel().getClass("XESBooleanClass"));
+        METHOD_CALL.info("public boolean extension.similarity.measure.SMBooleanXORImpl.isSimilarityFor" +
+                "(DataClass dataclass={}, String orderName={})...", maxSubstring(dataclass), maxSubstring(orderName));
+
+        boolean isSimilarityFor = dataclass.isBoolean() || dataclass.isSubclassOf(dataclass.getModel().getClass("XESBooleanClass"));
+
+        METHOD_CALL.info("extension.similarity.measure.SMBooleanXORImpl.isSimilarityFor" +
+                "(DataClass, String): return {}", isSimilarityFor);
+
+        return isSimilarityFor;
     }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+        METHOD_CALL.info(
+                "public Similarity extension.similarity.SMBooleanXORImpl.measurecompute" +
+                "(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
+                maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         BooleanObject queryBool, caseBool;
 
@@ -40,6 +55,12 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
         boolean x2 = caseBool.getNativeBooleanValue();
         double val = 0.0;
         if (x1 ^ x2 ) val = 1.0;
+
+        METHOD_CALL.info(
+                "extension.similarity.SMBooleanXORImpl.measurecompute" +
+                "(DataObject, DataObject, SimilarityValuator): " +
+                "return new SimilarityImpl(this, queryObject, caseObject, {}});",
+                val);
 
         return new SimilarityImpl(this, queryObject, caseObject, val);
     }

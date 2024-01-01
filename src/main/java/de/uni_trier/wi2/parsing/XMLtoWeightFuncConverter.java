@@ -1,6 +1,5 @@
 package de.uni_trier.wi2.parsing;
 
-import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -13,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+
+import static de.uni_trier.wi2.LoggingUtils.*;
 
 public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
 
@@ -33,15 +34,29 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static WeightFunc getWeightFunc(File file) throws ParserConfigurationException, IOException, SAXException {
-        if (file == null) WeightFunc.getDefault();
+        METHOD_CALL.info(
+                "public static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
+                        "(File file={})...", maxSubstring(file));
+        
+        if (file == null) {
+            METHOD_CALL.info(
+                    "procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(File): " +
+                            "return WeightFunc.getDefault();");
+            return WeightFunc.getDefault();
+        }
 
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
 
         // Parse the XML file
         Document doc = dBuilder.parse(file);
+        
+        WeightFunc weightFunc = getWeightFunc(doc);
 
-        return getWeightFunc(doc);
+        DIAGNOSTICS.trace(
+                "procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(File): return");
+
+        return weightFunc;
     }
 
     /**
@@ -61,15 +76,29 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static WeightFunc getWeightFunc(String str) throws ParserConfigurationException, IOException, SAXException {
-        if (str == null) WeightFunc.getDefault();
+        METHOD_CALL.info(
+                "public static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
+                        "(String str={})...", maxSubstring(str));
+        
+        if (str == null) {
+            METHOD_CALL.info(
+                    "procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(String): " +
+                            "return WeightFunc.getDefault();");
+            return WeightFunc.getDefault();
+        }
 
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
 
         // Parse the XML file
         Document doc = dBuilder.parse(IOUtils.toInputStream(str, StandardCharsets.UTF_8));
+        
+        WeightFunc weightFunc = getWeightFunc(doc);
 
-        return getWeightFunc(doc);
+        DIAGNOSTICS.trace(
+                "procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(String): return");
+
+        return weightFunc;
     }
 
     /**
@@ -78,7 +107,8 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @return  the WeightFunc generated from the Document
      */
     private static WeightFunc getWeightFunc(Document doc){
-
+        METHOD_CALL.info("private static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
+                "(Document doc={})...", maxSubstring(doc));
 
         // Get root element
         Node root = doc.getElementsByTagName("weight-function").item(0);
@@ -89,9 +119,13 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
         // Get all the child elements of the root element (should all be "if" nodes)
         NodeList ifStatements = root.getChildNodes();
 
-        // Define the SimilarityMeasureFunc which computes the output according to the DOM
+        // Define the WeightFunc which computes the output according to the DOM
         WeightFunc weightFunc = (q) -> {
 
+            METHOD_CALL.info("String procake-extension.utils.WeightFunc.apply" +
+                    "(DataObject q={})...", maxSubstring(q));
+
+            
             // It is important that the evaluation of the "if" nodes happens in the order of the
             //  definition in the xml file. This guarantees that an author of such a file can implicitly define
             //  an "else" or "else if" condition.
@@ -107,16 +141,38 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
                 Node condition = ifStatement.getChildNodes().item(0);
                 Node returnValue = ifStatement.getChildNodes().item(1);
 
+                DIAGNOSTICS.trace("procake-extension.utils.WeightFunc.apply(DataObject): " +
+                                "ifStatements.item({})={}, condition={}, returnValue={}",
+                        i, maxSubstring(ifStatement), maxSubstring(condition), maxSubstring(returnValue));
+
                 try {
-                    if ((boolean) evaluate(condition, q, null)) return (double) evaluate(returnValue, q, null);
+                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, null);
+
+                    DIAGNOSTICS.trace("procake-extension.utils.WeightFunc.apply(DataObject): " +
+                            "evaluate(condition, q, null))={}", ifStatementEvaluated);
+
+                    if (ifStatementEvaluated) {
+                        double weight  = (double) evaluate(returnValue, q, null);
+
+                        METHOD_CALL.info("procake-extension.utils.WeightFunc.apply(DataObject): " +
+                                "return {}", weight);
+
+                        return weight;
+                    }
                 } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                          IllegalAccessException e) {
+                    METHOD_CALL.info("procake-extension.utils.WeightFunc.apply(DataObject): " +
+                            "throw new RuntimeException(e); e={}", maxSubstring(e));
                     throw new RuntimeException(e);
                 }
 
             }
+            
             return 1.;
         };
+
+        METHOD_CALL.info("procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(Document): " +
+                "return weightFunc={}", maxSubstring(weightFunc));
 
         return weightFunc;
     }

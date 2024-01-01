@@ -16,6 +16,7 @@ public class LoggingUtils {
     public static int MAX_LOGGED_STRING_LENGTH = 50000;
 
     public static String maxSubstring(Object obj){
+        if (obj == null) obj = "null";
         return maxSubstring(obj.toString());
     }
 
@@ -28,6 +29,7 @@ public class LoggingUtils {
     }
 
     public static String stringOf(final ResultSet resultSet) throws SQLException {
+        if (resultSet == null) return "null";
         if (false) {
             ResultSetMetaData rsMetaData = resultSet.getMetaData();
             int colCount = rsMetaData.getColumnCount();
@@ -51,5 +53,30 @@ public class LoggingUtils {
             return resultSet.toString();
         }
         return resultSet.toString();
+    }
+
+    public static String get2DMatrixString(Object[][] matrix){
+        String m = "";
+        for (int i = 0; i < matrix.length; i++){
+            for (int j = 0; j < matrix[i].length ; j++){
+                if (matrix[i][j] != null) m = m + matrix[i][j].toString();
+                else m = m + "null";
+                if (j < matrix[i].length -1) m = m + ", ";
+            }
+            if (i < matrix.length -1) m = m + "\n";
+        }
+        return m;
+    }
+
+    public static String get2DMatrixString(double[][] matrix){
+        String m = "";
+        for (int i = 0; i < matrix.length; i++){
+            for (int j = 0; j < matrix[i].length ; j++){
+                m = m + matrix[i][j];
+                if (j < matrix[i].length -1) m = m + ", ";
+            }
+            if (i < matrix.length -1) m = m + "\n";
+        }
+        return m;
     }
 }

@@ -14,13 +14,12 @@ import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import de.uni_trier.wi2.utils.WeightFunc;
-import de.uni_trier.wi2.extension.abstraction.IMethodInvokersFunc;
-import de.uni_trier.wi2.extension.abstraction.INESTtoList;
-import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
-import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
 
 /**
  * A similarity measure using the 'Smith-Waterman' algorithm for {@link ListObject}s.
@@ -51,43 +50,53 @@ import java.util.ArrayList;
  */
 public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    protected SimilarityMeasureFunc similarityToUseFunc = (a, b) -> null;
+    protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
     protected WeightFunc weightFunc = (a) -> 1;
 
     @Override
-    public void setLocalSimilarityToUse(String newValue) {
-        super.setLocalSimilarityToUse(newValue);
-        similarityToUseFunc = (a, b) -> newValue;
+    public void setLocalSimilarityToUse(String similarityToUse) {
+        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
+        super.setLocalSimilarityToUse(similarityToUse);
+        similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        return similarityToUseFunc;
+        METHOD_CALL.info("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSimilarityToUse()...");
+        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
+        return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        similarityToUseFunc = similarityMeasureFunc;
+        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
+        this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
+        METHOD_CALL.info("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getMethodInvokersFunc()...");
+        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
+        METHOD_CALL.info("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getWeightFunc()...");
+        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getWeightFunc(): return {}", weightFunc);
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
+        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -98,6 +107,8 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     }
 
     public String getSystemName() {
+        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSystemName()...");
+        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSystemName(): return {}", SMListSWAExt.NAME);
         return SMListSWAExt.NAME;
     }
 
@@ -105,12 +116,20 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        return new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue(queryObject, caseObject, valuator));
+        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
+
+        Similarity similarity = new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue(queryObject, caseObject, valuator));
+
+        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.compute(DataObject, DataObject, SimilarityValuator): return Similarity");
+
+        return similarity;
 
     }
 
     protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.computeSimilarityValue(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
+        //TODO: DIAGNOSTICS!
 
         //prepare new arrays containing initial null-elements
         DataObject[] queryList, caseList;

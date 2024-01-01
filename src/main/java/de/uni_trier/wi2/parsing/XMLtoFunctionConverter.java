@@ -13,9 +13,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
 
 /**
  * <p>This abstract class delivers functionality for:
@@ -52,6 +56,8 @@ public abstract class XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     protected static void initialize() throws ParserConfigurationException {
+        METHOD_CALL.info("protected static void procake-extension.parsing.XMLtoFunctionConverter.initialize()...");
+
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setValidating(true);
         dbFactory.setIgnoringElementContentWhitespace(true);
@@ -99,6 +105,10 @@ public abstract class XMLtoFunctionConverter {
      * @throws InvocationTargetException
      */
     protected static Object evaluate(Node node, DataObject q, DataObject c) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        METHOD_CALL.info("protected static Object procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                "(Node node={}, DataObject q={}, DataObject c={})...",
+                maxSubstring(node), maxSubstring(q), maxSubstring(c));
+
         switch (node.getNodeName()) {
 
             // The "and" node represents the logical conjunction of its child nodes
@@ -111,6 +121,8 @@ public abstract class XMLtoFunctionConverter {
                         break;
                     }
                 }
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", value);
                 return value;
 
             // The "or" node represents the logical disjunction of its child nodes
@@ -123,28 +135,39 @@ public abstract class XMLtoFunctionConverter {
                         break;
                     }
                 }
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", value);
                 return value;
 
             // The "not" node represents the logical negation of its child node
             case "not":
-                return !(boolean) evaluate(node.getFirstChild(), q, c);
+                value = !(boolean) evaluate(node.getFirstChild(), q, c);
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", value);
+                return value;
 
             // The "equals" node represents Java's "Object.equals" method
             case "equals":
                 Object a = evaluate(node.getChildNodes().item(0), q, c);
                 Object b = evaluate(node.getChildNodes().item(1), q, c);
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", a.equals(b));
                 return a.equals(b);
 
             // The "equals" node represents Java's "==" equality
             case "same-object-as":
                 a = evaluate(node.getChildNodes().item(0), q, c);
                 b = evaluate(node.getChildNodes().item(1), q, c);
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", a == b);
                 return a == b;
 
             // The "instance-of" node represents Java's "instanceof" operator
             case "instance-of":
                 a = evaluate(node.getChildNodes().item(0), q, c);
                 Class clazz = Class.forName((String) evaluate(node.getChildNodes().item(1), q, c));
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", clazz.isInstance(a));
                 return clazz.isInstance(a);
 
             // The "regex" node represents a regular expression test
@@ -152,29 +175,45 @@ public abstract class XMLtoFunctionConverter {
             case "regex":
                 Pattern pattern = Pattern.compile((String) evaluate(node.getChildNodes().item(0), q, c));
                 Matcher matcher = pattern.matcher((String) evaluate(node.getChildNodes().item(1), q, c));
-                return matcher.matches();
+                value = matcher.matches();
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", value);
+                return value;
 
             // The "q" node represents the first argument passed to the functional interface which is generated by the
             //  respective converter
             case "q":
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", maxSubstring(q));
                 return q;
 
             // The "c" node represents the second argument passed to the functional interface which is generated by the
             //  respective converter (if the functional interface requires one)
             case "c":
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", maxSubstring(c));
                 return c;
 
             // The "string" node represents a String object
             case "string":
-                return node.getAttributes().item(0).getNodeValue();
+                String str = node.getAttributes().item(0).getNodeValue();
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", maxSubstring(str));
+                return str;
 
             // The "double" node represents a Double object
             case "double":
-                return Double.parseDouble(node.getAttributes().item(0).getNodeValue());
+                Double dbl = Double.parseDouble(node.getAttributes().item(0).getNodeValue());
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", dbl);
+                return dbl;
 
             // The "boolean" node represents a Boolean object
             case "boolean":
-                return Boolean.parseBoolean(node.getAttributes().item(0).getNodeValue());
+                boolean bool = Boolean.parseBoolean(node.getAttributes().item(0).getNodeValue());
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", bool);
+                return bool;
 
             // The "method" node represents a method (call) in Java.
             // A "method" node has an attribute "name" (=name of method) and arbitraryly many
@@ -197,13 +236,18 @@ public abstract class XMLtoFunctionConverter {
                     classes[i] = clazz;
                     objects[i] = evaluate(child, q, c);
                 }
-
-                return new MethodInvoker(methodName, classes, objects);
+                MethodInvoker methodInvoker_ = new MethodInvoker(methodName, classes, objects);
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", methodInvoker_);
+                return methodInvoker_;
 
             // The "method-return-value" node represents the return value of a method (see above)
             case "method-return-value":
                 MethodInvoker methodInvoker = (MethodInvoker) evaluate(node.getChildNodes().item(1), q, c);
-                return methodInvoker.invoke(evaluate(node.getChildNodes().item(0), q, c));
+                Object methodReturnValue = methodInvoker.invoke(evaluate(node.getChildNodes().item(0), q, c));
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", maxSubstring(methodReturnValue));
+                return methodReturnValue;
 
             // The "method-list" node represents a list of methods
             case "method-list":
@@ -212,10 +256,14 @@ public abstract class XMLtoFunctionConverter {
                 for (int i = 0; i < children.getLength(); i++) {
                     methodInvokers.add((MethodInvoker) evaluate(children.item(i), q, c));
                 }
+                METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", maxSubstring(methodInvokers));
                 return methodInvokers;
             default:
                 break;
         }
+        METHOD_CALL.info("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                "(Node, DataObject, DataObject): return {}", "null");
         return null;
     }
 }

@@ -8,6 +8,8 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinImpl;
 
+import static de.uni_trier.wi2.LoggingUtils.*;
+
 public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implements SMStringLevenshteinExt {
 
     public String getSystemName() {
@@ -16,11 +18,22 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
 
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
-        return super.isSimilarityFor(dataclass, orderName) || dataclass.isSubclassOf(dataclass.getModel().getClass("XESLiteralClass"));
+        METHOD_CALL.info("public boolean extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
+                "(DataClass dataclass={}, String orderName={})...", maxSubstring(dataclass), maxSubstring(orderName));
+
+        boolean isSimilarityFor = super.isSimilarityFor(dataclass, orderName) || dataclass.isSubclassOf(dataclass.getModel().getClass("XESLiteralClass"));
+
+        METHOD_CALL.info("extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
+                "(DataClass, String): return {}", isSimilarityFor);
+
+        return isSimilarityFor;
     }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+        METHOD_CALL.info("public Similarity extension.similarity.measure.SMStringLevenshteinImplExt.compute" +
+                "(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
+                maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         StringObject queryString, caseString;
 
@@ -36,6 +49,18 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
             caseString = (StringObject) caseObject;
         }
 
-        return super.compute(queryString, caseString, valuator);
+        DIAGNOSTICS.trace(
+                "extension.similarity.measure.SMStringLevenshteinImplExt.compute" +
+                "(DataObject, DataObject, SimilarityValuator): " +
+                "Similarity similarity = super.compute(queryString, caseString, valuator);");
+
+        Similarity similarity = super.compute(queryString, caseString, valuator);
+
+        METHOD_CALL.info(
+                "extension.similarity.measure.SMStringLevenshteinImplExt.compute" +
+                "(DataObject, DataObject, SimilarityValuator): return {}",
+                similarity);
+
+        return similarity;
     }
 }

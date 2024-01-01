@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import static de.uni_trier.wi2.LoggingUtils.*;
+
 public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
     /**
@@ -32,7 +34,16 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static MethodInvokersFunc getMethodInvokersFunc(File file) throws IOException, SAXException, ParserConfigurationException {
-        if (file == null) MethodInvokersFunc.getDefault();
+        METHOD_CALL.info(
+                "public static MethodInvokersFunc procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc" +
+                        "(File file={})...", maxSubstring(file));
+
+        if (file == null) {
+            METHOD_CALL.info(
+                    "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(File): " +
+                    "return MethodInvokersFunc.getDefault();");
+            return MethodInvokersFunc.getDefault();
+        }
 
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
@@ -40,7 +51,12 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
         // Parse the XML file
         Document doc = dBuilder.parse(file);
 
-        return getMethodInvokersFunc(doc);
+        MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(doc);
+
+        DIAGNOSTICS.trace(
+                "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(File): return");
+
+        return methodInvokersFunc;
     }
 
     /**
@@ -57,7 +73,16 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static MethodInvokersFunc getMethodInvokersFunc(String str) throws IOException, SAXException, ParserConfigurationException {
-        if (str == null) MethodInvokersFunc.getDefault();
+        METHOD_CALL.info(
+                "public static MethodInvokersFunc procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc" +
+                        "(String str={})...", maxSubstring(str));
+
+        if (str == null) {
+            METHOD_CALL.info(
+                    "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(String): " +
+                            "return MethodInvokersFunc.getDefault();");
+            return MethodInvokersFunc.getDefault();
+        }
 
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
@@ -65,7 +90,12 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
         // Parse the XML file
         Document doc = dBuilder.parse(IOUtils.toInputStream(str, StandardCharsets.UTF_8));
 
-        return getMethodInvokersFunc(doc);
+        MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(doc);
+
+        DIAGNOSTICS.trace(
+                "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(String): return");
+
+        return methodInvokersFunc;
     }
 
     /**
@@ -74,6 +104,9 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      * @return  the MethodInvokersFunc generated from the Document
      */
     private static MethodInvokersFunc getMethodInvokersFunc(Document doc){
+        METHOD_CALL.info("private static MethodInvokersFunc procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc" +
+                "(Document doc={})...", maxSubstring(doc));
+
         // Get root element
         Node root = doc.getElementsByTagName("method-invokers-function").item(0);
 
@@ -85,6 +118,9 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
         // Define the MethodInvokersFunc which computes the output according to the DOM
         MethodInvokersFunc methodInvokersFunc = (q, c) -> {
+
+            METHOD_CALL.info("ArrayList<MethodInvoker> procake-extension.utils.MethodInvokersFunc.apply" +
+                    "(DataObject q={}, DataObject c={})...", maxSubstring(q), maxSubstring(c));
 
             // It is important that the evaluation of the "if" nodes happens in the order of the
             //  definition in the xml file. This guarantees that an author of such a file can implicitly define
@@ -101,16 +137,43 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
                 Node condition = ifStatement.getChildNodes().item(0);
                 Node returnValue = ifStatement.getChildNodes().item(1);
 
+                DIAGNOSTICS.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
+                                "ifStatements.item({})={}, condition={}, returnValue={}",
+                        i, maxSubstring(ifStatement), maxSubstring(condition), maxSubstring(returnValue));
+
                 try {
-                    if ((boolean) evaluate(condition, q, c)) return (ArrayList<MethodInvoker>)  evaluate(returnValue, q, c);
+                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
+
+                    DIAGNOSTICS.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
+                            "evaluate(condition, q, c))={}", ifStatementEvaluated);
+
+                    if (ifStatementEvaluated) {
+                        ArrayList<MethodInvoker> methodInvokers = (ArrayList<MethodInvoker>)  evaluate(returnValue, q, c);
+
+                        METHOD_CALL.info("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
+                                "return {}", maxSubstring(methodInvokers));
+
+                        return methodInvokers;
+                    }
                 } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                          IllegalAccessException e) {
+
+                    METHOD_CALL.info("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
+                            "throw new RuntimeException(e); e={}", maxSubstring(e));
                     throw new RuntimeException(e);
                 }
 
             }
+
+            METHOD_CALL.info("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
+                    "return new ArrayList<MethodInvoker>();");
+            
             return new ArrayList<MethodInvoker>();
         };
+
+        METHOD_CALL.info("procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(Document): " +
+                "return methodInvokersFunc={}", maxSubstring(methodInvokersFunc));
+
         return methodInvokersFunc;
     }
 }

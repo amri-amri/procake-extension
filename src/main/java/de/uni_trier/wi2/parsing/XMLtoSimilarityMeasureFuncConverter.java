@@ -1,6 +1,6 @@
 package de.uni_trier.wi2.parsing;
 
-import de.uni_trier.wi2.utils.MethodInvokersFunc;
+import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+
+import static de.uni_trier.wi2.LoggingUtils.*;
 
 public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter {
 
@@ -34,7 +36,16 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws ParserConfigurationException
      */
     public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException {
-        if (file == null) SimilarityMeasureFunc.getDefault();
+        METHOD_CALL.info(
+                "public static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
+                        "(File file={})...", maxSubstring(file));
+        
+        if (file == null) {
+            METHOD_CALL.info(
+                    "procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(File): " +
+                            "return SimilarityMeasureFunc.getDefault();");
+            return SimilarityMeasureFunc.getDefault();
+        }
 
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
@@ -42,7 +53,12 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
         // Parse the XML file
         Document doc = dBuilder.parse(file);
 
-        return getSimilarityMeasureFunc(doc);
+        SimilarityMeasureFunc similarityMeasureFunc = getSimilarityMeasureFunc(doc);
+
+        DIAGNOSTICS.trace(
+                "procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(File): return");
+
+        return similarityMeasureFunc;
     }
 
     /**
@@ -62,7 +78,16 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws ParserConfigurationException
      */
     public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException {
-        if (str == null) SimilarityMeasureFunc.getDefault();
+        METHOD_CALL.info(
+                "public static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
+                        "(String str={})...", maxSubstring(str));
+        
+        if (str == null) {
+            METHOD_CALL.info(
+                    "procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(String): " +
+                            "return SimilarityMeasureFunc.getDefault();");
+            return SimilarityMeasureFunc.getDefault();
+        }
 
         // Initialize the Converter if not already initialized
         if (!initialized) initialize();
@@ -70,7 +95,12 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
         // Parse the XML file
         Document doc = dBuilder.parse(IOUtils.toInputStream(str, StandardCharsets.UTF_8));
 
-        return getSimilarityMeasureFunc(doc);
+        SimilarityMeasureFunc similarityMeasureFunc = getSimilarityMeasureFunc(doc);
+
+        DIAGNOSTICS.trace(
+                "procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(String): return");
+
+        return similarityMeasureFunc;
     }
 
     /**
@@ -79,6 +109,9 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @return  the SimilarityMeasureFunc generated from the Document
      */
     private static SimilarityMeasureFunc getSimilarityMeasureFunc(Document doc){
+        METHOD_CALL.info("private static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
+                "(Document doc={})...", maxSubstring(doc));
+        
         // Get root element
         Node root = doc.getElementsByTagName("similarity-measure-function").item(0);
 
@@ -90,6 +123,9 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
 
         // Define the SimilarityMeasureFunc which computes the output according to the DOM
         SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
+
+            METHOD_CALL.info("String procake-extension.utils.SimilarityMeasureFunc.apply" +
+                    "(DataObject q={}, DataObject c={})...", maxSubstring(q), maxSubstring(c));
 
             // It is important that the evaluation of the "if" nodes happens in the order of the
             //  definition in the xml file. This guarantees that an author of such a file can implicitly define
@@ -106,16 +142,41 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
                 Node condition = ifStatement.getChildNodes().item(0);
                 Node returnValue = ifStatement.getChildNodes().item(1);
 
+                DIAGNOSTICS.trace("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                                "ifStatements.item({})={}, condition={}, returnValue={}",
+                        i, maxSubstring(ifStatement), maxSubstring(condition), maxSubstring(returnValue));
+
                 try {
-                    if ((boolean) evaluate(condition, q, c)) return (String) evaluate(returnValue, q, c);
+                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
+
+                    DIAGNOSTICS.trace("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                            "evaluate(condition, q, c))={}", ifStatementEvaluated);
+                    
+                    if (ifStatementEvaluated) {
+                        String similarityMeasure = (String) evaluate(returnValue, q, c);
+
+                        METHOD_CALL.info("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                                "return {}", maxSubstring(similarityMeasure));
+
+                        return similarityMeasure;
+                    }
                 } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                          IllegalAccessException e) {
+                    METHOD_CALL.info("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                            "throw new RuntimeException(e); e={}", maxSubstring(e));
                     throw new RuntimeException(e);
                 }
 
             }
+
+            METHOD_CALL.info("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                    "return null;");
+            
             return null;
         };
+
+        METHOD_CALL.info("procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(Document): " +
+                "return similarityMeasureFunc={}", maxSubstring(similarityMeasureFunc));
 
         return similarityMeasureFunc;
     }

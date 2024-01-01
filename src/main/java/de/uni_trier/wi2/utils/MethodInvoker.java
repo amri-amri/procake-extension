@@ -3,6 +3,9 @@ package de.uni_trier.wi2.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
+
 /**
  * This classes use is to invoke a certain method on an object using java reflections.
  *
@@ -34,6 +37,12 @@ public class MethodInvoker {
      * @param argValues  the array of argument values
      */
     public MethodInvoker(final String methodName, final Class[] argTypes, final Object[] argValues) {
+        METHOD_CALL.info("public procake-extension.utils.MethodInvoker.MethodInvoker" +
+                "(final String methodName={}, " +
+                "final Class[] argTypes={}, " +
+                "final Object[] argValues={})...",
+                methodName, argTypes, argValues);
+
         this.methodName = methodName;
         this.argTypes = argTypes;
         this.argValues = argValues;
@@ -48,8 +57,13 @@ public class MethodInvoker {
      * @throws IllegalAccessException
      */
     public Object invoke(Object o) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        METHOD_CALL.info("public Object procake-extension.utils.MethodInvoker.invoke(Object o={})...", maxSubstring(o));
         Method method = o.getClass().getMethod(methodName, argTypes);
-        return method.invoke(o, argValues);
+
+        Object ret = method.invoke(o, argValues);
+
+        METHOD_CALL.info("procake-extension.utils.MethodInvoker.invoke(Object): return {}", maxSubstring(ret));
+        return ret;
     }
 
     public String getMethodName() {

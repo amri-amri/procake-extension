@@ -10,6 +10,8 @@ import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
 
 import java.util.Iterator;
 
+import static de.uni_trier.wi2.LoggingUtils.*;
+
 /**
  * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.
  * Implementing this interface can be useful for similarity measures.
@@ -29,12 +31,21 @@ public interface INESTtoList {
      * @return  the list containing the semantic descriptors of the task nodes
      */
     default ListObject toList(NESTSequentialWorkflowObject workflowObject){
+        METHOD_CALL.info(
+                "default ListObject procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject workflowObject={})...",
+                maxSubstring(workflowObject));
 
         if (!new NESTSequentialWorkflowValidatorImpl(workflowObject).isValidSequentialWorkflow()) {
-            throw new NoSequentialGraphException(
+            NoSequentialGraphException e = new NoSequentialGraphException(
                     "NESTSequentialWorkflowObject is not valid.",
                     workflowObject.getId(),
                     workflowObject);
+            DIAGNOSTICS.trace(
+                    "procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject): " +
+                    "throw new NoSequentialGraphException" +
+                    "(\"NESTSequentialWorkflowObject is not valid.\", workflowObject.getId(), workflowObject)={}",
+                    maxSubstring(e));
+            throw e;
         }
 
         ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
@@ -43,6 +54,10 @@ public interface INESTtoList {
         while (workflowElementIterator.hasNext()) {
             workflowList.addValue(  ((NESTTaskNodeObject) workflowElementIterator.next()).getSemanticDescriptor()  );
         }
+
+        METHOD_CALL.trace(
+                "procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject): return {}",
+                maxSubstring(workflowList.getValues()));
 
         return workflowList;
     }
