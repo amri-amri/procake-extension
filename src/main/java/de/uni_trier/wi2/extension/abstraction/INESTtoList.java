@@ -3,12 +3,14 @@ package de.uni_trier.wi2.extension.abstraction;
 import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.impl.ListObjectImpl;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequenceNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTSequentialWorkflowValidatorImpl;
 import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import static de.uni_trier.wi2.LoggingUtils.*;
 
@@ -30,12 +32,18 @@ public interface INESTtoList {
      * @param workflowObject  the sequential workflow to be converted
      * @return  the list containing the semantic descriptors of the task nodes
      */
-    default ListObject toList(NESTSequentialWorkflowObject workflowObject){
+    default ListObject toList(NESTSequentialWorkflowObject workflowObject) {
         METHOD_CALL.info(
                 "default ListObject procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject workflowObject={})...",
                 maxSubstring(workflowObject));
 
-        if (!new NESTSequentialWorkflowValidatorImpl(workflowObject).isValidSequentialWorkflow()) {
+        ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
+
+        Set<NESTSequenceNodeObject> startNodes = workflowObject.getStartNodes();
+
+        if (startNodes.isEmpty()) return workflowList;
+
+        if (!new NESTSequentialWorkflowValidatorImpl(workflowObject).isValidSequentialWorkflow() || startNodes.size() > 1) {
             NoSequentialGraphException e = new NoSequentialGraphException(
                     "NESTSequentialWorkflowObject is not valid.",
                     workflowObject.getId(),
@@ -48,14 +56,14 @@ public interface INESTtoList {
             throw e;
         }
 
-        ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
+        NESTSequenceNodeObject node = startNodes.iterator().next();
 
-        Iterator workflowElementIterator = workflowObject.getTaskNodes().iterator();
-        while (workflowElementIterator.hasNext()) {
-            workflowList.addValue(  ((NESTTaskNodeObject) workflowElementIterator.next()).getSemanticDescriptor()  );
+        while (node != null) {
+            workflowList.addValue(  ((NESTTaskNodeObject) node).getSemanticDescriptor()  );
+            node = node.getNextNode();
         }
 
-        METHOD_CALL.trace(
+        METHOD_CALL.info(
                 "procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject): return {}",
                 maxSubstring(workflowList.getValues()));
 

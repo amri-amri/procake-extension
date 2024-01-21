@@ -207,7 +207,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     private void cutOffQueue(TreeSet<AStarSolution> solutions) {
-        METHOD_CALL.info("private void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution> solutions={})...", maxSubstring(solutions));
+        METHOD_CALL.info("private void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution> solutions)...");
         Iterator<AStarSolution> aStarSolutionIterator = solutions.descendingIterator();
         AStarSolution toBeRemoved;
         // if maxQueueSize is negative, the pruning of the queue is disabled
@@ -216,7 +216,6 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 toBeRemoved = aStarSolutionIterator.next();
                 aStarSolutionIterator.remove();
 
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution>): removed: {}", maxSubstring(toBeRemoved));
             }
         }
         METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution>) return");

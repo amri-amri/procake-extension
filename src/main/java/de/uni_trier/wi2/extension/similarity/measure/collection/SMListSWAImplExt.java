@@ -146,6 +146,7 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
             caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
         else caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
 
+        //TODO:DIAGNOSTICS!
 
         DataObject[] queryArray = new DataObject[queryList.length + 1];
         DataObject[] caseArray = new DataObject[caseList.length + 1];

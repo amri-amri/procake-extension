@@ -113,7 +113,7 @@ public class SMCollectionMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
     @Test
     public void test5(){
-        ListObject queryList = utils.createListObject();;
+        ListObject queryList = utils.createListObject();
         ListObject caseList = workdays();
 
         SMCollectionMappingImplExt sm = new SMCollectionMappingImplExt();
@@ -128,7 +128,7 @@ public class SMCollectionMappingImplExtTest extends ISimilarityMeasureFuncTest {
     @Test
     public void test6(){
         ListObject queryList = weekdays();
-        ListObject caseList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();
 
         SMCollectionMappingImplExt sm = new SMCollectionMappingImplExt();
         sm.setMaxQueueSize(-1);
@@ -143,8 +143,8 @@ public class SMCollectionMappingImplExtTest extends ISimilarityMeasureFuncTest {
     public void test7(){
         SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
 
-        ListObject queryList = utils.createListObject();;
-        ListObject caseList = utils.createListObject();;
+        ListObject queryList = utils.createListObject();
+        ListObject caseList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("Abc"));
         queryList.addValue(utils.createStringObject("dEf"));

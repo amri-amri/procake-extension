@@ -125,7 +125,7 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
         SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
 
             METHOD_CALL.info("String procake-extension.utils.SimilarityMeasureFunc.apply" +
-                    "(DataObject q={}, DataObject c={})...", maxSubstring(q), maxSubstring(c));
+                    "(DataObject q={}, DataObject c={})...", q, c);
 
             // It is important that the evaluation of the "if" nodes happens in the order of the
             //  definition in the xml file. This guarantees that an author of such a file can implicitly define
