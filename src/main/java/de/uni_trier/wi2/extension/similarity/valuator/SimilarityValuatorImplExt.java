@@ -7,14 +7,14 @@ import de.uni_trier.wi2.procake.similarity.SimilarityModel;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityValuatorImpl;
+import de.uni_trier.wi2.utils.MethodInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.uni_trier.wi2.utils.MethodInvoker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 
 /**
  * Extension of SimilarityValuatorImpl to allow setting parameters of the used similarity measure.

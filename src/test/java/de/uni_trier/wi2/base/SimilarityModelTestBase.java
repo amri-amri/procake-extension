@@ -3,14 +3,11 @@ package de.uni_trier.wi2.base;
 import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.model.base.AggregateClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
-import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
-import de.uni_trier.wi2.procake.similarity.SimilarityMeasure;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.impl.SMObjectEqualImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
-import org.junit.Before;
 
 public abstract class SimilarityModelTestBase extends TestBase{
 

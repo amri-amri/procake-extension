@@ -1,5 +1,6 @@
 package de.uni_trier.wi2.base;
 
+import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
 import de.uni_trier.wi2.procake.CakeInstance;
 import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.model.Model;
@@ -11,7 +12,6 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityModelImpl;
 import de.uni_trier.wi2.procake.utils.exception.NameAlreadyExistsException;
 import de.uni_trier.wi2.procake.utils.io.ResourcePaths;
-import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
 import org.junit.Before;
 
 public abstract class TestBase {

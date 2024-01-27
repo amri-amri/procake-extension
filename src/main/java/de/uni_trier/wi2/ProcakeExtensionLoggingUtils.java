@@ -8,7 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-public class LoggingUtils {
+public class ProcakeExtensionLoggingUtils {
 
     public static final Logger METHOD_CALL = LoggerFactory.getLogger("method-call");
     public static final Logger DIAGNOSTICS = LoggerFactory.getLogger("diagnostics");

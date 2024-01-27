@@ -1,25 +1,22 @@
 package de.uni_trier.wi2.parsing;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
+import de.uni_trier.wi2.utils.MethodInvoker;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.*;
-import de.uni_trier.wi2.utils.MethodInvoker;
-import org.xml.sax.ext.EntityResolver2;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
-import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
 
 /**
  * <p>This abstract class delivers functionality for:

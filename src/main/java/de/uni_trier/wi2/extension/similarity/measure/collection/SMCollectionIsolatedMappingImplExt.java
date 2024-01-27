@@ -22,7 +22,7 @@ import de.uni_trier.wi2.utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 import static de.uni_trier.wi2.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject;
 
 /**

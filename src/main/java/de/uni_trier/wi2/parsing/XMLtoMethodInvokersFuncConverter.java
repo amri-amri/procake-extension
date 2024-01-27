@@ -2,7 +2,6 @@ package de.uni_trier.wi2.parsing;
 
 import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
-import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -16,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 
 public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 

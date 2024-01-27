@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 
 /**
  * A similarity measure using the 'Dynamic Time Warping' algorithm for {@link ListObject}s.

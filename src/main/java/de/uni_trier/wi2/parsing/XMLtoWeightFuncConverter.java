@@ -1,11 +1,11 @@
 package de.uni_trier.wi2.parsing;
 
+import de.uni_trier.wi2.utils.WeightFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import de.uni_trier.wi2.utils.WeightFunc;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 
 public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
 

@@ -1,15 +1,11 @@
 package de.uni_trier.wi2.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-
-import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
-import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
 
 public class IOUtils {
 

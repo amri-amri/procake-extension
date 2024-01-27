@@ -4,7 +4,7 @@ import de.uni_trier.wi2.procake.data.object.DataObject;
 
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
 
 /**
  * Functional interface for assigning lists of MethodInvoker objects to pairs of data objects.

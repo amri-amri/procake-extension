@@ -12,9 +12,9 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityValuatorImpl;
-import org.junit.Test;
 import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
+import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

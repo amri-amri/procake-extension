@@ -9,10 +9,9 @@ import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTSequentialWorkflowValidatorImpl;
 import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
 
-import java.util.Iterator;
 import java.util.Set;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 
 /**
  * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.

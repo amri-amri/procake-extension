@@ -1,6 +1,10 @@
 package de.uni_trier.wi2.retrieval;
 
 import de.uni_trier.wi2.base.SimpleTestBase;
+import de.uni_trier.wi2.extension.retrieval.ParallelLinearRetrieverImplExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMCollectionIsolatedMappingExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingImplExt;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.IntegerObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -15,15 +19,11 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.SMObjectEqual;
 import de.uni_trier.wi2.procake.similarity.base.numeric.SMNumericLinear;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import de.uni_trier.wi2.extension.retrieval.ParallelLinearRetrieverImplExt;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMCollectionIsolatedMappingExt;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingExt;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingImplExt;
-import org.junit.Test;
 import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import de.uni_trier.wi2.utils.WeightFunc;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;

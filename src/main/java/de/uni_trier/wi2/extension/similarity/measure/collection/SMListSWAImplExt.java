@@ -18,8 +18,8 @@ import de.uni_trier.wi2.utils.WeightFunc;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
-import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
 
 /**
  * A similarity measure using the 'Smith-Waterman' algorithm for {@link ListObject}s.

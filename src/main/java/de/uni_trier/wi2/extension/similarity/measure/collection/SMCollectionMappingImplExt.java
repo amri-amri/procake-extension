@@ -25,7 +25,7 @@ import org.apache.commons.collections4.map.MultiKeyMap;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 import static de.uni_trier.wi2.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject;
 
 /**

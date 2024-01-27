@@ -1,16 +1,16 @@
 package de.uni_trier.wi2.similarity;
 
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListDTWExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListDTWImplExt;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListDTW;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMListDTWExt;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMListDTWImplExt;
+import de.uni_trier.wi2.utils.MethodInvoker;
 import org.junit.Ignore;
 import org.junit.Test;
-import de.uni_trier.wi2.utils.MethodInvoker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

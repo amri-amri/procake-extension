@@ -1,17 +1,17 @@
 package de.uni_trier.wi2.similarity;
 
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListSWAExt;
+import de.uni_trier.wi2.extension.similarity.measure.collection.SMListSWAImplExt;
+import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.collection.SMListSWA;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringEqual;
 import de.uni_trier.wi2.procake.similarity.base.string.SMStringLevenshtein;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMListSWAExt;
-import de.uni_trier.wi2.extension.similarity.measure.collection.SMListSWAImplExt;
-import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.utils.MethodInvoker;
 import org.junit.Assert;
 import org.junit.Test;
-import de.uni_trier.wi2.utils.MethodInvoker;
 
 import java.util.ArrayList;
 

@@ -9,8 +9,8 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 
-import static de.uni_trier.wi2.LoggingUtils.METHOD_CALL;
-import static de.uni_trier.wi2.LoggingUtils.maxSubstring;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
 
 public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBooleanXOR {
     public String getSystemName() {

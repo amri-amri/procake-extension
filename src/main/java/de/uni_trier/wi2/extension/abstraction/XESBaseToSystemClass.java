@@ -6,7 +6,8 @@ import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.SetObject;
 
-import static de.uni_trier.wi2.LoggingUtils.*;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
+import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
 
 public interface XESBaseToSystemClass {
 
