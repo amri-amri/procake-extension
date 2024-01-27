@@ -34,12 +34,12 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static WeightFunc getWeightFunc(File file) throws ParserConfigurationException, IOException, SAXException {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
                         "(File file={})...", maxSubstring(file));
         
         if (file == null) {
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(File): " +
                             "return WeightFunc.getDefault();");
             return WeightFunc.getDefault();
@@ -76,12 +76,12 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static WeightFunc getWeightFunc(String str) throws ParserConfigurationException, IOException, SAXException {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
                         "(String str={})...", maxSubstring(str));
         
         if (str == null) {
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(String): " +
                             "return WeightFunc.getDefault();");
             return WeightFunc.getDefault();
@@ -107,7 +107,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @return  the WeightFunc generated from the Document
      */
     private static WeightFunc getWeightFunc(Document doc){
-        METHOD_CALL.info("private static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
+        METHOD_CALL.trace("private static WeightFunc procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc" +
                 "(Document doc={})...", maxSubstring(doc));
 
         // Get root element
@@ -122,7 +122,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
         // Define the WeightFunc which computes the output according to the DOM
         WeightFunc weightFunc = (q) -> {
 
-            METHOD_CALL.info("String procake-extension.utils.WeightFunc.apply" +
+            METHOD_CALL.trace("String procake-extension.utils.WeightFunc.apply" +
                     "(DataObject q={})...", maxSubstring(q));
 
             
@@ -154,14 +154,14 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
                     if (ifStatementEvaluated) {
                         double weight  = (double) evaluate(returnValue, q, null);
 
-                        METHOD_CALL.info("procake-extension.utils.WeightFunc.apply(DataObject): " +
+                        METHOD_CALL.trace("procake-extension.utils.WeightFunc.apply(DataObject): " +
                                 "return {}", weight);
 
                         return weight;
                     }
                 } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                          IllegalAccessException e) {
-                    METHOD_CALL.info("procake-extension.utils.WeightFunc.apply(DataObject): " +
+                    METHOD_CALL.trace("procake-extension.utils.WeightFunc.apply(DataObject): " +
                             "throw new RuntimeException(e); e={}", maxSubstring(e));
                     throw new RuntimeException(e);
                 }
@@ -171,7 +171,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
             return 1.;
         };
 
-        METHOD_CALL.info("procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(Document): " +
+        METHOD_CALL.trace("procake-extension.parsing.XMLtoWeightFuncConverter.getWeightFunc(Document): " +
                 "return weightFunc={}", maxSubstring(weightFunc));
 
         return weightFunc;

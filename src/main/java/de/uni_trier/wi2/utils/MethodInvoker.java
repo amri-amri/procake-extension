@@ -37,7 +37,7 @@ public class MethodInvoker {
      * @param argValues  the array of argument values
      */
     public MethodInvoker(final String methodName, final Class[] argTypes, final Object[] argValues) {
-        METHOD_CALL.info("public procake-extension.utils.MethodInvoker.MethodInvoker" +
+        METHOD_CALL.trace("public procake-extension.utils.MethodInvoker.MethodInvoker" +
                 "(final String methodName={}, " +
                 "final Class[] argTypes={}, " +
                 "final Object[] argValues={})...",
@@ -57,12 +57,12 @@ public class MethodInvoker {
      * @throws IllegalAccessException
      */
     public Object invoke(Object o) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        METHOD_CALL.info("public Object procake-extension.utils.MethodInvoker.invoke(Object o={})...", maxSubstring(o));
+        METHOD_CALL.trace("public Object procake-extension.utils.MethodInvoker.invoke(Object o={})...", maxSubstring(o));
         Method method = o.getClass().getMethod(methodName, argTypes);
 
         Object ret = method.invoke(o, argValues);
 
-        METHOD_CALL.info("procake-extension.utils.MethodInvoker.invoke(Object): return {}", maxSubstring(ret));
+        METHOD_CALL.trace("procake-extension.utils.MethodInvoker.invoke(Object): return {}", maxSubstring(ret));
         return ret;
     }
 

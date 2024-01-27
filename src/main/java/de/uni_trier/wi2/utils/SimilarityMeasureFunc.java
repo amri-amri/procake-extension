@@ -19,7 +19,7 @@ public interface SimilarityMeasureFunc {
     String apply(DataObject q, DataObject c);
 
     static SimilarityMeasureFunc getDefault(){
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "static SimilarityMeasureFunc procake-extension.utils.SimilarityMeasureFunc.getDefault()...");
         return (q, c) -> null;
     }

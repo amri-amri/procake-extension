@@ -34,12 +34,12 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws ParserConfigurationException
      */
     public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
                         "(File file={})...", maxSubstring(file));
         
         if (file == null) {
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(File): " +
                             "return SimilarityMeasureFunc.getDefault();");
             return SimilarityMeasureFunc.getDefault();
@@ -76,12 +76,12 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws ParserConfigurationException
      */
     public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
                         "(String str={})...", maxSubstring(str));
         
         if (str == null) {
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(String): " +
                             "return SimilarityMeasureFunc.getDefault();");
             return SimilarityMeasureFunc.getDefault();
@@ -107,7 +107,7 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @return  the SimilarityMeasureFunc generated from the Document
      */
     private static SimilarityMeasureFunc getSimilarityMeasureFunc(Document doc){
-        METHOD_CALL.info("private static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
+        METHOD_CALL.trace("private static SimilarityMeasureFunc procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc" +
                 "(Document doc={})...", maxSubstring(doc));
         
         // Get root element
@@ -122,7 +122,7 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
         // Define the SimilarityMeasureFunc which computes the output according to the DOM
         SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
 
-            METHOD_CALL.info("String procake-extension.utils.SimilarityMeasureFunc.apply" +
+            METHOD_CALL.trace("String procake-extension.utils.SimilarityMeasureFunc.apply" +
                     "(DataObject q={}, DataObject c={})...", q, c);
 
             // It is important that the evaluation of the "if" nodes happens in the order of the
@@ -153,27 +153,27 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
                     if (ifStatementEvaluated) {
                         String similarityMeasure = (String) evaluate(returnValue, q, c);
 
-                        METHOD_CALL.info("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                        METHOD_CALL.trace("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
                                 "return {}", maxSubstring(similarityMeasure));
 
                         return similarityMeasure;
                     }
                 } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                          IllegalAccessException e) {
-                    METHOD_CALL.info("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+                    METHOD_CALL.trace("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
                             "throw new RuntimeException(e); e={}", maxSubstring(e));
                     throw new RuntimeException(e);
                 }
 
             }
 
-            METHOD_CALL.info("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
+            METHOD_CALL.trace("procake-extension.utils.SimilarityMeasureFunc.apply(DataObject, DataObject): " +
                     "return null;");
             
             return null;
         };
 
-        METHOD_CALL.info("procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(Document): " +
+        METHOD_CALL.trace("procake-extension.parsing.XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(Document): " +
                 "return similarityMeasureFunc={}", maxSubstring(similarityMeasureFunc));
 
         return similarityMeasureFunc;

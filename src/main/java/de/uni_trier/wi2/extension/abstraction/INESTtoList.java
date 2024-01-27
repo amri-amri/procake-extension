@@ -32,7 +32,7 @@ public interface INESTtoList {
      * @return  the list containing the semantic descriptors of the task nodes
      */
     default ListObject toList(NESTSequentialWorkflowObject workflowObject) {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "default ListObject procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject workflowObject={})...",
                 maxSubstring(workflowObject));
 
@@ -62,7 +62,7 @@ public interface INESTtoList {
             node = node.getNextNode();
         }
 
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject): return {}",
                 maxSubstring(workflowList.getValues()));
 

@@ -19,12 +19,12 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
 
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
-        METHOD_CALL.info("public boolean extension.similarity.measure.SMBooleanXORImpl.isSimilarityFor" +
+        METHOD_CALL.trace("public boolean extension.similarity.measure.SMBooleanXORImpl.isSimilarityFor" +
                 "(DataClass dataclass={}, String orderName={})...", maxSubstring(dataclass), maxSubstring(orderName));
 
         boolean isSimilarityFor = dataclass.isBoolean() || dataclass.isSubclassOf(dataclass.getModel().getClass("XESBooleanClass"));
 
-        METHOD_CALL.info("extension.similarity.measure.SMBooleanXORImpl.isSimilarityFor" +
+        METHOD_CALL.trace("extension.similarity.measure.SMBooleanXORImpl.isSimilarityFor" +
                 "(DataClass, String): return {}", isSimilarityFor);
 
         return isSimilarityFor;
@@ -32,7 +32,7 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public Similarity extension.similarity.SMBooleanXORImpl.measurecompute" +
                 "(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
                 maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
@@ -56,7 +56,7 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
         double val = 0.0;
         if (x1 ^ x2 ) val = 1.0;
 
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "extension.similarity.SMBooleanXORImpl.measurecompute" +
                 "(DataObject, DataObject, SimilarityValuator): " +
                 "return new SimilarityImpl(this, queryObject, caseObject, {}});",

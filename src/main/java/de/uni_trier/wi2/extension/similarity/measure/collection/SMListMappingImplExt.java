@@ -62,47 +62,47 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
 
     @Override
     public void setSimilarityToUse(String similarityToUse) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
         super.setSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        METHOD_CALL.info("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSimilarityToUse()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
+        METHOD_CALL.trace("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSimilarityToUse()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        METHOD_CALL.info("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getMethodInvokersFunc()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
+        METHOD_CALL.trace("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getMethodInvokersFunc()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        METHOD_CALL.info("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getWeightFunc()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getWeightFunc(): return {}", weightFunc);
+        METHOD_CALL.trace("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getWeightFunc()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getWeightFunc(): return {}", weightFunc);
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -113,15 +113,15 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
     }
 
     public String getSystemName() {
-        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSystemName()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSystemName(): return {}", SMListMappingExt.NAME);
+        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSystemName()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.getSystemName(): return {}", SMListMappingExt.NAME);
         return SMListMappingExt.NAME;
     }
 
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.info("public Similarity procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
+        METHOD_CALL.trace("public Similarity procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
                 maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         ListObject queryList, caseList;
@@ -143,7 +143,7 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
 
         Similarity similarity = checkStoppingCriteria(queryList, caseList);
         if (similarity != null) {
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
             return similarity;
         }
 
@@ -153,18 +153,18 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             similarity = computeContainsInexact(queryList, caseList, valuator, true, queryObject, caseObject);
         }
 
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return Similarity");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return Similarity");
         return similarity;
     }
 
     private SimilarityImpl computeContainsExact(ListObject queryList, ListObject caseList, SimilarityValuator valuator, DataObject queryObject, DataObject caseObject) {
-        METHOD_CALL.info("public Similarity procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject queryList={}, ListObject caseList={}, SimilarityValuator valuator={}, DataObject queryObject, DataObject caseObject)...",
+        METHOD_CALL.trace("public Similarity procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject queryList={}, ListObject caseList={}, SimilarityValuator valuator={}, DataObject queryObject, DataObject caseObject)...",
                 maxSubstring(queryList), maxSubstring(caseList), maxSubstring(valuator));
 
         // if the lists have different sizes, the similarity is 0.0
         if (queryList.size() != caseList.size()) {
             DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): the lists have different sizes, the similarity is 0.0");
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, 0.0)));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, 0.0)));
             return new SimilarityImpl(this, queryObject, caseObject, 0.0);
         }
 
@@ -223,12 +223,12 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             denominator = 1;
         }
 
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, similaritySum / denominator, localSimilarities)));
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsExact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, similaritySum / denominator, localSimilarities)));
         return new SimilarityImpl(this, queryObject, caseObject, similaritySum / denominator, localSimilarities);
     }
 
     private SimilarityImpl computeContainsInexact(ListObject largerList, ListObject smallerList, SimilarityValuator valuator, boolean queryFirst, DataObject queryObject, DataObject caseObject) {
-        METHOD_CALL.info("public Similarity procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject largerList={}, ListObject smallerList={}, SimilarityValuator valuator={}, DataObject queryObject, DataObject caseObject)...",
+        METHOD_CALL.trace("public Similarity procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject largerList={}, ListObject smallerList={}, SimilarityValuator valuator={}, DataObject queryObject, DataObject caseObject)...",
                 maxSubstring(largerList), maxSubstring(smallerList), maxSubstring(valuator));
 
         SimilarityImpl similarity = new SimilarityImpl(this, queryObject, caseObject, -1.0);
@@ -357,7 +357,7 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                     DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): (similaritySum / denominator) <= maxSimilarityValue");
                 }
             }
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return {}", maxSubstring(similarity));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return {}", maxSubstring(similarity));
             return similarity;
 
         } else if (largerList.size() < smallerList.size()) {
@@ -366,7 +366,7 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             // so the computation was just implemented once
             similarity = computeContainsInexact(smallerList, largerList, valuator, false, caseObject, queryObject);
 
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return Similarity");
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return Similarity");
 
             return similarity;
         }
@@ -375,7 +375,7 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
         // contains is called
         similarity = computeContainsExact(largerList, smallerList, valuator, queryObject, caseObject);
 
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return Similarity");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListMappingImplExt.computeContainsInexact(ListObject, ListObject, SimilarityValuator, DataObject, DataObject): return Similarity");
 
         return similarity;
     }

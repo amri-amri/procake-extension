@@ -26,7 +26,7 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
      */
     public SimilarityValuatorImplExt(SimilarityModel simModel) {
         super(simModel);
-        METHOD_CALL.info("...public procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.SimilarityValuatorImplExt" +
+        METHOD_CALL.trace("...public procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.SimilarityValuatorImplExt" +
                 "(SimilarityModel simModel={})", maxSubstring(simModel));
     }
 
@@ -47,7 +47,7 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
      * @throws IllegalAccessException
      */
     public Similarity computeSimilarity(DataObject queryObject, DataObject caseObject, String similarityMeasureStr, ArrayList<MethodInvoker> methodInvokers) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public Similarity procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.computeSimilarity" +
                 "(DataObject queryObject={}, " +
                 "DataObject caseObject={}, " +
@@ -75,7 +75,7 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
 
             Similarity similarity = computeSimilarity(queryObject, caseObject);
 
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.computeSimilarity" +
                     "(DataObject, DataObject, String, ArrayList<MethodInvoker>): return similarity = {}",
                     maxSubstring(similarity));
@@ -95,7 +95,7 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
             // invalid similarity
             logger.warn("No applicable similarity measure found! Returning invalid similarity.");
 
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.computeSimilarity" +
                     "(DataObject, DataObject, String, ArrayList<MethodInvoker>): return new SimilarityImpl(null, queryObject, caseObject)");
 
@@ -124,13 +124,13 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
 
         Similarity similarity = similarityMeasure.compute(queryObject, caseObject, this);
 
-        METHOD_CALL.info("procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.computeSimilarity" +
+        METHOD_CALL.trace("procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.computeSimilarity" +
                 "(DataObject, DataObject, String, ArrayList<MethodInvoker>): return Similarity");
         return similarity;
     }
 
     private SimilarityMeasure createNewInstance(SimilarityMeasure base) {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "public SimilarityMeasure procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.createNewInstance" +
                         "(SimilarityMeasure base={})...", maxSubstring(base));
 
@@ -144,19 +144,19 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
             copy.setForceOverride(base.isForceOverride());
 
 
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.createNewInstance" +
                             "(SimilarityMeasure): return copy={}", maxSubstring(copy));
             return copy;
         } catch (Exception e) {
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.createNewInstance" +
                             "(SimilarityMeasure): Exception e: {}", maxSubstring(e.getMessage()));
             e.printStackTrace();
         }
 
 
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.createNewInstance" +
                         "(SimilarityMeasure): return null;");
         return null;

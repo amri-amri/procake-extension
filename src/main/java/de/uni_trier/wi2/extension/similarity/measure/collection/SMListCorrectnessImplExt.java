@@ -35,14 +35,14 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
     @Override
     public WeightFunc getWeightFunc() {
-        METHOD_CALL.info("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getWeightFunc()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getWeightFunc(): return {}", weightFunc);
+        METHOD_CALL.trace("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getWeightFunc()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getWeightFunc(): return {}", weightFunc);
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -53,14 +53,14 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
     }
 
     public String getSystemName() {
-        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getSystemName()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getSystemName(): return {}", SMListCorrectnessExt.NAME);
+        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getSystemName()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.getSystemName(): return {}", SMListCorrectnessExt.NAME);
         return SMListCorrectnessExt.NAME;
     }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.info("public Similarity procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
+        METHOD_CALL.trace("public Similarity procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
                 maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         // cast query and case object as list objects
@@ -80,7 +80,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
         // if the lists have different sizes, return invalid similarity
         if (queryList.size() != caseList.size()) {
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): queryList.size() != caseList.size(), return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject)));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): queryList.size() != caseList.size(), return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject)));
             return new SimilarityImpl(this, queryObject, caseObject);
         }
 
@@ -88,7 +88,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         // check if case or query are empty
         Similarity similarity = checkStoppingCriteria(queryList, caseList);
         if (similarity != null) {
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
             return similarity;
         }
 
@@ -150,7 +150,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         // (check, if there are more elements in the list than concordant and discordant pairs)
         if (queryList.size() > countConcordant + countDiscordant) {
             DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): different elements occur in query and case");
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject)));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject)));
             return new SimilarityImpl(this, queryObject, caseObject);
         }
 
@@ -160,19 +160,19 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         // if correctness >= 0, return computed value as similarity
         if (correctness >= 0) {
             DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): correctness >= 0");
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, correctness)));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, correctness)));
             return new SimilarityImpl(this, queryObject, caseObject, correctness);
         }
 
         DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): correctness < 0");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, Math.abs(correctness) * discordantParameter)));
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(new SimilarityImpl(this, queryObject, caseObject, Math.abs(correctness) * discordantParameter)));
 
         // otherwise, use discordant parameter to normalize value and return similarity
         return new SimilarityImpl(this, queryObject, caseObject, Math.abs(correctness) * discordantParameter);
     }
 
     public void setDiscordantParameter(double discordantParameter) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.setDiscordantParameter(double discordantParameter={})", discordantParameter);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListCorrectnessImplExt.setDiscordantParameter(double discordantParameter={})", discordantParameter);
         if (discordantParameter > 1.0) {
             this.discordantParameter = 1.0;
         } else if (discordantParameter < 0.0) {

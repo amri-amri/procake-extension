@@ -21,7 +21,7 @@ public interface MethodInvokersFunc {
     ArrayList<MethodInvoker> apply(DataObject q, DataObject c);
 
     static MethodInvokersFunc getDefault(){
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "static MethodInvokersFunc procake-extension.utils.MethodInvokersFunc.getDefault()...");
         return (q, c) -> new ArrayList<>();
     }

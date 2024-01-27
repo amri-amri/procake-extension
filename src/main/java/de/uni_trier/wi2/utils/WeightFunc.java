@@ -18,7 +18,7 @@ public interface WeightFunc {
     double apply(DataObject q);
 
     static WeightFunc getDefault(){
-        METHOD_CALL.info("static WeightFunc procake-extension.utils.WeightFunc.getDefault()...");
+        METHOD_CALL.trace("static WeightFunc procake-extension.utils.WeightFunc.getDefault()...");
         return (q) -> 1;
     }
 }

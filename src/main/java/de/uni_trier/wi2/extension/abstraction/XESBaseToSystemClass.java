@@ -12,13 +12,13 @@ import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
 public interface XESBaseToSystemClass {
 
     static CollectionObject getXESAggregateAttributesAsSystemCollectionObject(AggregateObject o) throws XESBaseToSystemClassException {
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "static CollectionObject extension.abstraction.XESBaseToSystemClass" +
                 ".getXESAggregateAttributesAsSystemCollectionObject(AggregateObject o={})", maxSubstring(o));
 
         if (! (o.getDataClass().isSubclassOf(o.getModel().getClass("XESBaseClass")))) {
 
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject" +
                     "(AggregateObject): throw new XESBaseToSystemClassException(\"Aggregate's DataClass is not subclass of \\\"XESBaseClass\\\".\")");
 
@@ -30,7 +30,7 @@ public interface XESBaseToSystemClass {
 
             SetObject setObject = (SetObject) o.getAttributeValue("attributes");
 
-            METHOD_CALL.info(
+            METHOD_CALL.trace(
                     "procake-extension.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject" +
                     "(AggregateObject): return {}", maxSubstring(setObject));
 
@@ -42,7 +42,7 @@ public interface XESBaseToSystemClass {
             if (o.getDataClass().isSubclassOf(o.getModel().getClass("XESListClass"))) {
                 ListObject listObject = (ListObject) o.getAttributeValue("value");
 
-                METHOD_CALL.info(
+                METHOD_CALL.trace(
                         "procake-extension.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject" +
                                 "(AggregateObject): return {}", maxSubstring(listObject.getValues()));
 
@@ -53,7 +53,7 @@ public interface XESBaseToSystemClass {
 
                 SetObject setObject = (SetObject) o.getAttributeValue("attributes");
 
-                METHOD_CALL.info(
+                METHOD_CALL.trace(
                         "procake-extension.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject" +
                                 "(AggregateObject): return {}", maxSubstring(setObject));
 
@@ -61,7 +61,7 @@ public interface XESBaseToSystemClass {
             }
         }
 
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "procake-extension.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject" +
                         "(AggregateObject): return empty SetObject");
 

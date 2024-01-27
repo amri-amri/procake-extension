@@ -18,12 +18,12 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
 
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
-        METHOD_CALL.info("public boolean extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
+        METHOD_CALL.trace("public boolean extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
                 "(DataClass dataclass={}, String orderName={})...", maxSubstring(dataclass), maxSubstring(orderName));
 
         boolean isSimilarityFor = super.isSimilarityFor(dataclass, orderName) || dataclass.isSubclassOf(dataclass.getModel().getClass("XESLiteralClass"));
 
-        METHOD_CALL.info("extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
+        METHOD_CALL.trace("extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
                 "(DataClass, String): return {}", isSimilarityFor);
 
         return isSimilarityFor;
@@ -31,7 +31,7 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.info("public Similarity extension.similarity.measure.SMStringLevenshteinImplExt.compute" +
+        METHOD_CALL.trace("public Similarity extension.similarity.measure.SMStringLevenshteinImplExt.compute" +
                 "(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})...",
                 maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
@@ -56,7 +56,7 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
 
         Similarity similarity = super.compute(queryString, caseString, valuator);
 
-        METHOD_CALL.info(
+        METHOD_CALL.trace(
                 "extension.similarity.measure.SMStringLevenshteinImplExt.compute" +
                 "(DataObject, DataObject, SimilarityValuator): return {}",
                 similarity);

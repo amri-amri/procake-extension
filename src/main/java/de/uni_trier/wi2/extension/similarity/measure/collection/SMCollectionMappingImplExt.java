@@ -83,47 +83,47 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
     @Override
     public void setSimilarityToUse(String similarityToUse) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
         super.setSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        METHOD_CALL.info("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSimilarityToUse()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
+        METHOD_CALL.trace("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSimilarityToUse()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        METHOD_CALL.info("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getMethodInvokersFunc()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
+        METHOD_CALL.trace("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getMethodInvokersFunc()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        METHOD_CALL.info("public WeightFunc procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getWeightFunc()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getWeightFunc(): return {}", weightFunc);
+        METHOD_CALL.trace("public WeightFunc procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getWeightFunc()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getWeightFunc(): return {}", weightFunc);
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        METHOD_CALL.info("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
+        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -134,14 +134,14 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     public String getSystemName() {
-        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSystemName()...");
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSystemName(): return {}", SMCollectionMappingExt.NAME);
+        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSystemName()...");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getSystemName(): return {}", SMCollectionMappingExt.NAME);
         return SMCollectionMappingExt.NAME;
     }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.info("public String procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
+        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         CollectionObject queryCollection, caseCollection;
 
@@ -167,7 +167,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
         Similarity similarity = checkStoppingCriteria(queryCollection, caseCollection);
         if (similarity != null) {
-            METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
+            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
             return similarity;
         }
 
@@ -207,7 +207,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     private void cutOffQueue(TreeSet<AStarSolution> solutions) {
-        METHOD_CALL.info("private void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution> solutions)...");
+        METHOD_CALL.trace("private void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution> solutions)...");
         Iterator<AStarSolution> aStarSolutionIterator = solutions.descendingIterator();
         AStarSolution toBeRemoved;
         // if maxQueueSize is negative, the pruning of the queue is disabled
@@ -218,14 +218,14 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
             }
         }
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution>) return");
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.cutOffQueue(TreeSet<AStarSolution>) return");
     }
 
     /**
      * expands the next queryItem
      */
     private Set<AStarSolution> expandSolution(AStarSolution solution) {
-        METHOD_CALL.info("private Set<AStarSolution> procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.expandSolution(AStarSolution solution={})...", maxSubstring(solution));
+        METHOD_CALL.trace("private Set<AStarSolution> procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.expandSolution(AStarSolution solution={})...", maxSubstring(solution));
 
         Set<AStarSolution> newSolutions = new TreeSet<>();
         for (DataObject queryElement : solution.queryElements) {
@@ -282,7 +282,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
             }
         }
 
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.expandSolution(AStarSolution): return {}", maxSubstring(newSolutions));
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.expandSolution(AStarSolution): return {}", maxSubstring(newSolutions));
         return newSolutions;
     }
 
@@ -290,7 +290,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
      * creates the starting solution
      */
     private AStarSolution generateInitialSolution(CollectionObject queryObject, CollectionObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.info("private AStarSolution procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.generateInitialSolution(CollectionObject queryObject={}, CollectionObject caseObject={}, SimilarityValuator valuator={})...",
+        METHOD_CALL.trace("private AStarSolution procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.generateInitialSolution(CollectionObject queryObject={}, CollectionObject caseObject={}, SimilarityValuator valuator={})...",
                 maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         AStarSolution initialSolution = new AStarSolution();
@@ -327,7 +327,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 initialSolution.f,
                 initialSolution.mapping.size());
 
-        METHOD_CALL.info("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.generateInitialSolution(CollectionObject, CollectionObject, SimilarityValuator): return {}", maxSubstring(initialSolution));
+        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.generateInitialSolution(CollectionObject, CollectionObject, SimilarityValuator): return {}", maxSubstring(initialSolution));
         return initialSolution;
     }
 
@@ -373,7 +373,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
      * @param solution
      */
     private void calcFValue(AStarSolution solution) {
-        METHOD_CALL.info("private void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.calcFValue(AStarSolution solution={})...", maxSubstring(solution));
+        METHOD_CALL.trace("private void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.calcFValue(AStarSolution solution={})...", maxSubstring(solution));
         if (solution.g_h_Denominator > 0) {
             DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.calcFValue(AStarSolution): solution.g_h_Denominator > 0");
 
@@ -394,7 +394,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     // it's necessary to override this method, because otherwise the maxQueueSize would be returned to
     // the default value
     protected void initializeBasedOn(SimilarityMeasure base) {
-        METHOD_CALL.info("protected void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.initializeBasedOn(SimilarityMeasure base={})...", maxSubstring(base));
+        METHOD_CALL.trace("protected void procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.initializeBasedOn(SimilarityMeasure base={})...", maxSubstring(base));
         super.initializeBasedOn(base);
         this.setMaxQueueSize(((SMCollectionMapping) base).getMaxQueueSize());
     }
@@ -403,7 +403,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
      * retrieves the next ID
      */
     private int getNextID() {
-        METHOD_CALL.info("...private int procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getNextID(): return IDCounter={}; IDCounter++;", IDCounter);
+        METHOD_CALL.trace("...private int procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.getNextID(): return IDCounter={}; IDCounter++;", IDCounter);
         return IDCounter++;
     }
 
