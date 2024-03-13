@@ -172,9 +172,8 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
         globalMethodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{getLocalMethodInvokersFunc()}));
         globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
 
-
-        for (DataObjectIterator iter = getObjectPool().iterator(); iter.hasNext(); ) {
-
+        DataObjectIterator iter = getObjectPool().iterator();
+        while (iter.hasNext()){
             DataObject caseObject = iter.nextDataObject();
 
             Similarity sim = null;
