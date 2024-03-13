@@ -39,3 +39,5 @@
 
 <!ELEMENT method (string | double | boolean | character | integer | byte)* >
 <!ATTLIST method name CDATA #REQUIRED >
+
+<!ELEMENT method-list (method)* >
