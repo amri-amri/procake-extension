@@ -2,7 +2,7 @@
 
 <!ELEMENT similarity-measure-function (if)* >
 
-<!ELEMENT if ((and | or | not | equals | same-object-as | instance-of | regex), string) >
+<!ELEMENT if ((and | or | not | equals | same-object-as | instance-of | regex), double) >
 
 <!ELEMENT and ((and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex)*) >
 <!ELEMENT or ((and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex)*) >
@@ -27,7 +27,16 @@
 <!ELEMENT boolean EMPTY >
 <!ATTLIST boolean value CDATA #REQUIRED >
 
+<!ELEMENT character EMPTY >
+<!ATTLIST character value CDATA #REQUIRED >
+
+<!ELEMENT integer EMPTY >
+<!ATTLIST integer value CDATA #REQUIRED >
+
+<!ELEMENT byte EMPTY >
+<!ATTLIST byte value CDATA #REQUIRED >
+
 <!ELEMENT method-return-value ((q | c | method-return-value), method) >
 
-<!ELEMENT method (string | double | boolean)* >
+<!ELEMENT method (string | double | boolean | character | integer | byte)* >
 <!ATTLIST method name CDATA #REQUIRED >

@@ -26,7 +26,16 @@
 <!ELEMENT boolean EMPTY >
 <!ATTLIST boolean value CDATA #REQUIRED >
 
+<!ELEMENT character EMPTY >
+<!ATTLIST character value CDATA #REQUIRED >
+
+<!ELEMENT integer EMPTY >
+<!ATTLIST integer value CDATA #REQUIRED >
+
+<!ELEMENT byte EMPTY >
+<!ATTLIST byte value CDATA #REQUIRED >
+
 <!ELEMENT method-return-value ((q | method-return-value), method) >
 
-<!ELEMENT method (string | double | boolean)* >
+<!ELEMENT method (string | double | boolean | character | integer | byte)* >
 <!ATTLIST method name CDATA #REQUIRED >

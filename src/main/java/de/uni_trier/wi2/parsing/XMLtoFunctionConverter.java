@@ -212,6 +212,27 @@ public abstract class XMLtoFunctionConverter {
                         "(Node, DataObject, DataObject): return {}", bool);
                 return bool;
 
+            // The "boolean" node represents a Boolean object
+            case "character":
+                char chr = node.getAttributes().item(0).getNodeValue().charAt(0);
+                METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", chr);
+                return chr;
+
+            // The "boolean" node represents a Boolean object
+            case "integer":
+                Integer itg = Integer.parseInt(node.getAttributes().item(0).getNodeValue());
+                METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", itg);
+                return itg;
+
+            // The "boolean" node represents a Boolean object
+            case "Byte":
+                Byte bte = Byte.parseByte(node.getAttributes().item(0).getNodeValue());
+                METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
+                        "(Node, DataObject, DataObject): return {}", bte);
+                return bte;
+
             // The "method" node represents a method (call) in Java.
             // A "method" node has an attribute "name" (=name of method) and arbitraryly many
             //  child nodes of node string, double or boolean.

@@ -497,10 +497,13 @@ is why their child elements are exactly two of the following:
 2. `<c>`,
 4. `<string>`,
 5. `<double>`,
-6. `<boolean>`, and
-7. `<method-return-value>`,
+6. `<boolean>`,
+7. `<character>`,
+8. `<integer>`,
+9. `<byte>`, and
+10. `<method-return-value>`,
 
-which represent just that; an object. I will adress these
+which represent just that: an object. I will adress these
 'object elements' later.
 
 The operands of the `instanceof` operator are objects, as well,
@@ -525,10 +528,11 @@ performed, there are `<q>` and `<c>`elements representing
 the query and case object, respectively.
 These elements are empty and have no attributes.
 
-The `<string>`, `<double>`, & `<boolean>` elements are all empty
-but have one required attribute called `value`, which, you guessed
-it, stores the value of the `String`, `double`, or `boolean`
-object.
+The `<string>`, `<double>`, `<boolean>`, `<character>`,
+`<integer>`, & `<byte>` elements are all empty
+but have one required attribute called `value`, which,
+you guessed it, stores the value of the `String`, `Double`,
+`Boolean`, `Character`, `Integer`, or `Byte` object.
 
 As you might have also guessed, a `<method-return-value>` element
 represents the return-value of a method, which in turn is
@@ -542,8 +546,8 @@ represented by the second child is called.
 A `<method>` has a required attribute `name`, which contains
 the exact name of the method without modifiers or parameters.
 It can have an arbitrary amount of `<string>`, `<double>`,
-& `<boolean>` elements as children which represent the
-arguments of the method.
+`<boolean>`, `<character>`, `<integer>`, & `<byte>` elements
+as children which represent the arguments of the method.
 
 A `<method-list>` element contains an arbitrary amount
 of `<method>` child elements and represents a list of methods.
