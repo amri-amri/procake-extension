@@ -113,6 +113,10 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
         return SMListDTWExt.NAME;
     }
 
+    public void setHalvingDistancePercentage(Double a){
+        this.setHalvingDistancePercentage((double) a);
+    }
+
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
