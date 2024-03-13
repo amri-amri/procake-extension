@@ -155,19 +155,22 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
 
         MethodInvokersFunc methodInvokersFunc = getLocalMethodInvokersFunc();
 
-        setLocalMethodInvokersFunc((q, c) -> {
-            ArrayList<MethodInvoker> methodInvokers = methodInvokersFunc.apply(q, c);
-            if (methodInvokers == null) methodInvokers = new ArrayList<>();
-            methodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
-            methodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{this}));
-            methodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
-            return methodInvokers;
+        setLocalMethodInvokersFunc(new MethodInvokersFunc() {
+            @Override
+            public ArrayList<MethodInvoker> apply(DataObject q, DataObject c) {
+                ArrayList<MethodInvoker> methodInvokers = methodInvokersFunc.apply(q, c);
+                if (methodInvokers == null) methodInvokers = new ArrayList<>();
+                methodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
+                methodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{this}));
+                methodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
+                return methodInvokers;
+            }
         });
 
 
-            globalMethodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
-            globalMethodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{getLocalMethodInvokersFunc()}));
-            globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
+        globalMethodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
+        globalMethodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{getLocalMethodInvokersFunc()}));
+        globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
 
 
         for (DataObjectIterator iter = getObjectPool().iterator(); iter.hasNext(); ) {
