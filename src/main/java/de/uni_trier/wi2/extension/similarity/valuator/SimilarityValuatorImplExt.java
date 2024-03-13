@@ -113,11 +113,11 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
             for (MethodInvoker methodInvoker : methodInvokers) {
                 try {
                     methodInvoker.invoke(similarityMeasure);
-                } catch (Exception ignored){
+                } catch (Exception e){
                     DIAGNOSTICS.trace(
                             "procake-extension.extension.similarity.valuator.SimilarityValuatorImplExt.computeSimilarity" +
                             "(DataObject, DataObject, String, ArrayList<MethodInvoker>): Caught Exception: {}",
-                            maxSubstring(ignored));
+                            maxSubstring(e));
                 }
             }
         }
