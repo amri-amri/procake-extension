@@ -15,6 +15,7 @@
             }
         }
     },
+    "required": ["element-type"],
     
     "definitions": {
         "if": {

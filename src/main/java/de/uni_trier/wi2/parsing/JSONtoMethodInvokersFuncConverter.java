@@ -18,7 +18,7 @@ import java.util.Set;
 
 import static de.uni_trier.wi2.utils.IOUtils.getResourceAsString;
 
-public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter{
+public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter {
 
     /**
      * <p>returns the MethodInvokersFunc of which the passed JSON file is the representation of
@@ -41,7 +41,7 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter{
             return MethodInvokersFunc.getDefault();
         }
 
-        return(getMethodInvokersFunc(Files.readString(file.toPath())));
+        return (getMethodInvokersFunc(Files.readString(file.toPath())));
     }
 
     /**
@@ -73,7 +73,7 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter{
         }
 
         ObjectMapper om = new ObjectMapper();
-        Map<String,Object> map = om.readValue(str, Map.class);
+        Map<String, Object> map = om.readValue(str, Map.class);
 
         MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(map);
 
@@ -112,10 +112,13 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter{
                 Map returnValue = (Map) ifStatement.get("return-value");
 
                 try {
-                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
+                    boolean ifStatementEvaluated = true;
+                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition, q, c);
 
                     if (ifStatementEvaluated) {
-                        ArrayList<MethodInvoker> methodInvokers = (ArrayList<MethodInvoker>) evaluate(returnValue, q, c);
+                        ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
+                        if (returnValue != null)
+                            methodInvokers = (ArrayList<MethodInvoker>) evaluate(returnValue, q, c);
 
                         return methodInvokers;
                     }

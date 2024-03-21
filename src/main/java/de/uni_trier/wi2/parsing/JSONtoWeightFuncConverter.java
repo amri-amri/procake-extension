@@ -16,7 +16,7 @@ import java.util.Set;
 
 import static de.uni_trier.wi2.utils.IOUtils.getResourceAsString;
 
-public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter{
+public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter {
 
     /**
      * <p>returns the WeightFunc of which the passed JSON file is the representation of
@@ -39,7 +39,7 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter{
             return WeightFunc.getDefault();
         }
 
-        return(getWeightFunc(Files.readString(file.toPath())));
+        return (getWeightFunc(Files.readString(file.toPath())));
     }
 
     /**
@@ -71,7 +71,7 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter{
         }
 
         ObjectMapper om = new ObjectMapper();
-        Map<String,Object> map = om.readValue(str, Map.class);
+        Map<String, Object> map = om.readValue(str, Map.class);
 
         WeightFunc weightFunc = getWeightFunc(map);
 
@@ -110,10 +110,12 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter{
                 Map returnValue = (Map) ifStatement.get("return-value");
 
                 try {
-                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, null);
+                    boolean ifStatementEvaluated = true;
+                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition, q, null);
 
                     if (ifStatementEvaluated) {
-                        double weight = (double) evaluate(returnValue, q, null);
+                        double weight = 1;
+                        if (returnValue != null) weight = (double) evaluate(returnValue, q, null);
 
                         return weight;
                     }

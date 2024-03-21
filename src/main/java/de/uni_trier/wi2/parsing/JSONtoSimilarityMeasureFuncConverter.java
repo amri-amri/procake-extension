@@ -16,7 +16,7 @@ import java.util.Set;
 
 import static de.uni_trier.wi2.utils.IOUtils.getResourceAsString;
 
-public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverter{
+public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverter {
 
     /**
      * <p>returns the SimilarityMeasureFunc of which the passed JSON file is the representation of
@@ -39,7 +39,7 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
             return SimilarityMeasureFunc.getDefault();
         }
 
-        return(getSimilarityMeasureFunc(Files.readString(file.toPath())));
+        return (getSimilarityMeasureFunc(Files.readString(file.toPath())));
     }
 
     /**
@@ -71,7 +71,7 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
         }
 
         ObjectMapper om = new ObjectMapper();
-        Map<String,Object> map = om.readValue(str, Map.class);
+        Map<String, Object> map = om.readValue(str, Map.class);
 
         SimilarityMeasureFunc similarityMeasureFunc = getSimilarityMeasureFunc(map);
 
@@ -110,10 +110,12 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
                 Map returnValue = (Map) ifStatement.get("return-value");
 
                 try {
-                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
+                    boolean ifStatementEvaluated = true;
+                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition, q, c);
 
                     if (ifStatementEvaluated) {
-                        String similarityMeasure = (String) evaluate(returnValue, q, c);
+                        String similarityMeasure = null;
+                        if (returnValue != null) similarityMeasure = (String) evaluate(returnValue, q, c);
 
                         return similarityMeasure;
                     }
