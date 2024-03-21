@@ -11,10 +11,13 @@
 9. [RetrieverExt, ParallelLinearRetrieverImplExt & LinearRetrieverImplExt](#retrieverext-parallellinearretrieverimplext--linearretrieverimplext)
 10. [Examples](#examples)
 12. [Parsing](#parsing)
-    - [Explaination of the DTDs](#parsing)
-    - [Differences between the DTDs](#differences-between-the-dtds)
-    - [XMLtoFunctionConverter](#xmltofunctionconverter)
-    - [Example](#example)
+    - [XML](#xml-to-functional-interface)
+      - [Explaination of the DTDs](#parsing)
+      - [Differences between the DTDs](#differences-between-the-dtds)
+      - [XMLtoFunctionConverter](#xmltofunctionconverter)
+      - [Example](#example)
+    - [JSON](#json-to-functional-interface)
+    - [Boilerplate](#boilerplate)
 
 ## Introduction
 
@@ -445,15 +448,18 @@ of a retrieval
 In order to communicate with a ProCAKE instance per an API,
 a way of transporting functional interfaces without having to
 use java code had to be found.
-This has been achieved by turning Java code into an XML format.
+This has been achieved by turning Java code into an XML or JSON format.
 For the three central functional interfaces of this extension
 ([SimilarityMeasureFunc, MethodInvokersFunc, WeightFunc](#similaritymeasurefunc-methodinvoker-methodinvokersfunc--weightfunc))
-Document Type Definitions (.dtd) have been defined to schematize
-this Java-like XML format. The DTD files can be found under
+Document Type Definitions (.dtd) and JSON Schemas (.jschema)
+have been defined to schematize
+these Java-like XML formats. The DTD and JSchema files can be
+found under
 `src/main/resources/de/uni_trier/wi2/schema` or at
-https://karim-amri.de/dtd/. I will explain the components on
-the example of `methodinvokers-function.dtd`:
+https://karim-amri.de/dtd/. I will first explain the XML
+components on the example of `methodinvokers-function.dtd`:
 
+### XML to Functional Interface
 The root element in this case is the `<method-invokers-function>`
 element, which can contain an arbitrary amount of `<if>`
 elements. An if-statement in Java consists of a condition and
@@ -562,23 +568,23 @@ first one and defining the first child element as
 Also, if none of the `<if>` elements' conditions were satisfied,
 a default value is returned as follows:
 
-### Differences between the DTDs
-#### Default value:
+#### Differences between the DTDs
+##### Default value:
 - `methodinvokers-function.dtd`: Empty `ArrayList<MethodInvoker>`
 - `similaritymeasure-function.dtd`: `null`
 - `weight-function.dtd`: a `double` with the value `1`
-#### Name of root element:
+##### Name of root element:
 - `methodinvokers-function.dtd`: `<method-invokers-function>`
 - `similaritymeasure-function.dtd`: `<similarity-measure-function>`
 - `weight-function.dtd`: `<weight-function>`
-#### Second child of `<if>` Element.
+##### Second child of `<if>` Element.
 - `methodinvokers-function.dtd`: `<method-list>`
 - `similaritymeasure-function.dtd`: `<string>`
 - `weight-function.dtd`: `<double>`
 
 The second child of the `<if>` element always represents the
 return value of the respective functional interface.
-#### Availability of `<c>` element.
+##### Availability of `<c>` element.
 - `methodinvokers-function.dtd`: yes
 - `similaritymeasure-function.dtd`: yes
 - `weight-function.dtd`: no
@@ -586,7 +592,7 @@ return value of the respective functional interface.
 Since `WeightFunc.apply(DataObject q)` takes only one argument,
 there is no need for the `<c>` element to exist in that DTD.
 
-### XMLtoFunctionConverter
+#### XMLtoFunctionConverter
 
 The three inheritors of the abstract class `XMLtoFunctionConverter`
 - `XMLtoMethodInvokersFuncConverter`,
@@ -608,7 +614,7 @@ It is necessary that the `<!DOCTYPE ...` tag is given. Use
 the URL https://karim-amri.de/dtd/ if you want to avoid errors
 (see example below).
 
-### Example
+#### Example
 Take a look at the following XML
 `src/test/resources/de/uni_trier/wi2/xml/weight-function-test.xml`:
 ```xml
@@ -688,3 +694,398 @@ WeightFunc weighTFunc = new WeightFunc() {
     }
 };
 ```
+
+### JSON to Functional Interface
+The basic structures of an XML and a JSON representation are
+pretty similar. Every one of the above explained tags
+is available as a JSON object, but every object has to have
+an `element-type` property, which is a __string property__.
+The value of this property has to be the type of the object
+it belongs to, which can be:
+
+* `similarity-measure-function`
+* `method-invokers-function`
+* `weight-function`
+* `if`
+* `and`
+* `or`
+* `not`
+* `equals`
+* `same-object-as`
+* `instance-of`
+* `regex`
+* `q`
+* `c`
+* `string`
+* `double`
+* `boolean`
+* `character`
+* `integer`
+* `byte`
+* `method`
+* `method-return-value`
+* `method-list`
+
+This is necessary so that the parser knows what kind of object
+it is dealing with.
+
+The root object is an object where `element-type` is one of
+`similarity-measure-function`, `method-invokers-function`,
+or`weight-function`. Also, if a non-trivial functional interface
+(always returning a default value) is to be constructed,
+a property `if-statements` of type __array__ has to be declared.
+Content of that array can only be __Objects__ of `element-type`
+`if`.
+
+#### Example
+This example at
+`src/test/resources/de/uni_trier/wi2/json/weight-function-test.json`,
+ represents the same `WeightFunc` as the XML example above:
+```json
+{
+  "element-type": "weight-function",
+  "if-statements": [
+    {
+      "element-type": "if",
+      "condition": {
+        "element-type": "or",
+        "content": [
+          {
+            "element-type": "and",
+            "content": [
+              {
+                "element-type": "instance-of",
+                "a": {
+                  "element-type": "q"
+                },
+                "b": {
+                  "element-type": "string",
+                  "value": "de.uni_trier.wi2.procake.data.object.base.IntegerObject"
+                }
+              },
+              {
+                "element-type": "equals",
+                "a": {
+                  "element-type": "double",
+                  "value": 2
+                },
+                "b": {
+                  "element-type": "method-return-value",
+                  "object": {
+                    "element-type": "q"
+                  },
+                  "method": {
+                    "element-type": "method",
+                    "name": "getNativeInteger"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "element-type": "and",
+            "content": [
+              {
+                "element-type": "instance-of",
+                "a": {
+                  "element-type": "q"
+                },
+                "b": {
+                  "element-type": "string",
+                  "value": "de.uni_trier.wi2.procake.data.object.base.BooleanObject"
+                }
+              },
+              {
+                "element-type": "not",
+                "content": {
+                  "element-type": "same-object-as",
+                  "a": {
+                    "element-type": "boolean",
+                    "value": "false"
+                  },
+                  "b": {
+                    "element-type": "method-return-value",
+                    "object": {
+                      "element-type": "q"
+                    },
+                    "method": {
+                      "element-type": "method",
+                      "name": "getNativeBoolean"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "return-value": {
+        "element-type": "double",
+        "value": 0.3
+      }
+    },
+    {
+      "element-type": "if",
+      "condition": {
+        "element-type": "and",
+        "content": [
+          {
+            "element-type": "instance-of",
+            "a": {
+              "element-type": "q"
+            },
+            "b": {
+              "element-type": "string",
+              "value": "de.uni_trier.wi2.procake.data.object.base.StringObject"
+            }
+          },
+          {
+            "element-type": "regex",
+            "pattern": {
+              "element-type": "string",
+              "value": "ab(c)*d"
+            },
+            "matcher": {
+              "element-type": "method-return-value",
+              "object": {
+                "element-type": "q"
+              },
+              "method": {
+                "element-type": "method",
+                "name": "getNativeString"
+              }
+            }
+          }
+        ]
+      },
+      "return-value": {
+        "element-type": "double",
+        "value": 0.4
+      }
+    }
+  ]
+}
+```
+
+The only differences between the XML and JSON representations
+are grammatical and syntactical, which is
+why I will not describe the JSON schemas further.
+If you feel stuck in trying to understand these DTDs or
+schemas, take a look at the concepts of DTD and JSON schema
+themselves to understand why certain keywords are chosen
+they way they are and take a look at the `evaluate`- and
+`get...Func`-methods of XMLtoFunctionConverter and
+JSONtoFunctionConverter respectively. Also, take a look at the
+examples in `src/test/resources/de/uni_trier/wi2/xml`
+and `src/test/resources/de/uni_trier/wi2/json` respectively.
+
+### Boilerplate
+Here are some boilerplate snippets for possible use cases:
+1. [q and c both have DataClass "XYZ"](#q-and-c-both-have-procake-class-xyz)
+2. [q and c are StringObjects](#q-and-c-are-stringobjects)
+3. []
+
+#### q and c both have ProCake-class "XYZ"
+__Java__
+```Java
+String dataClassQ = q.getDataClass().getName();
+String dataClassC = c.getDataClass().getName();
+if (dataClassQ.equals(dataClassC) && dataClassQ.equals("XYZ")) {
+    return ...
+}
+```
+
+__XML__
+```XML
+<if>
+    <and>
+        <equals>
+            <method-return-value>
+                <method-return-value>
+                    <q/>
+                    <method name="getDataClass"/>
+                </method-return-value>
+                <method name="getName"/>
+            </method-return-value>
+            <method-return-value>
+                <method-return-value>
+                    <c/>
+                    <method name="getDataClass"/>
+                </method-return-value>
+                <method name="getName"/>
+            </method-return-value>
+        </equals>
+        <equals>
+            <method-return-value>
+                <method-return-value>
+                    <q/>
+                    <method name="getDataClass"/>
+                </method-return-value>
+                <method name="getName"/>
+            </method-return-value>
+            <string value="XYZ"/>
+        </equals>
+    </and>
+    ...
+</if>
+```
+
+__JSON__
+```JSON
+{
+  "element-type": "if",
+  "condition": {
+    "element-type": "and",
+    "content": [
+      {
+        "element-type":  "equals",
+        "a": {
+          "element-type": "method-return-value",
+          "object": {
+            "element-type": "method-return-value",
+            "object": {
+              "element-type": "q"
+            },
+            "method": {
+              "element-type": "method",
+              "name": "getDataClass"
+            }
+          },
+          "method": {
+            "element-type": "method",
+            "name": "getName"
+          }
+        },
+        "b": {
+          "element-type": "method-return-value",
+          "object": {
+            "element-type": "method-return-value",
+            "object": {
+              "element-type": "c"
+            },
+            "method": {
+              "element-type": "method",
+              "name": "getDataClass"
+            }
+          },
+          "method": {
+            "element-type": "method",
+            "name": "getName"
+          }
+        }
+      },
+      {
+        "element-type": "equals",
+        "a": {
+          "element-type": "method-return-value",
+          "object": {
+            "element-type": "method-return-value",
+            "object": {
+              "element-type": "q"
+            },
+            "method": {
+              "element-type": "method",
+              "name": "getDataClass"
+            }
+          },
+          "method": {
+            "element-type": "method",
+            "name": "getName"
+          }
+        },
+        "b": {
+          "element-type": "string",
+          "value": "XYZ"
+        }
+      }
+    ]
+  },
+  "return-value": { ... }
+}
+```
+
+
+
+#### q and c are StringObjects
+__Java__
+```Java
+if (q instanceof StringObject && c instanceof StringObject){
+    return ...
+}
+```
+
+__XML__
+```XML
+<if>
+    <and>
+        <instance-of>
+            <q/>
+            <string value="StringObject"/>
+        </instance-of>
+        <instance-of>
+            <c/>
+            <string value="StringObject"/>
+        </instance-of>
+    </and>
+    ...
+</if>
+```
+
+__JSON__
+```JSON
+{
+  "element-type": "if",
+  "condition": {
+    "element-type": "and",
+    "content": [
+      {
+        "element-type": "instance-of",
+        "a": {
+          "element-type": "q"
+        },
+        "b": {
+          "element-type": "string",
+          "value": "StringObject"
+        }
+      },
+      {
+        "element-type": "instance-of",
+        "a": {
+          "element-type": "c"
+        },
+        "b": {
+          "element-type": "string",
+          "value": "StringObject"
+        }
+      }
+    ]
+  },
+  "return-value": { ... }
+}
+```
+
+#### Always return certain value
+__Java__
+```Java
+return ...
+```
+
+__XML__
+```XML
+<if>
+    <equals>
+        <q/>
+        <q/>
+    </equals>
+    ...
+</if>
+```
+
+__JSON__
+```JSON
+{
+  "element-type": "if",
+  "return-value": { ... }
+}
+```
+No condition means `true` here!
