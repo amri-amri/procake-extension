@@ -212,29 +212,29 @@ public abstract class XMLtoFunctionConverter {
                         "(Node, DataObject, DataObject): return {}", bool);
                 return bool;
 
-            // The "boolean" node represents a Boolean object
+            // The "character" node represents a Character object
             case "character":
                 char chr = node.getAttributes().item(0).getNodeValue().charAt(0);
                 METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
                         "(Node, DataObject, DataObject): return {}", chr);
                 return chr;
 
-            // The "boolean" node represents a Boolean object
+            // The "integer" node represents a Integer object
             case "integer":
                 Integer itg = Integer.parseInt(node.getAttributes().item(0).getNodeValue());
                 METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
                         "(Node, DataObject, DataObject): return {}", itg);
                 return itg;
 
-            // The "boolean" node represents a Boolean object
-            case "Byte":
+            // The "byte" node represents a Byte object
+            case "byte":
                 Byte bte = Byte.parseByte(node.getAttributes().item(0).getNodeValue());
                 METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
                         "(Node, DataObject, DataObject): return {}", bte);
                 return bte;
 
-            // The "method" node represents a method (call) in Java.
-            // A "method" node has an attribute "name" (=name of method) and arbitraryly many
+            // The "method" node represents a method in Java.
+            // A "method" node has an attribute "name" (=name of method) and arbitrarily many
             //  child nodes of node string, double or boolean.
             case "method":
                 String methodName = node.getAttributes().item(0).getNodeValue();
@@ -251,6 +251,9 @@ public abstract class XMLtoFunctionConverter {
                     if (child.getNodeName().equals("string")) clazz = String.class;
                     if (child.getNodeName().equals("double")) clazz = double.class;
                     if (child.getNodeName().equals("boolean")) clazz = boolean.class;
+                    if (child.getNodeName().equals("character")) clazz = Character.class;
+                    if (child.getNodeName().equals("integer")) clazz = int.class;
+                    if (child.getNodeName().equals("byte")) clazz = byte.class;
                     classes[i] = clazz;
                     objects[i] = evaluate(child, q, c);
                 }
