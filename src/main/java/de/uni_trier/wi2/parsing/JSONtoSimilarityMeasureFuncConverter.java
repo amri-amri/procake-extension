@@ -63,7 +63,7 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
             return SimilarityMeasureFunc.getDefault();
         }
 
-        String schema = getResourceAsString("schema/similarity-measure-function.jschema");
+        String schema = getResourceAsString("jschema/similarity-measure-function.jschema");
 
         Set<ValidationMessage> validationMessages = validate(schema, str);
         if (!validationMessages.isEmpty()) {

@@ -65,7 +65,7 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter {
             return MethodInvokersFunc.getDefault();
         }
 
-        String schema = getResourceAsString("schema/method-invokers-function.jschema");
+        String schema = getResourceAsString("jschema/method-invokers-function.jschema");
 
         Set<ValidationMessage> validationMessages = validate(schema, str);
         if (!validationMessages.isEmpty()) {

@@ -455,8 +455,9 @@ Document Type Definitions (.dtd) and JSON Schemas (.jschema)
 have been defined to schematize
 these Java-like XML formats. The DTD and JSchema files can be
 found under
-`src/main/resources/de/uni_trier/wi2/schema` or at
-https://karim-amri.de/dtd/. I will first explain the XML
+`src/main/resources/de/uni_trier/wi2/dtd` and
+`src/main/resources/de/uni_trier/wi2/jschema` or at
+https://karim-amri.de/dtd/ or https://karim-amri.de/jschema/. I will first explain the XML
 components on the example of `methodinvokers-function.dtd`:
 
 ### XML to Functional Interface

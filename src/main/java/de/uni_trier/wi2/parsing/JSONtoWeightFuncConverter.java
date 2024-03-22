@@ -63,7 +63,7 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter {
             return WeightFunc.getDefault();
         }
 
-        String schema = getResourceAsString("schema/weight-function.jschema");
+        String schema = getResourceAsString("jschema/weight-function.jschema");
 
         Set<ValidationMessage> validationMessages = validate(schema, str);
         if (!validationMessages.isEmpty()) {
