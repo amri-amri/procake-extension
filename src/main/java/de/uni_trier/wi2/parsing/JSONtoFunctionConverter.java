@@ -156,11 +156,6 @@ public abstract class JSONtoFunctionConverter {
                         "(Node, DataObject, DataObject): return {}", itg);
                 return itg;
 
-            // The "byte" node represents a Byte object
-            case "Byte":
-                Byte bte = Byte.parseByte((String) node.get("value"));
-                return bte;
-
             // The "method" node represents a method in Java.
             // A "method" node has an attribute "name" (=name of method) and arbitrarily many
             //  child nodes of node string, double or boolean.

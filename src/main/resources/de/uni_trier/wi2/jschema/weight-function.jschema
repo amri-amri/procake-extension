@@ -279,18 +279,6 @@
             },
             "required": ["element-type", "value"]
         },
-        "byte": {
-            "properties": {
-                "element-type": {
-                    "type": "string",
-                    "enum": ["byte"]
-                },
-                "value": {
-                    "type": ["string", "number"]
-                }
-            },
-            "required": ["element-type", "value"]
-        },
         "method-return-value": {
             "properties": {
                 "element-type": {
@@ -324,8 +312,7 @@
                             { "$ref": "#/definitions/double" },
                             { "$ref": "#/definitions/boolean" },
                             { "$ref": "#/definitions/character" },
-                            { "$ref": "#/definitions/integer" },
-                            { "$ref": "#/definitions/byte" }
+                            { "$ref": "#/definitions/integer" }
                         ]
                     }
                 }

@@ -226,13 +226,6 @@ public abstract class XMLtoFunctionConverter {
                         "(Node, DataObject, DataObject): return {}", itg);
                 return itg;
 
-            // The "byte" node represents a Byte object
-            case "byte":
-                Byte bte = Byte.parseByte(node.getAttributes().item(0).getNodeValue());
-                METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
-                        "(Node, DataObject, DataObject): return {}", bte);
-                return bte;
-
             // The "method" node represents a method in Java.
             // A "method" node has an attribute "name" (=name of method) and arbitrarily many
             //  child nodes of node string, double or boolean.

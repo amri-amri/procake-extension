@@ -32,12 +32,9 @@
 <!ELEMENT integer EMPTY >
 <!ATTLIST integer value CDATA #REQUIRED >
 
-<!ELEMENT byte EMPTY >
-<!ATTLIST byte value CDATA #REQUIRED >
-
 <!ELEMENT method-return-value ((q | method-return-value), method) >
 
-<!ELEMENT method (string | double | boolean | character | integer | byte)* >
+<!ELEMENT method (string | double | boolean | character | integer)* >
 <!ATTLIST method name CDATA #REQUIRED >
 
 <!ELEMENT method-list (method)* >
