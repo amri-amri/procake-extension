@@ -7,6 +7,7 @@ import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinImpl;
+import de.uni_trier.wi2.utils.namingUtils.Classnames;
 
 import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 
@@ -21,7 +22,7 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
         METHOD_CALL.trace("public boolean extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
                 "(DataClass dataclass={}, String orderName={})...", maxSubstring(dataclass), maxSubstring(orderName));
 
-        boolean isSimilarityFor = super.isSimilarityFor(dataclass, orderName) || dataclass.isSubclassOf(dataclass.getModel().getClass("XESLiteralClass"));
+        boolean isSimilarityFor = super.isSimilarityFor(dataclass, orderName) || dataclass.isSubclassOf(dataclass.getModel().getClass(Classnames.LITERAL));
 
         METHOD_CALL.trace("extension.similarity.measure.SMStringLevenshteinImplExt.isSimilarityFor" +
                 "(DataClass, String): return {}", isSimilarityFor);
