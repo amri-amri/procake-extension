@@ -5,6 +5,7 @@ import de.uni_trier.wi2.extension.abstraction.INESTtoList;
 import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
 import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
@@ -20,6 +21,7 @@ import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import de.uni_trier.wi2.utils.WeightFunc;
+import de.uni_trier.wi2.utils.namingUtils.Classnames;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -140,18 +142,24 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     }
 
     @Override
+    public boolean isSimilarityFor(DataClass dataclass, String orderName) {
+        for (DataClass clazz : dataclass.getSuperClasses()) if (clazz.getName().equals(Classnames.BASE)) return true;
+        return super.isSimilarityFor(dataclass, orderName);
+    }
+
+    @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
         METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMCollectionMappingImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         CollectionObject queryCollection, caseCollection;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass")))
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass(Classnames.BASE)))
             queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
         else if (queryObject.isNESTSequentialWorkflow())
             queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass")))
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass(Classnames.BASE)))
             caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
         else if (caseObject.isNESTSequentialWorkflow())
             caseCollection = toList((NESTSequentialWorkflowObject) caseObject);

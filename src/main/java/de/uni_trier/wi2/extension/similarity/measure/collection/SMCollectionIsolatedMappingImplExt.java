@@ -5,6 +5,7 @@ import de.uni_trier.wi2.extension.abstraction.INESTtoList;
 import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
 import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
@@ -18,6 +19,7 @@ import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import de.uni_trier.wi2.utils.WeightFunc;
+import de.uni_trier.wi2.utils.namingUtils.Classnames;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -119,6 +121,12 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         return SMCollectionIsolatedMappingExt.NAME;
     }
 
+    @Override
+    public boolean isSimilarityFor(DataClass dataclass, String orderName) {
+        for (DataClass clazz : dataclass.getSuperClasses()) if (clazz.getName().equals(Classnames.BASE)) return true;
+        return super.isSimilarityFor(dataclass, orderName);
+    }
+
 
     /**
      * Computes the isolated mapping similarity between a given query- and case- object of type Collection.
@@ -134,13 +142,13 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
         CollectionObject queryCollection, caseCollection;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass")))
+        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass(Classnames.BASE)))
             queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
         else if (queryObject.isNESTSequentialWorkflow())
             queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass")))
+        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass(Classnames.BASE)))
             caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
         else if (caseObject.isNESTSequentialWorkflow())
             caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
