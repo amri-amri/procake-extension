@@ -1,5 +1,9 @@
 package de.uni_trier.wi2.parsing;
 
+import de.uni_trier.wi2.parsing.model.ConditionComponent;
+import de.uni_trier.wi2.parsing.model.DoubleComponent;
+import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
+import de.uni_trier.wi2.parsing.model.WF_IfComponent;
 import de.uni_trier.wi2.utils.WeightFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -23,8 +27,8 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      *
      * <p>Make sure that the file makes use of the respective DTD in order to avoid runtime errors while converting.
      *
-     * @param file  the XML file whose content represents the WeightFunc
-     * @return  the WeightFunc generated from the XML file
+     * @param file the XML file whose content represents the WeightFunc
+     * @return the WeightFunc generated from the XML file
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
@@ -32,7 +36,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static WeightFunc getWeightFunc(File file) throws ParserConfigurationException, IOException, SAXException {
+    public static WeightFunc getWeightFunc(File file) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
 
         if (file == null) {
@@ -45,7 +49,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
 
         // Parse the XML file
         Document doc = dBuilder.parse(file);
-        
+
         WeightFunc weightFunc = getWeightFunc(doc);
 
 
@@ -59,8 +63,8 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      *
      * <p>Make sure that the file makes use of the respective DTD in order to avoid runtime errors while converting.
      *
-     * @param str  the String whose content represents the WeightFunc
-     * @return  the WeightFunc generated from the XML file
+     * @param str the String whose content represents the WeightFunc
+     * @return the WeightFunc generated from the XML file
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
@@ -68,7 +72,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static WeightFunc getWeightFunc(String str) throws ParserConfigurationException, IOException, SAXException {
+    public static WeightFunc getWeightFunc(String str) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
 
         if (str == null) {
@@ -81,7 +85,7 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
 
         // Parse the XML file
         Document doc = dBuilder.parse(IOUtils.toInputStream(str, StandardCharsets.UTF_8));
-        
+
         WeightFunc weightFunc = getWeightFunc(doc);
 
 
@@ -90,10 +94,11 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
 
     /**
      * <p>Converts the passed {@link Document} to a {@link WeightFunc}
-     * @param doc  the Document which is to be converted into a WeightFunc
-     * @return  the WeightFunc generated from the Document
+     *
+     * @param doc the Document which is to be converted into a WeightFunc
+     * @return the WeightFunc generated from the Document
      */
-    private static WeightFunc getWeightFunc(Document doc){
+    private static WeightFunc getWeightFunc(Document doc) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         // Get root element
         Node root = doc.getElementsByTagName("weight-function").item(0);
 
@@ -103,46 +108,26 @@ public class XMLtoWeightFuncConverter extends XMLtoFunctionConverter {
         // Get all the child elements of the root element (should all be "if" nodes)
         NodeList ifStatements = root.getChildNodes();
 
-        // Define the WeightFunc which computes the output according to the DOM
-        WeightFunc weightFunc = (q) -> {
+        final int amountOfIfStatements = ifStatements.getLength();
 
+        WF_IfComponent[] ifComponents = new WF_IfComponent[amountOfIfStatements];
 
-            
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the xml file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
+        for (int i = 0; i < amountOfIfStatements; i++) {
+            Node ifStatement = ifStatements.item(i);
 
-            for (int i = 0; i < ifStatements.getLength(); i++){
+            Node condition = ifStatement.getChildNodes().item(0);
+            Node returnValue = ifStatement.getChildNodes().item(1);
 
-                // If the evaluation of the first child element of the "if" node (should be a node which represents a
-                //  logical operation/test) returns true, the second child of the "if" node, a "double" node, is
-                //  evaluated and the generated Double object is returned.
+            LogicalOrConditionComponent conditionComponent = (LogicalOrConditionComponent) evaluate(condition);
+            DoubleComponent doubleComponent = (DoubleComponent) evaluate(returnValue);
+            WF_IfComponent ifComponent = new WF_IfComponent(conditionComponent, doubleComponent);
+            ifComponents[i] = ifComponent;
+        }
 
-                Node ifStatement = ifStatements.item(i);
-
-                Node condition = ifStatement.getChildNodes().item(0);
-                Node returnValue = ifStatement.getChildNodes().item(1);
-
-
-                try {
-                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, null);
-
-
-                    if (ifStatementEvaluated) {
-                        double weight  = (double) evaluate(returnValue, q, null);
-
-
-                        return weight;
-                    }
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-
-                    throw new RuntimeException(e);
-                }
-
-            }
-            
-            return 1.;
+        final WeightFunc weightFunc = (q) -> {
+            for (WF_IfComponent ifComponent : ifComponents)
+                if (ifComponent.isSatisfied(q, null)) return ifComponent.getReturnValue();
+            return 1;
         };
 
 

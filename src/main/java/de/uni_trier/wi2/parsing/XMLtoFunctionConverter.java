@@ -1,6 +1,6 @@
 package de.uni_trier.wi2.parsing;
 
-import de.uni_trier.wi2.procake.data.object.DataObject;
+import de.uni_trier.wi2.parsing.model.*;
 import de.uni_trier.wi2.utils.MethodInvoker;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -12,8 +12,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -51,7 +49,7 @@ public abstract class XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     protected static void initialize() throws ParserConfigurationException {
-        
+
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setValidating(true);
@@ -99,112 +97,105 @@ public abstract class XMLtoFunctionConverter {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    protected static Object evaluate(Node node, DataObject q, DataObject c) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    protected static Component evaluate(Node node) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
 
-        switch (node.getNodeName()) {
+        final String nodeName = node.getNodeName();
+        switch (nodeName) {
 
             // The "and" node represents the logical conjunction of its child nodes
             case "and":
                 NodeList conditions = node.getChildNodes();
-                boolean value = true;
-                for (int i = 0; i < conditions.getLength(); i++) {
-                    if (!(boolean) evaluate(conditions.item(i), q, c)) {
-                        value = false;
-                        break;
-                    }
+                int amountOfConditions = conditions.getLength();
+                LogicalOrConditionComponent[] logicalOrConditionComponents = new LogicalOrConditionComponent[amountOfConditions];
+                for (int i = 0; i < amountOfConditions; i++) {
+                    logicalOrConditionComponents[i] = (LogicalOrConditionComponent) evaluate(conditions.item(i));
                 }
-
-                return value;
+                return new AndComponent(logicalOrConditionComponents);
 
             // The "or" node represents the logical disjunction of its child nodes
             case "or":
                 conditions = node.getChildNodes();
-                value = false;
-                for (int i = 0; i < conditions.getLength(); i++) {
-                    if ((boolean) evaluate(conditions.item(i), q, c)) {
-                        value = true;
-                        break;
-                    }
+                amountOfConditions = conditions.getLength();
+                logicalOrConditionComponents = new LogicalOrConditionComponent[amountOfConditions];
+                for (int i = 0; i < amountOfConditions; i++) {
+                    logicalOrConditionComponents[i] = (LogicalOrConditionComponent) evaluate(conditions.item(i));
                 }
-
-                return value;
+                return new OrComponent(logicalOrConditionComponents);
 
             // The "not" node represents the logical negation of its child node
             case "not":
-                value = !(boolean) evaluate(node.getFirstChild(), q, c);
-                
-                return value;
+                Node firstChild = node.getFirstChild();
+                return new NotComponent((LogicalOrConditionComponent) evaluate(firstChild));
 
             // The "equals" node represents Java's "Object.equals" method
             case "equals":
-                Object a = evaluate(node.getChildNodes().item(0), q, c);
-                Object b = evaluate(node.getChildNodes().item(1), q, c);
-                
-                return a.equals(b);
+                ObjectOrValueComponent object1 = (ObjectOrValueComponent) evaluate(node.getChildNodes().item(0));
+                ObjectOrValueComponent object2 = (ObjectOrValueComponent) evaluate(node.getChildNodes().item(1));
+
+                return new EqualsComponent(object1, object2);
 
             // The "equals" node represents Java's "==" equality
             case "same-object-as":
-                a = evaluate(node.getChildNodes().item(0), q, c);
-                b = evaluate(node.getChildNodes().item(1), q, c);
-                
-                return a == b;
+                object1 = (ObjectOrValueComponent) evaluate(node.getChildNodes().item(0));
+                object2 = (ObjectOrValueComponent) evaluate(node.getChildNodes().item(1));
+
+                return new SameObjectAsComponent(object1, object2);
 
             // The "instance-of" node represents Java's "instanceof" operator
             case "instance-of":
-                a = evaluate(node.getChildNodes().item(0), q, c);
-                Class clazz = Class.forName((String) evaluate(node.getChildNodes().item(1), q, c));
-                
-                return clazz.isInstance(a);
+                ObjectComponent objectComponent = (ObjectComponent) evaluate(node.getChildNodes().item(0));
+                StringComponent stringComponent = (StringComponent) evaluate(node.getChildNodes().item(1));
+
+                return new InstanceOfComponent(objectComponent, stringComponent);
 
             // The "regex" node represents a regular expression test
             // It returns true if the nodes second child node matches the nodes first child node
             case "regex":
-                Pattern pattern = Pattern.compile((String) evaluate(node.getChildNodes().item(0), q, c));
-                Matcher matcher = pattern.matcher((String) evaluate(node.getChildNodes().item(1), q, c));
-                value = matcher.matches();
+                StringOrMethodReturnValueComponent pattern = (StringOrMethodReturnValueComponent) evaluate(node.getChildNodes().item(0));
+                StringOrMethodReturnValueComponent string = (StringOrMethodReturnValueComponent) evaluate(node.getChildNodes().item(1));
 
-                return value;
+                return new RegexComponent(pattern, string);
 
             // The "q" node represents the first argument passed to the functional interface which is generated by the
             //  respective converter
             case "q":
-                return q;
+                return new QComponent();
 
             // The "c" node represents the second argument passed to the functional interface which is generated by the
             //  respective converter (if the functional interface requires one)
             case "c":
-                return c;
+                return new CComponent();
 
             // The "string" node represents a String object
             case "string":
                 String str = node.getAttributes().item(0).getNodeValue();
-                
-                return str;
+
+                return new StringComponent(str);
 
             // The "double" node represents a Double object
             case "double":
                 Double dbl = Double.parseDouble(node.getAttributes().item(0).getNodeValue());
-                
-                return dbl;
+
+                return new DoubleComponent(dbl);
 
             // The "boolean" node represents a Boolean object
             case "boolean":
                 boolean bool = Boolean.parseBoolean(node.getAttributes().item(0).getNodeValue());
-                
-                return bool;
+
+                return new BooleanComponent(bool);
 
             // The "character" node represents a Character object
             case "character":
                 char chr = node.getAttributes().item(0).getNodeValue().charAt(0);
-                
-                return chr;
+
+                return new CharacterComponent(chr);
 
             // The "integer" node represents a Integer object
             case "integer":
                 Integer itg = Integer.parseInt(node.getAttributes().item(0).getNodeValue());
-                
-                return itg;
+
+                return new IntegerComponent(itg);
 
             // The "method" node represents a method in Java.
             // A "method" node has an attribute "name" (=name of method) and arbitrarily many
@@ -213,46 +204,34 @@ public abstract class XMLtoFunctionConverter {
                 String methodName = node.getAttributes().item(0).getNodeValue();
                 NodeList children = node.getChildNodes();
                 int numParams = children.getLength();
-
-                Class[] classes = new Class[numParams];
-                Object[] objects = new Object[numParams];
-
-                clazz = null;
+                ValueComponent[] valueComponents = new ValueComponent[numParams];
 
                 for (int i = 0; i < numParams; i++) {
                     Node child = children.item(i);
-                    if (child.getNodeName().equals("string")) clazz = String.class;
-                    if (child.getNodeName().equals("double")) clazz = double.class;
-                    if (child.getNodeName().equals("boolean")) clazz = boolean.class;
-                    if (child.getNodeName().equals("character")) clazz = Character.class;
-                    if (child.getNodeName().equals("integer")) clazz = int.class;
-                    if (child.getNodeName().equals("byte")) clazz = byte.class;
-                    classes[i] = clazz;
-                    objects[i] = evaluate(child, q, c);
+                    valueComponents[i] = (ValueComponent) evaluate(child);
                 }
-                MethodInvoker methodInvoker_ = new MethodInvoker(methodName, classes, objects);
-
-                return methodInvoker_;
+                return new MethodComponent(methodName, valueComponents);
 
             // The "method-return-value" node represents the return value of a method (see above)
             case "method-return-value":
-                MethodInvoker methodInvoker = (MethodInvoker) evaluate(node.getChildNodes().item(1), q, c);
-                Object methodReturnValue = methodInvoker.invoke(evaluate(node.getChildNodes().item(0), q, c));
-                
-                return methodReturnValue;
+                MethodComponent methodComponent = (MethodComponent) evaluate(node.getChildNodes().item(1));
+                objectComponent = (ObjectComponent) evaluate(node.getChildNodes().item(0));
+
+                return new MethodReturnValueComponent(objectComponent, methodComponent);
 
             // The "method-list" node represents a list of methods
             case "method-list":
-                ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
                 children = node.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    methodInvokers.add((MethodInvoker) evaluate(children.item(i), q, c));
+                int amountOfChildren = children.getLength();
+                MethodComponent[] methods = new MethodComponent[amountOfChildren];
+                for (int i = 0; i < amountOfChildren; i++) {
+                    methods[i] = (MethodComponent) evaluate(children.item(i));
                 }
 
-                return methodInvokers;
+                return new MethodListComponent(methods);
             default:
-                break;
+                System.out.println("WARNING: Unknown element \"" + nodeName + "\"");
+                return null;
         }
-        return null;
     }
 }

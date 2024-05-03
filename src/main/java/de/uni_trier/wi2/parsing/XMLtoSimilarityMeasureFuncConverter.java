@@ -1,5 +1,9 @@
 package de.uni_trier.wi2.parsing;
 
+import de.uni_trier.wi2.parsing.model.ConditionComponent;
+import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
+import de.uni_trier.wi2.parsing.model.SMF_IfComponent;
+import de.uni_trier.wi2.parsing.model.StringComponent;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -23,8 +27,8 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      *
      * <p>Make sure that the file makes use of the respective DTD in order to avoid runtime errors while converting.
      *
-     * @param file  the XML file whose content represents the SimilarityMeasureFunc
-     * @return  the SimilarityMeasureFunc generated from the XML file
+     * @param file the XML file whose content represents the SimilarityMeasureFunc
+     * @return the SimilarityMeasureFunc generated from the XML file
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
@@ -32,7 +36,7 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException {
+    public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
 
         if (file == null) {
@@ -59,8 +63,8 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      *
      * <p>Make sure that the file makes use of the respective DTD in order to avoid runtime errors while converting.
      *
-     * @param str  the String whose content represents the SimilarityMeasureFunc
-     * @return  the SimilarityMeasureFunc generated from the XML file
+     * @param str the String whose content represents the SimilarityMeasureFunc
+     * @return the SimilarityMeasureFunc generated from the XML file
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
@@ -68,7 +72,7 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException {
+    public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
 
         if (str == null) {
@@ -90,10 +94,11 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
 
     /**
      * <p>Converts the passed {@link Document} to a {@link SimilarityMeasureFunc}
-     * @param doc  the Document which is to be converted into a SimilarityMeasureFunc
-     * @return  the SimilarityMeasureFunc generated from the Document
+     *
+     * @param doc the Document which is to be converted into a SimilarityMeasureFunc
+     * @return the SimilarityMeasureFunc generated from the Document
      */
-    private static SimilarityMeasureFunc getSimilarityMeasureFunc(Document doc){
+    private static SimilarityMeasureFunc getSimilarityMeasureFunc(Document doc) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         // Get root element
         Node root = doc.getElementsByTagName("similarity-measure-function").item(0);
@@ -105,46 +110,27 @@ public class XMLtoSimilarityMeasureFuncConverter extends XMLtoFunctionConverter 
         NodeList ifStatements = root.getChildNodes();
 
         // Define the SimilarityMeasureFunc which computes the output according to the DOM
-        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
+        final int amountOfIfStatements = ifStatements.getLength();
 
+        SMF_IfComponent[] ifComponents = new SMF_IfComponent[amountOfIfStatements];
 
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the xml file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
+        for (int i = 0; i < amountOfIfStatements; i++) {
+            Node ifStatement = ifStatements.item(i);
 
-            for (int i = 0; i < ifStatements.getLength(); i++){
+            Node condition = ifStatement.getChildNodes().item(0);
+            Node returnValue = ifStatement.getChildNodes().item(1);
 
-                // If the evaluation of the first child element of the "if" node (should be a node which represents a
-                //  logical operation/test) returns true, the second child of the "if" node, a "string" node, is
-                //  evaluated and the generated String object is returned.
+            LogicalOrConditionComponent conditionComponent = (LogicalOrConditionComponent) evaluate(condition);
+            StringComponent stringComponent = (StringComponent) evaluate(returnValue);
+            SMF_IfComponent ifComponent = new SMF_IfComponent(conditionComponent, stringComponent);
+            ifComponents[i] = ifComponent;
+        }
 
-                Node ifStatement = ifStatements.item(i);
-
-                Node condition = ifStatement.getChildNodes().item(0);
-                Node returnValue = ifStatement.getChildNodes().item(1);
-
-
-                try {
-                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
-
-
-                    if (ifStatementEvaluated) {
-                        String similarityMeasure = (String) evaluate(returnValue, q, c);
-
-                        return similarityMeasure;
-                    }
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-
-                    throw new RuntimeException(e);
-                }
-
-            }
-
-
+        final SimilarityMeasureFunc similarityMeasureFunc = (q, c) -> {
+            for (SMF_IfComponent ifComponent : ifComponents)
+                if (ifComponent.isSatisfied(q, c)) return ifComponent.getReturnValue();
             return null;
         };
-
 
         return similarityMeasureFunc;
     }

@@ -1,6 +1,9 @@
 package de.uni_trier.wi2.parsing;
 
-import de.uni_trier.wi2.utils.MethodInvoker;
+import de.uni_trier.wi2.parsing.model.ConditionComponent;
+import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
+import de.uni_trier.wi2.parsing.model.MIF_IfComponent;
+import de.uni_trier.wi2.parsing.model.MethodListComponent;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -16,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 
-
 public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
     /**
@@ -26,17 +28,17 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      *
      * <p>Make sure that the file makes use of the respective DTD in order to avoid runtime errors while converting.
      *
-     * @param file  the XML file whose content represents the MethodInvokersFunc
-     * @return  the MethodInvokersFunc generated from the XML file
-     * @throws IOException if any IO error occurs with the file
-     * @throws SAXException if any parse error occurs with the file
+     * @param file the XML file whose content represents the MethodInvokersFunc
+     * @return the MethodInvokersFunc generated from the XML file
+     * @throws IOException                  if any IO error occurs with the file
+     * @throws SAXException                 if any parse error occurs with the file
      * @throws ParserConfigurationException
      */
-    public static MethodInvokersFunc getMethodInvokersFunc(File file) throws IOException, SAXException, ParserConfigurationException {
-        
+    public static MethodInvokersFunc getMethodInvokersFunc(File file) throws IOException, SAXException, ParserConfigurationException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+
 
         if (file == null) {
-            
+
             return MethodInvokersFunc.getDefault();
         }
 
@@ -48,7 +50,6 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
         MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(doc);
 
-        
 
         return methodInvokersFunc;
     }
@@ -60,17 +61,17 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      *
      * <p>Make sure that the file makes use of the respective DTD in order to avoid runtime errors while converting.
      *
-     * @param str  the String whose content represents the MethodInvokersFunc
-     * @return  the MethodInvokersFunc generated from the XML file
-     * @throws IOException if any IO error occurs with the file
-     * @throws SAXException if any parse error occurs with the file
+     * @param str the String whose content represents the MethodInvokersFunc
+     * @return the MethodInvokersFunc generated from the XML file
+     * @throws IOException                  if any IO error occurs with the file
+     * @throws SAXException                 if any parse error occurs with the file
      * @throws ParserConfigurationException
      */
-    public static MethodInvokersFunc getMethodInvokersFunc(String str) throws IOException, SAXException, ParserConfigurationException {
-        
+    public static MethodInvokersFunc getMethodInvokersFunc(String str) throws IOException, SAXException, ParserConfigurationException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+
 
         if (str == null) {
-            
+
             return MethodInvokersFunc.getDefault();
         }
 
@@ -82,76 +83,48 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
         MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(doc);
 
-        
 
         return methodInvokersFunc;
     }
 
     /**
      * <p>Converts the passed {@link Document} to a {@link MethodInvokersFunc}
-     * @param doc  the Document which is to be converted into a MethodInvokersFunc
-     * @return  the MethodInvokersFunc generated from the Document
+     *
+     * @param doc the Document which is to be converted into a MethodInvokersFunc
+     * @return the MethodInvokersFunc generated from the Document
      */
-    private static MethodInvokersFunc getMethodInvokersFunc(Document doc){
+    private static MethodInvokersFunc getMethodInvokersFunc(Document doc) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         // Get root element
-        Node root = doc.getElementsByTagName("method-invokers-function").item(0);
+        final Node root = doc.getElementsByTagName("method-invokers-function").item(0);
 
         // Get rid of unnecessary whitespace
         root.normalize();
 
         // Get all the child elements of the root element (should all be "if" nodes)
-        NodeList ifStatements = root.getChildNodes();
+        final NodeList ifStatements = root.getChildNodes();
 
-        // Define the MethodInvokersFunc which computes the output according to the DOM
-        MethodInvokersFunc methodInvokersFunc = (q, c) -> {
+        final int amountOfIfStatements = ifStatements.getLength();
 
-            
+        MIF_IfComponent[] ifComponents = new MIF_IfComponent[amountOfIfStatements];
 
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the xml file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
+        for (int i = 0; i < amountOfIfStatements; i++) {
+            Node ifStatement = ifStatements.item(i);
 
-            for (int i = 0; i < ifStatements.getLength(); i++){
+            Node condition = ifStatement.getChildNodes().item(0);
+            Node returnValue = ifStatement.getChildNodes().item(1);
 
-                // If the evaluation of the first child element of the "if" node (should be a node which represents a
-                //  logical operation/test) returns true, the second child of the "if" node, a "method-list" node, is
-                //  evaluated and the generated MethodInvoker objects returned.
+            LogicalOrConditionComponent conditionComponent = (LogicalOrConditionComponent) evaluate(condition);
+            MethodListComponent methodListComponent = (MethodListComponent) evaluate(returnValue);
+            MIF_IfComponent ifComponent = new MIF_IfComponent(conditionComponent, methodListComponent);
+            ifComponents[i] = ifComponent;
+        }
 
-                Node ifStatement = ifStatements.item(i);
-
-                Node condition = ifStatement.getChildNodes().item(0);
-                Node returnValue = ifStatement.getChildNodes().item(1);
-
-                
-
-                try {
-                    boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
-
-                    
-
-                    if (ifStatementEvaluated) {
-                        ArrayList<MethodInvoker> methodInvokers = (ArrayList<MethodInvoker>)  evaluate(returnValue, q, c);
-
-                        
-
-                        return methodInvokers;
-                    }
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-
-                    
-                    throw new RuntimeException(e);
-                }
-
-            }
-
-            
-            
-            return new ArrayList<MethodInvoker>();
+        final MethodInvokersFunc methodInvokersFunc = (q, c) -> {
+            for (MIF_IfComponent ifComponent : ifComponents)
+                if (ifComponent.isSatisfied(q, c)) return ifComponent.getReturnValue();
+            return new ArrayList<>();
         };
-
-        
 
         return methodInvokersFunc;
     }
