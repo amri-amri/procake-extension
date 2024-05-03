@@ -11,7 +11,7 @@ import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
 
 import java.util.Set;
 
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
+
 
 /**
  * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.
@@ -32,10 +32,6 @@ public interface INESTtoList {
      * @return  the list containing the semantic descriptors of the task nodes
      */
     default ListObject toList(NESTSequentialWorkflowObject workflowObject) {
-        METHOD_CALL.trace(
-                "default ListObject procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject workflowObject={})...",
-                maxSubstring(workflowObject));
-
         ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
 
         Set<NESTSequenceNodeObject> startNodes = workflowObject.getStartNodes();
@@ -47,11 +43,6 @@ public interface INESTtoList {
                     "NESTSequentialWorkflowObject is not valid.",
                     workflowObject.getId(),
                     workflowObject);
-            DIAGNOSTICS.trace(
-                    "procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject): " +
-                    "throw new NoSequentialGraphException" +
-                    "(\"NESTSequentialWorkflowObject is not valid.\", workflowObject.getId(), workflowObject)={}",
-                    maxSubstring(e));
             throw e;
         }
 
@@ -61,10 +52,6 @@ public interface INESTtoList {
             workflowList.addValue(  ((NESTTaskNodeObject) node).getSemanticDescriptor()  );
             node = node.getNextNode();
         }
-
-        METHOD_CALL.trace(
-                "procake-extension.extension.abstraction.INESTtoList.toList(NESTSequentialWorkflowObject): return {}",
-                maxSubstring(workflowList.getValues()));
 
         return workflowList;
     }

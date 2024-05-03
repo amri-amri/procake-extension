@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
+
 
 public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
@@ -33,14 +33,10 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static MethodInvokersFunc getMethodInvokersFunc(File file) throws IOException, SAXException, ParserConfigurationException {
-        METHOD_CALL.trace(
-                "public static MethodInvokersFunc procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc" +
-                        "(File file={})...", maxSubstring(file));
+        
 
         if (file == null) {
-            METHOD_CALL.trace(
-                    "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(File): " +
-                    "return MethodInvokersFunc.getDefault();");
+            
             return MethodInvokersFunc.getDefault();
         }
 
@@ -52,8 +48,7 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
         MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(doc);
 
-        DIAGNOSTICS.trace(
-                "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(File): return");
+        
 
         return methodInvokersFunc;
     }
@@ -72,14 +67,10 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      * @throws ParserConfigurationException
      */
     public static MethodInvokersFunc getMethodInvokersFunc(String str) throws IOException, SAXException, ParserConfigurationException {
-        METHOD_CALL.trace(
-                "public static MethodInvokersFunc procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc" +
-                        "(String str={})...", maxSubstring(str));
+        
 
         if (str == null) {
-            METHOD_CALL.trace(
-                    "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(String): " +
-                            "return MethodInvokersFunc.getDefault();");
+            
             return MethodInvokersFunc.getDefault();
         }
 
@@ -91,8 +82,7 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
 
         MethodInvokersFunc methodInvokersFunc = getMethodInvokersFunc(doc);
 
-        DIAGNOSTICS.trace(
-                "procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(String): return");
+        
 
         return methodInvokersFunc;
     }
@@ -103,8 +93,6 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
      * @return  the MethodInvokersFunc generated from the Document
      */
     private static MethodInvokersFunc getMethodInvokersFunc(Document doc){
-        METHOD_CALL.trace("private static MethodInvokersFunc procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc" +
-                "(Document doc={})...", maxSubstring(doc));
 
         // Get root element
         Node root = doc.getElementsByTagName("method-invokers-function").item(0);
@@ -118,8 +106,7 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
         // Define the MethodInvokersFunc which computes the output according to the DOM
         MethodInvokersFunc methodInvokersFunc = (q, c) -> {
 
-            METHOD_CALL.trace("ArrayList<MethodInvoker> procake-extension.utils.MethodInvokersFunc.apply" +
-                    "(DataObject q={}, DataObject c={})...", maxSubstring(q), maxSubstring(c));
+            
 
             // It is important that the evaluation of the "if" nodes happens in the order of the
             //  definition in the xml file. This guarantees that an author of such a file can implicitly define
@@ -136,42 +123,35 @@ public class XMLtoMethodInvokersFuncConverter extends XMLtoFunctionConverter {
                 Node condition = ifStatement.getChildNodes().item(0);
                 Node returnValue = ifStatement.getChildNodes().item(1);
 
-                DIAGNOSTICS.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
-                                "ifStatements.item({})={}, condition={}, returnValue={}",
-                        i, maxSubstring(ifStatement), maxSubstring(condition), maxSubstring(returnValue));
+                
 
                 try {
                     boolean ifStatementEvaluated = (boolean) evaluate(condition, q, c);
 
-                    DIAGNOSTICS.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
-                            "evaluate(condition, q, c))={}", ifStatementEvaluated);
+                    
 
                     if (ifStatementEvaluated) {
                         ArrayList<MethodInvoker> methodInvokers = (ArrayList<MethodInvoker>)  evaluate(returnValue, q, c);
 
-                        METHOD_CALL.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
-                                "return {}", maxSubstring(methodInvokers));
+                        
 
                         return methodInvokers;
                     }
                 } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                          IllegalAccessException e) {
 
-                    METHOD_CALL.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
-                            "throw new RuntimeException(e); e={}", maxSubstring(e));
+                    
                     throw new RuntimeException(e);
                 }
 
             }
 
-            METHOD_CALL.trace("procake-extension.utils.MethodInvokersFunc.apply(DataObject, DataObject): " +
-                    "return new ArrayList<MethodInvoker>();");
+            
             
             return new ArrayList<MethodInvoker>();
         };
 
-        METHOD_CALL.trace("procake-extension.parsing.XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(Document): " +
-                "return methodInvokersFunc={}", maxSubstring(methodInvokersFunc));
+        
 
         return methodInvokersFunc;
     }

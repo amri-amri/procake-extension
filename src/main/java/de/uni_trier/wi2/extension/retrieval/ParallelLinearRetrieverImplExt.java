@@ -51,30 +51,15 @@ import java.util.List;
 public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl implements ParallelLinearRetriever<DataObject, Query>, RetrievalFactoryObject, RetrieverExt {
 
     private static final Logger logger = LoggerFactory.getLogger(ParallelLinearRetrieverImpl.class);
-
+    protected ArrayList<MethodInvoker> globalMethodInvokers;
+    protected SimilarityMeasureFunc localSimilarityMeasureFunc;
+    protected WeightFunc localWeightFunc = (a) -> 1;
+    protected MethodInvokersFunc localMethodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
     /**
      * The similarity cache to use
      */
     private SimilarityCache similarityCache;
-
-    public SimilarityCache getSimilarityCache() {
-        return similarityCache;
-    }
-
-    public void setSimilarityCache(SimilarityCache similarityCache) {
-        this.similarityCache = similarityCache;
-    }
-
     private int numberOfWorkers = DEFAULT_NUMBER_OF_WORKERS;
-
-    public int getNumberOfWorkers() {
-        return numberOfWorkers;
-    }
-
-    public void setNumberOfWorkers(int numberOfWorkers) {
-        this.numberOfWorkers = numberOfWorkers;
-    }
-
     private RetrievalResultListImpl retrievalResultList;
     private RetrievalResult worstRetrievalResult;
     private Query query;
@@ -88,9 +73,20 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
         super();
     }
 
-    @Override
-    public void setTaskSize(int taskSize) {
-        this.taskSize = taskSize;
+    public SimilarityCache getSimilarityCache() {
+        return similarityCache;
+    }
+
+    public void setSimilarityCache(SimilarityCache similarityCache) {
+        this.similarityCache = similarityCache;
+    }
+
+    public int getNumberOfWorkers() {
+        return numberOfWorkers;
+    }
+
+    public void setNumberOfWorkers(int numberOfWorkers) {
+        this.numberOfWorkers = numberOfWorkers;
     }
 
     @Override
@@ -99,8 +95,8 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
     }
 
     @Override
-    public void setSorting(boolean sorting) {
-        this.sorting = sorting;
+    public void setTaskSize(int taskSize) {
+        this.taskSize = taskSize;
     }
 
     @Override
@@ -109,21 +105,13 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
     }
 
     @Override
-    public Query newQuery() {
-        return new QueryImpl();
+    public void setSorting(boolean sorting) {
+        this.sorting = sorting;
     }
 
-
-
-    protected ArrayList<MethodInvoker> globalMethodInvokers;
-
-    protected SimilarityMeasureFunc localSimilarityMeasureFunc;
-    protected WeightFunc localWeightFunc = (a) -> 1;
-    protected MethodInvokersFunc localMethodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
-
     @Override
-    public void setGlobalSimilarityMeasure(String similarityMeasure) {
-        setInternalSimilarityMeasure(similarityMeasure);
+    public Query newQuery() {
+        return new QueryImpl();
     }
 
     @Override
@@ -132,8 +120,8 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
     }
 
     @Override
-    public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers) {
-        globalMethodInvokers = methodInvokers;
+    public void setGlobalSimilarityMeasure(String similarityMeasure) {
+        setInternalSimilarityMeasure(similarityMeasure);
     }
 
     @Override
@@ -142,8 +130,8 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
     }
 
     @Override
-    public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        this.localSimilarityMeasureFunc = similarityMeasureFunc;
+    public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers) {
+        globalMethodInvokers = methodInvokers;
     }
 
     @Override
@@ -152,8 +140,8 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
     }
 
     @Override
-    public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        this.localMethodInvokersFunc = methodInvokersFunc;
+    public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
+        this.localSimilarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
@@ -162,8 +150,8 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
     }
 
     @Override
-    public void setLocalWeightFunc(WeightFunc weightFunc) {
-        this.localWeightFunc = weightFunc;
+    public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
+        this.localMethodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
@@ -171,13 +159,15 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
         return localWeightFunc;
     }
 
+    @Override
+    public void setLocalWeightFunc(WeightFunc weightFunc) {
+        this.localWeightFunc = weightFunc;
+    }
 
     @Override
     public String getRetrieverName() {
         return super.getRetrieverName() + "Ext";
     }
-
-
 
 
     @Override
@@ -190,10 +180,9 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
         this.query = query;
 
         // create instance
-        ParallelPoolProcessing poolProcessing =
-                new ParallelPoolProcessing(getObjectPool(), taskSize, sorting, numberOfWorkers);
+        ParallelPoolProcessing poolProcessing = new ParallelPoolProcessing(getObjectPool(), taskSize, sorting, numberOfWorkers);
 
-        if (globalMethodInvokers !=null) {
+        if (globalMethodInvokers != null) {
             globalMethodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
             globalMethodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{getLocalMethodInvokersFunc()}));
             globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
@@ -221,8 +210,7 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
 
     private synchronized void addRetrievalResults(List<RetrievalResult> threadRetrievalResults) {
 
-        if (retrievalResultList.size() == 0
-                && threadRetrievalResults.size() <= query.getNumberOfResults()) {
+        if (retrievalResultList.size() == 0 && threadRetrievalResults.size() <= query.getNumberOfResults()) {
             retrievalResultList = new RetrievalResultListImpl();
             for (RetrievalResult retrievalResult : threadRetrievalResults) {
                 retrievalResultList.add(retrievalResult);
@@ -251,7 +239,7 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
 
     private static class PLRProcessingTask implements ParallelPoolProcessing.ProcessingTask {
 
-        ParallelLinearRetrieverImplExt parallelRetriever;
+        final ParallelLinearRetrieverImplExt parallelRetriever;
         Query query;
         SimilarityValuatorImplExt simVal;
         SimilarityCache similarityCache;
@@ -277,11 +265,15 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
                 if (sim == null) {
                     // compute similarity
                     try {
-                        sim = simVal.computeSimilarity(query.getQueryObject(), nextElement,
-                                parallelRetriever.getInternalSimilarityMeasure(), parallelRetriever.globalMethodInvokers);
+                        String internalSimilarityMeasure;
+                        ArrayList<MethodInvoker> globalMethodInvokers;
+
+                        internalSimilarityMeasure = parallelRetriever.getInternalSimilarityMeasure();
+                        globalMethodInvokers = parallelRetriever.globalMethodInvokers;
+
+                        sim = simVal.computeSimilarity(query.getQueryObject(), nextElement, internalSimilarityMeasure, globalMethodInvokers);
                     } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                        sim = simVal.computeSimilarity(query.getQueryObject(), nextElement,
-                                parallelRetriever.getInternalSimilarityMeasure());
+                        sim = simVal.computeSimilarity(query.getQueryObject(), nextElement, parallelRetriever.getInternalSimilarityMeasure());
                     }
                     if (similarityCache != null) {
                         similarityCache.setSimilarity(query.getQueryObject(), nextElement, sim);
@@ -289,8 +281,7 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
                 }
 
                 if (sim.isValidValue()) {
-                    if (parallelRetriever.worstRetrievalResult == null
-                            || parallelRetriever.worstRetrievalResult.getSimilarity().isLessThan(sim)) {
+                    if (parallelRetriever.worstRetrievalResult == null || parallelRetriever.worstRetrievalResult.getSimilarity().isLessThan(sim)) {
                         RetrievalResultImpl retrievalResult = new RetrievalResultImpl();
                         retrievalResult.setSimilarity(sim);
                         retrievalResult.setResultId(nextElement.getId());
@@ -310,8 +301,6 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
             }
         }
     }
-
-
 
 
 }

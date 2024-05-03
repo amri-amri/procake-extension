@@ -61,5 +61,13 @@ public abstract class SimpleTestBase extends TestBase {
         addSimilarityMeasureToSimilarityModel(new SMListSWAImplExt(),                   model.getListSystemClass());
         addSimilarityMeasureToSimilarityModel(new SMListDTWImplExt(),                   model.getListSystemClass());
         addSimilarityMeasureToSimilarityModel(new SMListCorrectnessImplExt(),           model.getListSystemClass());
+
+
+        addSimilarityMeasureToSimilarityModel(new SMCollectionIsolatedMappingImplExt(), model.getNESTSequentialWorkflowClass());
+        addSimilarityMeasureToSimilarityModel(new SMCollectionMappingImplExt(),         model.getNESTSequentialWorkflowClass());
+        addSimilarityMeasureToSimilarityModel(new SMListMappingImplExt(),               model.getNESTSequentialWorkflowClass());
+        addSimilarityMeasureToSimilarityModel(new SMListSWAImplExt(),                   model.getNESTSequentialWorkflowClass());
+        addSimilarityMeasureToSimilarityModel(new SMListDTWImplExt(),                   model.getNESTSequentialWorkflowClass());
+        addSimilarityMeasureToSimilarityModel(new SMListCorrectnessImplExt(),           model.getNESTSequentialWorkflowClass());
     }
 }

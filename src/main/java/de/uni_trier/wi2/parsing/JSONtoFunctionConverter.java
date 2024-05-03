@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
+
 
 public abstract class JSONtoFunctionConverter {
 
@@ -152,8 +152,7 @@ public abstract class JSONtoFunctionConverter {
             // The "integer" node represents a Integer object
             case "integer":
                 Integer itg = Integer.parseInt((String) node.get("value"));
-                METHOD_CALL.trace("procake-extension.parsing.XMLtoFunctionConverter.evaluate" +
-                        "(Node, DataObject, DataObject): return {}", itg);
+                
                 return itg;
 
             // The "method" node represents a method in Java.
