@@ -53,7 +53,7 @@ import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
-    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
     ArrayList<Similarity> localSimilarities;
 
@@ -300,19 +300,12 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                     normalizationMatrix[i][j] = normalizationMatrix[i - 1][j] + wTemp * weight;
 
                 }
-                
-                
-                
-                
-                
 
                 if (matrix[i][j] >= matrix[maxCell_i][maxCell_j]
                         && (!forceAlignmentEndsWithQuery || j == queryArray.length - 1)) {
                     maxCell_i = i;
                     maxCell_j = j;
                 }
-                
-                
 
             }
         }

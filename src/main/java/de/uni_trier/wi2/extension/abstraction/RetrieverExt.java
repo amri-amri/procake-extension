@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * <p>A class like {@link LinearRetrieverImpl} does not provide enough functionality to handle different
  * similarity measures, weights and similarity measure parameters on multiple levels/depths
  * (a collection object can again contain collection objects as elements and so forth and
- * one may would want to use different similarity measures on different levels etc.).
+ * one may want to use different similarity measures on different levels etc.).
  *
  * <p>This interface makes sure that a retriever implementing it will be able to do so.
  *
@@ -42,6 +42,10 @@ public interface RetrieverExt {
      * @param similarityMeasure  the name of the globally used similarity measure
      */
     public void setGlobalSimilarityMeasure(String similarityMeasure);
+
+    /**
+     * @return the globally used similarity measure of the extended retriever
+     */
     public String getGlobalSimilarityMeasure();
 
     /**
@@ -53,6 +57,10 @@ public interface RetrieverExt {
      * @param methodInvokers  the list of methods to be invoked by the global similarity measure
      */
     public void setGlobalMethodInvokers(ArrayList<MethodInvoker> methodInvokers);
+
+    /**
+     * @return the globally used method invokers of the extended retriever
+     */
     public ArrayList<MethodInvoker> getGlobalMethodInvokers();
 
     /**
@@ -65,6 +73,10 @@ public interface RetrieverExt {
      * @param similarityMeasureFunc  the locally used function assigning similarity measures
      */
     public void setLocalSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc);
+
+    /**
+     * @return the locally used SimilarityMeasureFunc of the extended retriever
+     */
     public SimilarityMeasureFunc getLocalSimilarityMeasureFunc();
 
     /**
@@ -79,6 +91,10 @@ public interface RetrieverExt {
      * @param methodInvokersFunc  the locally used function assigning methods to be invoked by similarity measures
      */
     public void setLocalMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc);
+
+    /**
+     * @return the locally used MethodInvokersFunc of the extended retriever
+     */
     public MethodInvokersFunc getLocalMethodInvokersFunc();
 
     /**
@@ -94,5 +110,9 @@ public interface RetrieverExt {
      * @param weightFunc  the locally used weight function
      */
     public void setLocalWeightFunc(WeightFunc weightFunc);
+
+    /**
+     * @return the locally used WeightFunc of the extended retriever
+     */
     public WeightFunc getLocalWeightFunc();
 }

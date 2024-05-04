@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE similarity-measure-function SYSTEM
+        "https://karim-amri.de/dtd/similaritymeasure-function.dtd">
+<similarity-measure-function>
+    <if>
+        <and>
+            <regex>
+                <string value="XESEventClass"/>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+            </regex>
+            <regex>
+                <string value="XESEventClass"/>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+            </regex>
+        </and>
+        <string value="CollectionIsolatedMappingExt"/>
+    </if>
+    <if>
+        <and>
+            <equals>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+                <method-return-value>
+                    <method-return-value>
+                        <c/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+            </equals>
+            <regex>
+                <string value="XES.*StringClass"/>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+            </regex>
+        </and>
+        <string value="StringLevenshteinExt"/>
+    </if>
+</similarity-measure-function>

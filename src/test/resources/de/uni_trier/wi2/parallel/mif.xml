@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE method-invokers-function SYSTEM
+        "https://karim-amri.de/dtd/methodinvokers-function.dtd">
+<method-invokers-function>
+    <if>
+        <and>
+            <equals>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+                <method-return-value>
+                    <method-return-value>
+                        <c/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+            </equals>
+            <equals>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"></method>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+                <string value="XESStringClass"/>
+            </equals>
+        </and>
+        <method-list>
+            <method name="setCaseInsensitive"/>
+        </method-list>
+    </if>
+</method-invokers-function>

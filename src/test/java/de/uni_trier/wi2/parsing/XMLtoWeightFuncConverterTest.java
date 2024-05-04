@@ -9,13 +9,14 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.Assert.assertEquals;
 
 public class XMLtoWeightFuncConverterTest extends SimpleTestBase {
 
     @Test
-    public void testAllNodes() throws ParserConfigurationException, IOException, SAXException {
+    public void testAllNodes() throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         WeightFunc weightFunc = XMLtoWeightFuncConverter.getWeightFunc(new File("src/test/resources/de/uni_trier/wi2/xml/weight-function-test.xml"));
 
         DataObject q = utils.createIntegerObject(2);

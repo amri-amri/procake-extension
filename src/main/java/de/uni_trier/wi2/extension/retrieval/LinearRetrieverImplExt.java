@@ -51,12 +51,30 @@ import java.util.ArrayList;
  */
 public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retriever, RetrievalFactoryObject, RetrieverExt {
 
+    /**
+     * The extended version of the similarity valuator implementation
+     */
     protected SimilarityValuatorImplExt valuator;
 
+    /**
+     * The list of global {@link MethodInvoker}s to set parameters of the global similarity measure
+     */
     protected ArrayList<MethodInvoker> globalMethodInvokers = new ArrayList<MethodInvoker>();
 
+    /**
+     * The functional interface assigning similarity measures to pairs of data objects
+     */
     protected SimilarityMeasureFunc localSimilarityMeasureFunc = (a,b) -> null;
+
+    /**
+     * The functional interface assigning weight values to pairs of data objects
+     */
     protected WeightFunc localWeightFunc = (a) -> 1;
+
+    /**
+     * The functional interface assigning methods to pairs of data objects. The methods
+     * are to be invoked on the similarity measures assigned to the same pairs of data objects.
+     */
     protected MethodInvokersFunc localMethodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     protected SimilarityCache similarityCache;

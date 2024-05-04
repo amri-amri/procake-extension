@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE weight-function SYSTEM "https://karim-amri.de/dtd/weight-function.dtd">
+<weight-function>
+    <if>
+        <and>
+            <regex>
+                <string value="XES.*StringClass"/>
+                <method-return-value>
+                    <method-return-value>
+                        <q/>
+                        <method name="getDataClass"/>
+                    </method-return-value>
+                    <method name="getName"/>
+                </method-return-value>
+            </regex>
+            <or>
+                <equals>
+                    <method-return-value>
+                        <method-return-value>
+                            <q/>
+                            <method name="getAttributeValue">
+                                <string value="key"/>
+                            </method>
+                        </method-return-value>
+                        <method name="getNativeString"/>
+                    </method-return-value>
+                    <string value="concept:name"/>
+                </equals>
+                <equals>
+                    <method-return-value>
+                        <method-return-value>
+                            <q/>
+                            <method name="getAttributeValue">
+                                <string value="key"/>
+                            </method>
+                        </method-return-value>
+                        <method name="getNativeString"/>
+                    </method-return-value>
+                    <string value="time:timestamp"/>
+                </equals>
+            </or>
+        </and>
+        <double value="0"/>
+    </if>
+</weight-function>

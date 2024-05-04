@@ -538,7 +538,7 @@ The `<string>`, `<double>`, `<boolean>`, `<character>`,
 & `<integer>` elements are all empty
 but have one required attribute called `value`, which,
 you guessed it, stores the value of the `String`, `Double`,
-`Boolean`, `Character`, `Integer`, or `Byte` object.
+`Boolean`, `Character`, or `Integer` object.
 
 As you might have also guessed, a `<method-return-value>` element
 represents the return-value of a method, which in turn is
@@ -882,7 +882,7 @@ and `src/test/resources/de/uni_trier/wi2/json` respectively.
 Here are some boilerplate snippets for possible use cases:
 1. [q and c both have DataClass "XYZ"](#q-and-c-both-have-procake-class-xyz)
 2. [q and c are StringObjects](#q-and-c-are-stringobjects)
-3. []
+3. [Always return certain value](#always-return-certain-value)
 
 #### q and c both have ProCake-class "XYZ"
 __Java__

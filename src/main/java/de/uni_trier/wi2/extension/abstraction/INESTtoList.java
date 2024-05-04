@@ -23,15 +23,16 @@ public interface INESTtoList {
      * converts a valid {@link NESTSequentialWorkflowObject} to a {@link ListObject}
      *
      * <p>In a sequential workflow every task node has exactly one incoming and one outgoing edge,
-     * with the first and last ones being the exception.
-     *
-     * <p>The semantic descriptors of these task nodes are being put in a list in the order of the workflow.
+     * with the first and last ones being exceptions.
+     * The semantic descriptors of these task nodes are being put in a list in the order of the workflow.
      * This list is then returned.
      *
      * @param workflowObject  the sequential workflow to be converted
      * @return  the list containing the semantic descriptors of the task nodes
+     * @throws NoSequentialGraphException if (1) {@code workflowObject} is not a valid {@code NESTSequentialWorkflow} or
+     * (2) {@code workflowObject.getStartNodes().size()} is greater than 1.
      */
-    default ListObject toList(NESTSequentialWorkflowObject workflowObject) {
+    default ListObject toList(NESTSequentialWorkflowObject workflowObject) throws NoSequentialGraphException {
         ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
 
         Set<NESTSequenceNodeObject> startNodes = workflowObject.getStartNodes();
