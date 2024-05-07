@@ -16,13 +16,19 @@ public interface XEStoSystem {
     }
 
     static boolean isXESListClass(DataClass dataClass) {
-        String listClassName = Classnames.getXESClassName(Classnames.LIST_CLASS);
-        if (dataClass.getName().equals(listClassName)) return true;
-        return Arrays.stream(dataClass.getSuperClasses()).anyMatch(a -> a.getName().equals(listClassName));
+        return isXESClass(dataClass, Classnames.LIST_CLASS);
     }
 
     static boolean isXESStringClass(DataClass dataClass) {
-        String stringClassName = Classnames.getXESClassName(Classnames.STRING_CLASS);
+        return isXESClass(dataClass, Classnames.STRING_CLASS);
+    }
+
+    static boolean isXESEventClass(DataClass dataClass) {
+        return isXESClass(dataClass, Classnames.EVENT_CLASS);
+    }
+
+    static boolean isXESClass(DataClass dataClass, String nameOfXESClass){
+        String stringClassName = Classnames.getXESClassName(nameOfXESClass);
         if (dataClass.getName().equals(stringClassName)) return true;
         return Arrays.stream(dataClass.getSuperClasses()).anyMatch(a -> a.getName().equals(stringClassName));
     }
