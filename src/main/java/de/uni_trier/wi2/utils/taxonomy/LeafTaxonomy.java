@@ -15,6 +15,8 @@ import java.util.stream.Stream;
  */
 public class LeafTaxonomy extends Taxonomy {
 
+    private double maxInformationContent = -1;
+
 
     /**
      * @see Taxonomy#Taxonomy(String, String, int, int)
@@ -64,6 +66,16 @@ public class LeafTaxonomy extends Taxonomy {
      */
     @Override
     protected double getMaximumInformationContent() throws IOException {
+        if (maxInformationContent == -1) calculateMaximumInformationContent();
+        return maxInformationContent;
+    }
+
+    /**
+     * Calculates the maximum information content.
+     *
+     * @throws IOException if an error occurs reading the *.xlsx file.
+     */
+    private void calculateMaximumInformationContent() throws IOException {
         Stream<Row> rows = getRowStream();
 
         AtomicDouble maxIC = new AtomicDouble(0);
@@ -78,6 +90,6 @@ public class LeafTaxonomy extends Taxonomy {
             if (IC > maxIC.get()) maxIC.set(IC);
         });
 
-        return maxIC.get();
+        maxInformationContent = maxIC.get();
     }
 }

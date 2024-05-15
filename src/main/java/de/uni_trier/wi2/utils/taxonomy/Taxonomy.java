@@ -176,7 +176,7 @@ public abstract class Taxonomy {
     protected abstract double getInformationContent(String code) throws IOException;
 
     /**
-     * Returns maximum information content of given code.
+     * Returns maximum information content.
      *
      * @return The maximum information content value.
      * @throws IOException if an error occurs reading the *.xlsx file.
