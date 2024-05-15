@@ -58,22 +58,9 @@ import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
  */
 public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implements SMCollectionMappingExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
-    /**
-     * keeps a list of maximum similarities, which can be achieved if there would be no mapping
-     * involved
-     */
-    private final Map<DataObject, Double> maxQueryElementSimilarityValues = new HashMap<>();
     protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
-    /**
-     * This cache stores calculated mappings of collection items.
-     */
-    private MultiKeyMap<DataObject, Similarity> mappingCache;
-    /**
-     * This cache stores calculated weights of collection items.
-     */
-    private Map<DataObject, Double> weightCache;
     /**
      * uniqueID-counter
      */
@@ -165,8 +152,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
         
 
         // init cache
-        mappingCache = new MultiKeyMap<>();
-        weightCache = new HashMap<>();
+        MultiKeyMap<DataObject, Similarity> mappingCache = new MultiKeyMap<>();
+        Map<DataObject, Double> weightCache = new HashMap<>();
 
         
 
@@ -176,9 +163,13 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
             return similarity;
         }
 
+
+        //keeps a list of maximum similarities, which can be achieved if there would be no mapping involved
+        Map<DataObject, Double> maxQueryElementSimilarityValues = new HashMap<>();
+
         // initialize the first solution
         TreeSet<AStarSolution> solutions = new TreeSet<>();
-        solutions.add(generateInitialSolution(queryCollection, caseCollection, valuator));
+        solutions.add(generateInitialSolution(queryCollection, caseCollection, valuator, maxQueryElementSimilarityValues, mappingCache, weightCache));
 
 
         // iterate as long as we don't find a finished solution
@@ -194,7 +185,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
             
 
-            TreeSet<AStarSolution> newSolutions = (TreeSet<AStarSolution>) expandSolution(topSolution);
+            TreeSet<AStarSolution> newSolutions = (TreeSet<AStarSolution>) expandSolution(topSolution, maxQueryElementSimilarityValues, mappingCache);
             solutions.addAll(newSolutions);
 
             topSolution = solutions.first();
@@ -227,7 +218,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     /**
      * expands the next queryItem
      */
-    private Set<AStarSolution> expandSolution(AStarSolution solution) {
+    private Set<AStarSolution> expandSolution(AStarSolution solution,  Map<DataObject, Double> maxQueryElementSimilarityValues, MultiKeyMap<DataObject, Similarity> mappingCache) {
         
 
         Set<AStarSolution> newSolutions = new TreeSet<>();
@@ -291,7 +282,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     /**
      * creates the starting solution
      */
-    private AStarSolution generateInitialSolution(CollectionObject queryObject, CollectionObject caseObject, SimilarityValuator valuator) {
+    private AStarSolution generateInitialSolution(CollectionObject queryObject, CollectionObject caseObject, SimilarityValuator valuator,  Map<DataObject, Double> maxQueryElementSimilarityValues, MultiKeyMap<DataObject, Similarity> mappingCache, Map<DataObject, Double> weightCache) {
         
 
         AStarSolution initialSolution = new AStarSolution();
@@ -314,7 +305,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
             // calc max similarity per queryItem (necessary for A* II heuristic approximation)
             // also fill cache
-            double maxSimilarityValue = getMaxSimilarity(queryElement, initialSolution.caseElements, valuator);
+            double maxSimilarityValue = getMaxSimilarity(queryElement, initialSolution.caseElements, valuator, mappingCache, weightCache);
             maxQueryElementSimilarityValues.put(queryElement, maxSimilarityValue);
             initialSolution.h_Numerator += maxSimilarityValue;
             initialSolution.g_h_Denominator += weight;
@@ -331,7 +322,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     /**
      * calculates the maximum similarity for the queryItem among the given caseItems
      */
-    private double getMaxSimilarity(DataObject queryElement, List<DataObject> caseElements, SimilarityValuator valuator) {
+    private double getMaxSimilarity(DataObject queryElement, List<DataObject> caseElements, SimilarityValuator valuator, MultiKeyMap<DataObject, Similarity> mappingCache, Map<DataObject, Double> weightCache) {
 
         double maxSimilarityValue = 0;
 
@@ -394,8 +385,8 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     /**
      * retrieves the next ID
      */
-    private int getNextID() {
-        
+    private synchronized int getNextID() {
+
         return IDCounter++;
     }
 

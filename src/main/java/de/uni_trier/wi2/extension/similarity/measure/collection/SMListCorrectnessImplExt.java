@@ -109,17 +109,9 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
             DataObject aStarResult1 = queryList.elementAt(indexAStar1);
             double weight1 = getWeightFunc().apply(aStarResult1);
 
-            
-            
-
             for (int indexAStar2 = indexAStar1 + 1; indexAStar2 < queryList.size(); indexAStar2++) {
                 DataObject aStarResult2 = queryList.elementAt(indexAStar2);
                 double weight2 = getWeightFunc().apply(aStarResult2);
-
-                
-                
-
-                
 
                 // get indices to compare
                 int indexCompare1 = -1;

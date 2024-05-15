@@ -1,11 +1,11 @@
 package de.uni_trier.wi2.extension.similarity.measure.collection;
 
-import de.uni_trier.wi2.extension.abstraction.*;
+import de.uni_trier.wi2.extension.abstraction.IMethodInvokersFunc;
+import de.uni_trier.wi2.extension.abstraction.INESTtoList;
+import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
+import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
-import de.uni_trier.wi2.naming.Classnames;
 import de.uni_trier.wi2.procake.data.model.DataClass;
-import de.uni_trier.wi2.procake.data.model.Model;
-import de.uni_trier.wi2.procake.data.model.ModelFactory;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -15,11 +15,12 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.utils.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-
 
 import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
@@ -55,51 +56,50 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
     protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
-    ArrayList<Similarity> localSimilarities;
 
     @Override
     public void setLocalSimilarityToUse(String similarityToUse) {
-        
+
         super.setLocalSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        
-        
+
+
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        
+
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        
-        
+
+
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        
+
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        
-        
+
+
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        
+
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -110,12 +110,12 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
     }
 
     public String getSystemName() {
-        
-        
+
+
         return SMListDTWExt.NAME;
     }
 
-    public void setHalvingDistancePercentage(Double a){
+    public void setHalvingDistancePercentage(Double a) {
         this.setHalvingDistancePercentage((double) a);
     }
 
@@ -129,37 +129,34 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        
 
-        localSimilarities = new ArrayList<>();
+        Object[] similarityComputation = computeSimilarityValue(queryObject, caseObject, valuator);
+        double similarityValue = (double) similarityComputation[0];
+        ArrayList<Similarity> localSimilarities = (ArrayList<Similarity>) similarityComputation[1];
+        Similarity similarity = new SimilarityImpl(this, queryObject, caseObject, similarityValue, localSimilarities);
 
-
-
-        Similarity similarity = new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue(queryObject, caseObject, valuator), localSimilarities);
-
-        
 
         return similarity;
     }
 
-    protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+    protected Object[] computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        
 
         //prepare new arrays containing initial null-elements
         DataObject[] queryList, caseList;
 
         if (XEStoSystem.isXESListClass(queryObject.getDataClass()))
             queryList = getXESListAsSystemListObject((AggregateObject) queryObject).getCollection().toArray(new DataObject[0]);
-        else if (queryObject.isNESTSequentialWorkflow()) queryList = toList((NESTSequentialWorkflowObject) queryObject).getCollection().toArray(new DataObject[0]);
+        else if (queryObject.isNESTSequentialWorkflow())
+            queryList = toList((NESTSequentialWorkflowObject) queryObject).getCollection().toArray(new DataObject[0]);
         else queryList = ((ListObject) queryObject).getValues().toArray(new DataObject[0]);
 
         if (XEStoSystem.isXESListClass(caseObject.getDataClass()))
             caseList = getXESListAsSystemListObject((AggregateObject) caseObject).getCollection().toArray(new DataObject[0]);
-        else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject).getCollection().toArray(new DataObject[0]);
+        else if (caseObject.isNESTSequentialWorkflow())
+            caseList = toList((NESTSequentialWorkflowObject) caseObject).getCollection().toArray(new DataObject[0]);
         else caseList = ((ListObject) caseObject).getValues().toArray(new DataObject[0]);
 
-        
 
         DataObject[] queryArray = new DataObject[queryList.length + 1];
         DataObject[] caseArray = new DataObject[caseList.length + 1];
@@ -215,12 +212,7 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                 wTempDenominator += getWeightFunc().apply(queryArray[j]);
             }
         }
-        
-        
-        
 
-        
-        
 
         for (int j = 1; j < queryArray.length; j++) {
 
@@ -231,19 +223,13 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                 wTemp = getHalvingDistancePercentage() / (2 * wTempDenominator);
             }
 
-            
-            
-            
-            
 
             for (int i = 1; i < caseArray.length; i++) {
                 String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryArray[j], caseArray[i]);
                 if (localSimilarityMeasure == null)
                     localSimilarityMeasure = valuator.getSimilarityMeasure(queryArray[j], caseArray[i]).getSystemName();
 
-                
-                
-                
+
                 Similarity similarity;
 
                 if (valuator instanceof SimilarityValuatorImplExt) {
@@ -254,26 +240,17 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                     }
                 } else similarity = valuator.computeSimilarity(queryArray[j], caseArray[i], localSimilarityMeasure);
 
-                
-                
-                
-                // apply weight
-                similarity = new SimilarityImpl(
-                        valuator.getSimilarityModel().getSimilarityMeasure(queryArray[j].getDataClass(), localSimilarityMeasure),
-                        queryArray[j],
-                        caseArray[i],
-                        similarity.getValue() * weight
-                );
 
-                
-                
+                // apply weight
+                similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryArray[j].getDataClass(), localSimilarityMeasure), queryArray[j], caseArray[i], similarity.getValue() * weight);
+
+
                 localSimilarityMatrix[i][j] = similarity;
 
                 double diagonal = matrix[i - 1][j - 1] + wTemp * similarity.getValue() * 2;
                 double horizontal = matrix[i][j - 1] + wTemp * similarity.getValue();
                 double vertical = matrix[i - 1][j] + wTemp * similarity.getValue();
-                
-                
+
 
                 if (diagonal >= horizontal && diagonal >= vertical) {
 
@@ -301,8 +278,7 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
 
                 }
 
-                if (matrix[i][j] >= matrix[maxCell_i][maxCell_j]
-                        && (!forceAlignmentEndsWithQuery || j == queryArray.length - 1)) {
+                if (matrix[i][j] >= matrix[maxCell_i][maxCell_j] && (!forceAlignmentEndsWithQuery || j == queryArray.length - 1)) {
                     maxCell_i = i;
                     maxCell_j = j;
                 }
@@ -315,6 +291,9 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
         int origin_j = maxCell_j;
         int h_i;
 
+
+        ArrayList<Similarity> localSimilarities = new ArrayList<>();
+
         while (origin_i + origin_j > 0) {
             localSimilarities.add(localSimilarityMatrix[origin_i][origin_j]);
             h_i = originMatrix[origin_i][origin_j][0];
@@ -324,16 +303,12 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
 
         Collections.reverse(localSimilarities);
 
-        
-        
+
         double maxSimilarityValue = matrix[maxCell_i][maxCell_j];
         double denominator = normalizationMatrix[maxCell_i][maxCell_j];
 
-        
-        
-        
 
-        return maxSimilarityValue / denominator;
+        return new Object[]{maxSimilarityValue / denominator, localSimilarities};
     }
 
 }
