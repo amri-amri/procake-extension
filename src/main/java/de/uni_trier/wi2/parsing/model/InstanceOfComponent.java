@@ -16,8 +16,8 @@ public class InstanceOfComponent implements ConditionComponent {
         Class<?> clazz;
         try {
             clazz = Class.forName(stringC.evaluate());
-            return clazz.isInstance(object.evaluate(q,c));
-        }catch (ClassNotFoundException e){
+            return clazz.isInstance(object.evaluate(q, c));
+        } catch (ClassNotFoundException e) {
             //TODO logging
             System.out.print("WARNING: " + e.getMessage());
             return false;

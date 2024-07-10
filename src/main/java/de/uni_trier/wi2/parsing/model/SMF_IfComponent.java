@@ -1,6 +1,6 @@
 package de.uni_trier.wi2.parsing.model;
 
-public class SMF_IfComponent extends IfComponent<String>{
+public class SMF_IfComponent extends IfComponent<String> {
     final private StringComponent string;
 
 

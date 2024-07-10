@@ -2,7 +2,7 @@ package de.uni_trier.wi2.parsing.model;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 
-public class StringComponent implements StringOrMethodReturnValueComponent, ValueComponent<String>{
+public class StringComponent implements StringOrMethodReturnValueComponent, ValueComponent<String> {
     final private String value;
 
     public StringComponent(String value) {

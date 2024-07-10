@@ -2,7 +2,7 @@ package de.uni_trier.wi2.parsing.model;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 
-public class DoubleComponent implements ValueComponent<Double>{
+public class DoubleComponent implements ValueComponent<Double> {
     final private Double value;
 
     public DoubleComponent(Double value) {

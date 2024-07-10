@@ -1,6 +1,5 @@
 package de.uni_trier.wi2.parsing;
 
-import de.uni_trier.wi2.parsing.model.ConditionComponent;
 import de.uni_trier.wi2.parsing.model.DoubleComponent;
 import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
 import de.uni_trier.wi2.parsing.model.WF_IfComponent;

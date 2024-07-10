@@ -3,7 +3,7 @@ package de.uni_trier.wi2.parsing.model;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.utils.MethodInvoker;
 
-public class MethodComponent implements Component<MethodInvoker>{
+public class MethodComponent implements Component<MethodInvoker> {
     final private ValueComponent<?>[] arguments;
     final private String name;
 
@@ -12,10 +12,10 @@ public class MethodComponent implements Component<MethodInvoker>{
         this.name = name;
     }
 
-    public MethodInvoker evaluate(){
+    public MethodInvoker evaluate() {
         Class<?>[] argTypes = new Class[arguments.length];
         Object[] args = new Object[arguments.length];
-        for (int i = 0; i < arguments.length; i++){
+        for (int i = 0; i < arguments.length; i++) {
             Object arg = arguments[i].evaluate();
             Class<?> argType = arg.getClass();
 

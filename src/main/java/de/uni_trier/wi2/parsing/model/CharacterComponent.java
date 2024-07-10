@@ -2,7 +2,7 @@ package de.uni_trier.wi2.parsing.model;
 
 import de.uni_trier.wi2.procake.data.object.DataObject;
 
-public class CharacterComponent  implements ValueComponent<Character>{
+public class CharacterComponent implements ValueComponent<Character> {
     final private Character value;
 
     public CharacterComponent(Character value) {

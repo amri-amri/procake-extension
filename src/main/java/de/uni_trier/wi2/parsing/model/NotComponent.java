@@ -11,6 +11,6 @@ public class NotComponent implements LogicalComponent {
 
     @Override
     public Boolean evaluate(DataObject q, DataObject c) {
-        return !condition.evaluate(q,c);
+        return !condition.evaluate(q, c);
     }
 }

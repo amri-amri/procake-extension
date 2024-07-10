@@ -2,11 +2,11 @@
 
 <!ELEMENT weight-function (if)* >
 
-<!ELEMENT if ((and | or | not | equals | same-object-as | instance-of | regex), double) >
+<!ELEMENT if ((and | or | not | equals | same-object-as | instance-of | regex | function), double) >
 
-<!ELEMENT and ((and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex)*) >
-<!ELEMENT or ((and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex), (and | or | not | equals | same-object-as | instance-of | regex)*) >
-<!ELEMENT not ((and | or | not | equals | same-object-as | instance-of | regex)) >
+<!ELEMENT and ((and | or | not | equals | same-object-as | instance-of | regex | function), (and | or | not | equals | same-object-as | instance-of | regex | function), (and | or | not | equals | same-object-as | instance-of | regex | function)*) >
+<!ELEMENT or ((and | or | not | equals | same-object-as | instance-of | regex | function), (and | or | not | equals | same-object-as | instance-of | regex | function), (and | or | not | equals | same-object-as | instance-of | regex | function)*) >
+<!ELEMENT not ((and | or | not | equals | same-object-as | instance-of | regex | function)) >
 
 <!ELEMENT equals ((q | string | double | boolean | method-return-value),(q | string | double | boolean | method-return-value)) >
 <!ELEMENT same-object-as ((q | string | double | boolean | method-return-value),(q | string | double | boolean | method-return-value)) >
@@ -38,3 +38,9 @@
 <!ATTLIST method name CDATA #REQUIRED >
 
 <!ELEMENT method-list (method)* >
+
+<!ELEMENT function EMPTY >
+<!ATTLIST function name (qAttributeHasKeyTypeValue | qEventContainsAttribute | cAttributeHasKeyTypeValue | cEventContainsAttribute) #REQUIRED
+    arg1 CDATA #IMPLIED
+    arg2 CDATA #IMPLIED
+    arg3 CDATA #IMPLIED >

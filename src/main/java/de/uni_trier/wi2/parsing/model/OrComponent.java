@@ -11,7 +11,7 @@ public class OrComponent implements LogicalComponent {
 
     @Override
     public Boolean evaluate(DataObject q, DataObject c) {
-        for (LogicalOrConditionComponent cond : conditions) if (cond.evaluate(q,c)) return true;
+        for (LogicalOrConditionComponent cond : conditions) if (cond.evaluate(q, c)) return true;
         return false;
     }
 }

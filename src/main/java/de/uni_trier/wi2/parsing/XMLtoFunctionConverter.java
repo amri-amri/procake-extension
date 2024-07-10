@@ -1,7 +1,7 @@
 package de.uni_trier.wi2.parsing;
 
 import de.uni_trier.wi2.parsing.model.*;
-import de.uni_trier.wi2.utils.MethodInvoker;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
@@ -11,7 +11,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
 
 /**
@@ -229,9 +228,18 @@ public abstract class XMLtoFunctionConverter {
                 }
 
                 return new MethodListComponent(methods);
+            case "function":
+                NamedNodeMap attributes = node.getAttributes();
+                String functionName = attributes.getNamedItem("name").getNodeValue();
+                Node arg1 = attributes.getNamedItem("arg1");
+                Node arg2 = attributes.getNamedItem("arg2");
+                Node arg3 = attributes.getNamedItem("arg3");
+                return new FunctionComponent(functionName, arg1 == null ? null : arg1.getNodeValue(), arg2 == null ? null : arg2.getNodeValue(), arg3 == null ? null : arg3.getNodeValue());
             default:
                 System.out.println("WARNING: Unknown element \"" + nodeName + "\"");
                 return null;
         }
     }
+
+
 }

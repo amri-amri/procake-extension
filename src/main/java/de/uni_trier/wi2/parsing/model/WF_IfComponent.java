@@ -1,6 +1,6 @@
 package de.uni_trier.wi2.parsing.model;
 
-public class WF_IfComponent extends IfComponent<Double>{
+public class WF_IfComponent extends IfComponent<Double> {
     DoubleComponent doubleComponent;
 
 

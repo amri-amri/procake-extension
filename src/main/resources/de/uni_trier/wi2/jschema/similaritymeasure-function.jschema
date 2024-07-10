@@ -346,6 +346,28 @@
                 }
             },
             "required": ["element-type"]
+        },
+        "function": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["function"]
+                },
+                "name": {
+                    "type": "string",
+                    "enum": ["qcAttributesHaveSameKeyAndType", "qAttributeHasKeyTypeValue", "qEventContainsAttribute", "cAttributeHasKeyTypeValue", "cEventContainsAttribute"]
+                },
+                "arg1": {
+                    "type": "string"
+                },
+                "arg2": {
+                    "type": "string"
+                },
+                "arg3": {
+                    "type": "string"
+                }
+            },
+            "required": ["element-type", "name"]
         }
     }
 }

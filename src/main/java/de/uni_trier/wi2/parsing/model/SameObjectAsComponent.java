@@ -12,6 +12,6 @@ public class SameObjectAsComponent implements ConditionComponent {
 
     @Override
     public Boolean evaluate(DataObject q, DataObject c) {
-        return object1.evaluate(q,c) == object2.evaluate(q,c);
+        return object1.evaluate(q, c) == object2.evaluate(q, c);
     }
 }
