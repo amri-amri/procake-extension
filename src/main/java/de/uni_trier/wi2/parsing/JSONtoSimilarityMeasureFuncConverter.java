@@ -111,11 +111,11 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
 
                 try {
                     boolean ifStatementEvaluated = true;
-                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition, q, c);
+                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition).evaluate(q,c);
 
                     if (ifStatementEvaluated) {
                         String similarityMeasure = null;
-                        if (returnValue != null) similarityMeasure = (String) evaluate(returnValue, q, c);
+                        if (returnValue != null) similarityMeasure = (String) evaluate(returnValue).evaluate(q,c);
 
                         return similarityMeasure;
                     }

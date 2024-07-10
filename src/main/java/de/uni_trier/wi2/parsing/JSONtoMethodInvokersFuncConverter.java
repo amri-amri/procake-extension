@@ -113,12 +113,12 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter {
 
                 try {
                     boolean ifStatementEvaluated = true;
-                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition, q, c);
+                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition).evaluate(q,c);
 
                     if (ifStatementEvaluated) {
                         ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
                         if (returnValue != null)
-                            methodInvokers = (ArrayList<MethodInvoker>) evaluate(returnValue, q, c);
+                            methodInvokers = (ArrayList<MethodInvoker>) evaluate(returnValue).evaluate(q,c);
 
                         return methodInvokers;
                     }

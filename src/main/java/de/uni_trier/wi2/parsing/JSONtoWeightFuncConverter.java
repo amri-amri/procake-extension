@@ -111,11 +111,11 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter {
 
                 try {
                     boolean ifStatementEvaluated = true;
-                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition, q, null);
+                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition).evaluate(q,null);
 
                     if (ifStatementEvaluated) {
                         double weight = 1;
-                        if (returnValue != null) weight = (double) evaluate(returnValue, q, null);
+                        if (returnValue != null) weight = (double) evaluate(returnValue).evaluate(q,null);
 
                         return weight;
                     }
