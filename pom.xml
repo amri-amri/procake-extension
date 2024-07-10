@@ -7,7 +7,7 @@
 
     <groupId>de.uni-trier.wi2</groupId>
     <artifactId>procake-extension</artifactId>
-    <version>1.5.17-SNAPSHOT</version>
+    <version>1.5.18-SNAPSHOT</version>
 
     <dependencies>
 
