@@ -1088,3 +1088,192 @@ __JSON__
 }
 ```
 No condition means `true` here!
+
+
+
+```mermaid
+---
+title: Class Diagram of Components used by Functional Interface Converters
+---
+classDiagram
+    
+    class AndComponent{
+        -LogicalOrConditionComponent[] conditions
+    }
+
+    class NotComponent{
+        -LogicalOrConditionComponent condition
+    }
+
+    class OrComponent{
+        -LogicalOrConditionComponent[] conditions
+    }
+    
+    class EqualsComponent{
+        -ObjectOrValueComponent object1
+        -ObjectOrValueComponent object2
+    }
+    
+    class InstanceOfComponent{
+        -ObjectComponent object
+        -StringComponent stringC
+    }
+    
+    class RegexComponent{
+        -StringOrMethodReturnValueComponent pattern
+        -StringOrMethodReturnValueComponent string
+    }
+    
+    class SameObjectAsComponent{
+        -ObjectOrValueComponent object1
+        -ObjectOrValueComponent object2
+    }
+    
+    class BooleanComponent{
+        -Boolean value
+    }
+    
+    class CharacterComponent{
+        -Character value
+    }
+
+    class DoubleComponent{
+        -Double value
+    }
+
+    class IntegerComponent{
+        -Integer value
+    }
+
+    class StringComponent{
+        -String value
+    }
+    
+    class CComponent
+    
+    class QComponent
+    
+    class MethodComponent{
+        -ValueComponent[] arguments
+        -String name
+    }
+    
+    class MethodListComponent{
+        -MethodComponent[] methods
+        + ArrayList<MethodInvoker> evaluate()
+    }
+
+    class MethodReturnValueComponent{
+        -ObjectComponent object
+        -MethodComponent method
+    }
+
+
+    class FunctionComponent{
+        -String name
+        -String firstArgument
+        -String secondArgument
+    }
+
+
+    class IfComponent{
+        <<abstract>>
+        -LogicalOrConditionComponent conditionComponent
+        + boolean isSatisfied(DataObject, DataObject )
+    }
+
+    class MIF_IfComponent{
+        -MethodListComponent methodList
+    }
+
+    class SMF_IfComponent{
+        -StringComponent string
+    }
+
+    class WF_IfComponent{
+        -DoubleComponent doubleComponent
+    }
+    
+    
+    class Component{
+        <<interface>>
+        + T evaluate(DataObject, DataObject)
+    }
+    
+    class ConditionComponent{
+        <<interface>>
+    }
+    
+    class LogicalComponent{
+        <<interface>>
+    }
+    
+    class LogicalOrConditionComponent{
+        <<interface>>
+        + Boolean evaluate(DataObject, DataObject)
+    }
+    
+    class ObjectComponent{
+        <<interface>>
+    }
+    
+    class ObjectOrValueComponent{
+        <<interface>>
+    }
+    
+    class StringOrMethodReturnValueComponent{
+        <<interface>>
+    }
+    
+    class ValueComponent{
+        <<interface>>
+        + T evaluate()
+    }
+    
+    
+    
+    
+    
+    
+    
+    LogicalComponent <|-- AndComponent
+    LogicalComponent <|-- NotComponent
+    LogicalComponent <|-- OrComponent
+    
+    ConditionComponent <|-- EqualsComponent
+    ConditionComponent <|-- InstanceOfComponent
+    ConditionComponent <|-- RegexComponent
+    ConditionComponent <|-- SameObjectAsComponent
+    
+    ValueComponent <|-- BooleanComponent
+    ValueComponent <|-- CharacterComponent
+    ValueComponent <|-- DoubleComponent
+    ValueComponent <|-- IntegerComponent
+    ValueComponent <|-- StringComponent
+    
+    ObjectComponent <|-- CComponent
+    ObjectComponent <|-- QComponent
+    
+    Component <|-- MethodComponent
+    Component <|-- MethodListComponent
+    ObjectComponent <|-- MethodReturnValueComponent
+    StringOrMethodReturnValueComponent <|-- MethodReturnValueComponent
+
+    ObjectComponent <|-- FunctionComponent
+    StringOrMethodReturnValueComponent <|-- FunctionComponent
+    
+    IfComponent <|-- MIF_IfComponent
+    IfComponent <|-- SMF_IfComponent
+    IfComponent <|-- WF_IfComponent
+
+    LogicalOrConditionComponent <|-- ConditionComponent
+    LogicalOrConditionComponent <|-- LogicalComponent
+    Component <|-- LogicalOrConditionComponent
+    ObjectOrValueComponent <|-- ObjectComponent
+    Component <|-- ObjectOrValueComponent
+    Component <|-- StringOrMethodReturnValueComponent
+    ObjectOrValueComponent <|-- ValueComponent
+    
+    
+
+```
