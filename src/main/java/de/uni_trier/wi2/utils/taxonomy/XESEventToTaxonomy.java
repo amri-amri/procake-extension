@@ -8,6 +8,11 @@ import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.utils.XEStoSystem;
 
+/**
+ * This interface provides functionality to retrieve ICD-Codes from fitting data objects.
+ * As of now, the only "fitting" data objects are those created when converting
+ * the "KR_Berlin" XES log using the XES2NEST-Converter.
+ */
 public interface XESEventToTaxonomy {
 
 

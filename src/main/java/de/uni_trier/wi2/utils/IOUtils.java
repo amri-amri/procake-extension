@@ -5,12 +5,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 
-
-
 public class IOUtils {
 
-    public static String getResourceAsString(String nameWithoutPackage) throws IOException, IOException {
-        
+    public static String getResourceAsString(String nameWithoutPackage) throws IOException {
+
 
         final String packageName = "/de/uni_trier/wi2";
         String nameWithPackage = nameWithoutPackage;
@@ -21,7 +19,7 @@ public class IOUtils {
 
         String out = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 
-        
+
         return out;
     }
 }

@@ -15,7 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 
-
 /**
  * Extension of SimilarityValuatorImpl to allow setting parameters of the used similarity measure.
  */
@@ -36,10 +35,10 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
      * Computes the similarity after setting the parameters of the given similarity measure
      * according to the list of method invokers
      *
-     * @param queryObject  the query object
-     * @param caseObject  the case object
-     * @param similarityMeasureStr  the name of the similarity measure to be used
-     * @param methodInvokers  list of method invokers to set parameters of the similarity Measure
+     * @param queryObject          the query object
+     * @param caseObject           the case object
+     * @param similarityMeasureStr the name of the similarity measure to be used
+     * @param methodInvokers       list of method invokers to set parameters of the similarity Measure
      * @return
      * @throws InvocationTargetException
      * @throws NoSuchMethodException
@@ -59,7 +58,6 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
         SimilarityMeasureImpl similarityMeasure = (SimilarityMeasureImpl) getSimilarityModel().getSimilarityMeasure(queryObject.getDataClass(), similarityMeasureStr);
 
 
-
         if (similarityMeasure == null) {
             // invalid similarity
             logger.warn("No applicable similarity measure found! Returning invalid similarity.");
@@ -71,15 +69,17 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
             similarityMeasure = (SimilarityMeasureImpl) createNewInstance(similarityMeasure);
         }
 
-        if (!similarityMeasure.isSimilarityFor(queryObject.getDataClass(),null)) return new SimilarityImpl(null, queryObject, caseObject);
-        if (!similarityMeasure.isSimilarityFor(caseObject.getDataClass(), null)) return new SimilarityImpl(null, queryObject, caseObject);
+        if (!similarityMeasure.isSimilarityFor(queryObject.getDataClass(), null))
+            return new SimilarityImpl(null, queryObject, caseObject);
+        if (!similarityMeasure.isSimilarityFor(caseObject.getDataClass(), null))
+            return new SimilarityImpl(null, queryObject, caseObject);
 
-        if (methodInvokers!= null) {
+        if (methodInvokers != null) {
 
             for (MethodInvoker methodInvoker : methodInvokers) {
                 try {
                     methodInvoker.invoke(similarityMeasure);
-                } catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -105,13 +105,11 @@ public class SimilarityValuatorImplExt extends SimilarityValuatorImpl {
             copy.setForceOverride(base.isForceOverride());
 
 
-
             return copy;
         } catch (Exception e) {
 
             e.printStackTrace();
         }
-
 
 
         return null;

@@ -20,7 +20,6 @@ import de.uni_trier.wi2.utils.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-
 import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
 /**
@@ -60,6 +59,11 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     protected WeightFunc weightFunc = (a) -> 1;
 
     @Override
+    public boolean isReusable() {
+        return true;
+    }
+
+    @Override
     public void setSimilarityToUse(String similarityToUse) {
         super.setSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
@@ -92,7 +96,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        
+
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -103,8 +107,8 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     }
 
     public String getSystemName() {
-        
-        
+
+
         return SMCollectionIsolatedMappingExt.NAME;
     }
 
@@ -126,7 +130,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
      */
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        
+
 
         CollectionObject queryCollection, caseCollection;
 
@@ -145,7 +149,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         Similarity similarity = checkStoppingCriteria(queryCollection, caseCollection);
 
         if (similarity != null) {
-            
+
             return similarity;
         }
 
@@ -162,33 +166,25 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         while (queryElementIterator.hasNext()) {
             DataObject queryElement = queryElementIterator.nextDataObject();
 
-            
-
             Similarity localSimilarity = this.computeLocalSimilarity(queryElement, caseCollection, valuator);
-
-            
 
             similaritySum += localSimilarity.getValue();
             weight = getWeightFunc().apply(queryElement);
             divisor += weight;
 
-            
-            
-            
 
             localSimilarities.add(localSimilarity);
         }
 
         similarity = new SimilarityImpl(this, queryObject, caseObject, similaritySum / divisor, localSimilarities);
 
-        
 
         return similarity;
     }
 
     @Override
     protected Similarity computeLocalSimilarity(DataObject queryElement, CollectionObject caseCollection, SimilarityValuator valuator) {
-        
+
 
         String localSimilarityMeasure;
         double weight = getWeightFunc().apply(queryElement);
@@ -196,20 +192,15 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
         DataObjectIterator caseElementIterator = caseCollection.iterator();
 
-        
 
         while (caseElementIterator.hasNext()) {
             DataObject caseElement = caseElementIterator.nextDataObject();
-
-            
-
 
             localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
 
             if (localSimilarityMeasure == null)
                 localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
-            
 
             Similarity similarity;
 
@@ -217,43 +208,27 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
                 try {
                     similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, methodInvokersFunc.apply(queryElement, caseElement));
 
-                    
+
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                     similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-                    
+
                 }
             } else {
                 similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-                
-            }
 
-            
+            }
 
             //Application of the weight function
             similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, similarity.getValue() * weight, (ArrayList<Similarity>) similarity.getLocalSimilarities(), similarity.getInfo());
 
-            
-
-            
-
             if (similarity.isValidValue() && similarity.getValue() > maxSimilarity.getValue()) {
-                
-
-                
-
                 maxSimilarity = similarity;
             } else {
-                
 
-                
-
-                
             }
         }
-
-        
 
         return maxSimilarity;
     }

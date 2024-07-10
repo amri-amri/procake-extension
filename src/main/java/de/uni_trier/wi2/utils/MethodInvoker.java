@@ -30,8 +30,8 @@ public class MethodInvoker {
     /**
      * Constructs a new MethodInvoker object.
      *
-     * @param methodName  the name of the method
-     * @param argTypes  the array of argument types
+     * @param methodName the name of the method
+     * @param argTypes   the array of argument types
      * @param argValues  the array of argument values
      */
     public MethodInvoker(final String methodName, final Class[] argTypes, final Object[] argValues) {
@@ -44,8 +44,8 @@ public class MethodInvoker {
     /**
      * Invokes the method on a given object.
      *
-     * @param o  the object the method is to be invoked on
-     * @throws NoSuchMethodException if the method does not exist for the object
+     * @param o the object the method is to be invoked on
+     * @throws NoSuchMethodException     if the method does not exist for the object
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */

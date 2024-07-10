@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * <p>
  * A taxonomy of codes is a tree where each node represents a code.
  * A code is a string of characters. Descendants of a code in the taxonomy
- * contains the code as a prefix. Furthermore, the amount of characters
+ * contain the code as a prefix. Furthermore, the amount of characters
  * a descendant has more than its ancestor, is the depth of the descendant in
  * the subtree of the ancestor. So every child contains one character more than
  * its parent code.
@@ -32,27 +32,34 @@ import java.util.stream.Stream;
 public abstract class Taxonomy {
 
     /**
+     * The String used to describe the ICD-10-PCS taxonomy.
+     */
+    public final static String ICD_10_PCS = "ICD-10-PCS";
+    /**
+     * The String used to describe the ICD-10-CM taxonomy.
+     */
+    public final static String ICD_10_CM = "ICD-10-CM";
+    /**
      * The static map containing all implemented taxonomies.
      */
     private final static HashMap<String, Taxonomy> taxonomies;
 
-    public final static String ICD_10_PCS = "ICD-10-PCS";
-    public final static String ICD_10_CM = "ICD-10-CM";
-
     static {
         taxonomies = new HashMap<>();
 
-        new LeafTaxonomy(
-                ICD_10_PCS, "src/main/resources/de/uni_trier/wi2/taxonomies/ICD-10-PCS Codes.xlsx",
-                1, 8, row -> {
+        // ICD-10-PCS taxonomy
+        new LeafTaxonomy(ICD_10_PCS, "src/main/resources/de/uni_trier/wi2/taxonomies/ICD-10-PCS Codes.xlsx", 1, 8, row -> {
+            // ignore title row
             if (row.getCellAsString(8).get().equals("ICD-10-PCS")) return false;
+            // only include values where HIPAA == 1
             return row.getCellAsNumber(9).get().intValue() == 1;
         });
 
-        new LeafTaxonomy(
-                ICD_10_CM, "src/main/resources/de/uni_trier/wi2/taxonomies/ICD-10-CM Codes.xlsx",
-                0, 1, row -> {
+        // ICD-10-CM taxonomy
+        new LeafTaxonomy(ICD_10_CM, "src/main/resources/de/uni_trier/wi2/taxonomies/ICD-10-CM Codes.xlsx", 0, 1, row -> {
+            // ignore title row
             if (row.getCellAsString(1).get().equals("ICD-10-CM")) return false;
+            // only include values where HIPAA == 1
             return row.getCellAsNumber(2).get().intValue() == 1;
         });
     }
@@ -123,6 +130,9 @@ public abstract class Taxonomy {
 
     /**
      * Returns information content of given code in given taxonomy.
+     * The concept of information content in this context stems from the paper
+     * "Semantic similarity estimation in the biomedical domain: An ontology-based information-theoretic perspective"
+     * by Sánchez et al. (2011).
      *
      * @param taxonomy The taxonomy in which the information content is to be calculated
      * @param code     The code for which the information content is to be calculated
@@ -136,6 +146,9 @@ public abstract class Taxonomy {
 
     /**
      * Returns maximum information content in taxonomy.
+     * The concept of information content in this context stems from the paper
+     * "Semantic similarity estimation in the biomedical domain: An ontology-based information-theoretic perspective"
+     * by Sánchez et al. (2011).
      *
      * @param taxonomy The name of the taxonomy.
      * @return The maximum information content value.
@@ -148,6 +161,9 @@ public abstract class Taxonomy {
 
     /**
      * Returns the least common subsumer of two given codes, independent of any taxonomy.
+     * The concept of subsumers in this context stems from the paper
+     * "Semantic similarity estimation in the biomedical domain: An ontology-based information-theoretic perspective"
+     * by Sánchez et al. (2011).
      *
      * @param code1 The first code.
      * @param code2 The second code.
@@ -168,6 +184,9 @@ public abstract class Taxonomy {
 
     /**
      * Returns information content of given code.
+     * The concept of information content in this context stems from the paper
+     * "Semantic similarity estimation in the biomedical domain: An ontology-based information-theoretic perspective"
+     * by Sánchez et al. (2011).
      *
      * @param code The code for which the information content is to be calculated.
      * @return The information content value.
@@ -177,6 +196,9 @@ public abstract class Taxonomy {
 
     /**
      * Returns maximum information content.
+     * The concept of information content in this context stems from the paper
+     * "Semantic similarity estimation in the biomedical domain: An ontology-based information-theoretic perspective"
+     * by Sánchez et al. (2011).
      *
      * @return The maximum information content value.
      * @throws IOException if an error occurs reading the *.xlsx file.

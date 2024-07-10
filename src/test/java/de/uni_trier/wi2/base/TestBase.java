@@ -40,7 +40,7 @@ public abstract class TestBase {
         // puts name and SimilarityMeasure-Object in cache (should be called only once per SM)
         try {
             similarityModel.registerSimilarityMeasureTemplate(sm);
-        } catch (NameAlreadyExistsException e) {};
+        } catch (NameAlreadyExistsException ignored) {};
 
         // sets the DataClass the SM can be applied to
         sm.setDataClass(dataClass);

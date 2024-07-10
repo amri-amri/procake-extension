@@ -50,7 +50,7 @@ import java.util.ArrayList;
  * </ul>
  */
 public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retriever, RetrievalFactoryObject, RetrieverExt {
-
+//todo: implements Retriever<..., ...>
     /**
      * The extended version of the similarity valuator implementation
      */
@@ -64,7 +64,7 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     /**
      * The functional interface assigning similarity measures to pairs of data objects
      */
-    protected SimilarityMeasureFunc localSimilarityMeasureFunc = (a,b) -> null;
+    protected SimilarityMeasureFunc localSimilarityMeasureFunc = (a, b) -> null;
 
     /**
      * The functional interface assigning weight values to pairs of data objects
@@ -135,16 +135,14 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    protected SimilarityValuator getValuator() {
+    public SimilarityValuator getValuator() {
         return valuator;
     }
 
-    @Override
     public SimilarityCache getSimilarityCache() {
         return similarityCache;
     }
 
-    @Override
     public void setSimilarityCache(SimilarityCache similarityCache) {
         this.similarityCache = similarityCache;
     }
@@ -191,7 +189,7 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
         globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
 
         DataObjectIterator iter = getObjectPool().iterator();
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             DataObject caseObject = iter.nextDataObject();
 
             Similarity sim = null;

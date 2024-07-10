@@ -10,8 +10,6 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 
 
-
-
 public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBooleanXOR {
     public String getSystemName() {
         return NAME;
@@ -19,18 +17,17 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
 
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
-        
+
 
         boolean isSimilarityFor = dataclass.isBoolean() || dataclass.isSubclassOf(dataclass.getModel().getClass("XESBooleanClass"));
 
-        
 
         return isSimilarityFor;
     }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        
+
 
         BooleanObject queryBool, caseBool;
 
@@ -49,7 +46,7 @@ public class SMBooleanXORImpl extends SimilarityMeasureImpl implements SMBoolean
         boolean x1 = queryBool.getNativeBooleanValue();
         boolean x2 = caseBool.getNativeBooleanValue();
         double val = 0.0;
-        if (x1 ^ x2 ) val = 1.0;
+        if (x1 ^ x2) val = 1.0;
 
 
         return new SimilarityImpl(this, queryObject, caseObject, val);

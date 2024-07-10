@@ -15,8 +15,6 @@ import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.utils.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -59,47 +57,37 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
 
     @Override
     public void setLocalSimilarityToUse(String similarityToUse) {
-
         super.setLocalSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-
-
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-
-
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-
-
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -110,8 +98,6 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
     }
 
     public String getSystemName() {
-
-
         return SMListDTWExt.NAME;
     }
 

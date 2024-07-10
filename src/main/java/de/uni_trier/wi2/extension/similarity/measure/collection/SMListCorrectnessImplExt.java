@@ -14,7 +14,6 @@ import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.utils.WeightFunc;
 import de.uni_trier.wi2.utils.XEStoSystem;
 
-
 import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
 /**
@@ -37,14 +36,12 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
     @Override
     public WeightFunc getWeightFunc() {
-        
-        
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        
+
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -55,8 +52,8 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
     }
 
     public String getSystemName() {
-        
-        
+
+
         return SMListCorrectnessExt.NAME;
     }
 
@@ -69,7 +66,7 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        
+
 
         // cast query and case object as list objects
         ListObject queryList, caseList;
@@ -84,19 +81,18 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
         else caseList = (ListObject) caseObject;
 
-        
 
         // if the lists have different sizes, return invalid similarity
         if (queryList.size() != caseList.size()) {
-            
+
             return new SimilarityImpl(this, queryObject, caseObject);
         }
 
-        
+
         // check if case or query are empty
         Similarity similarity = checkStoppingCriteria(queryList, caseList);
         if (similarity != null) {
-            
+
             return similarity;
         }
 
@@ -137,7 +133,6 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
                     sumDiscordant += weight1 * weight2;
                 }
 
-                
 
             }
         }
@@ -145,8 +140,8 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         // if different elements occur in query and case, return invalid similarity
         // (check, if there are more elements in the list than concordant and discordant pairs)
         if (queryList.size() > countConcordant + countDiscordant) {
-            
-            
+
+
             return new SimilarityImpl(this, queryObject, caseObject);
         }
 
@@ -155,20 +150,18 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
 
         // if correctness >= 0, return computed value as similarity
         if (correctness >= 0) {
-            
-            
+
+
             return new SimilarityImpl(this, queryObject, caseObject, correctness);
         }
 
-        
-        
 
         // otherwise, use discordant parameter to normalize value and return similarity
         return new SimilarityImpl(this, queryObject, caseObject, Math.abs(correctness) * discordantParameter);
     }
 
     public void setDiscordantParameter(double discordantParameter) {
-        
+
         if (discordantParameter > 1.0) {
             this.discordantParameter = 1.0;
         } else if (discordantParameter < 0.0) {
@@ -176,7 +169,6 @@ public class SMListCorrectnessImplExt extends SMListCorrectnessImpl implements S
         } else {
             this.discordantParameter = discordantParameter;
         }
-        
-    }
 
+    }
 }

@@ -20,7 +20,6 @@ import de.uni_trier.wi2.utils.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-
 import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
 /**
@@ -58,49 +57,50 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
     protected WeightFunc weightFunc = (a) -> 1;
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
+
     @Override
     public void setSimilarityToUse(String similarityToUse) {
-        
+
         super.setSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        
-        
+
+
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        
+
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        
-        
+
+
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        
+
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        
-        
+
+
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        
+
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -111,8 +111,8 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
     }
 
     public String getSystemName() {
-        
-        
+
+
         return SMListMappingExt.NAME;
     }
 
@@ -125,7 +125,7 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        
+
 
         ListObject queryList, caseList;
 
@@ -139,13 +139,10 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
         else if (caseObject.isNESTSequentialWorkflow()) caseList = toList((NESTSequentialWorkflowObject) caseObject);
         else caseList = (ListObject) caseObject;
 
-        
-
-        
 
         Similarity similarity = checkStoppingCriteria(queryList, caseList);
         if (similarity != null) {
-            
+
             return similarity;
         }
 
@@ -155,17 +152,17 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             similarity = computeContainsInexact(queryList, caseList, valuator, true, queryObject, caseObject);
         }
 
-        
+
         return similarity;
     }
 
     private SimilarityImpl computeContainsExact(ListObject queryList, ListObject caseList, SimilarityValuator valuator, DataObject queryObject, DataObject caseObject) {
-        
+
 
         // if the lists have different sizes, the similarity is 0.0
         if (queryList.size() != caseList.size()) {
-            
-            
+
+
             return new SimilarityImpl(this, queryObject, caseObject, 0.0);
         }
 
@@ -182,17 +179,14 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             DataObject queryElement = (DataObject) queryElementIterator.next();
             DataObject caseElement = (DataObject) caseElementIterator.next();
 
-            
 
             String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
             if (localSimilarityMeasure == null)
                 localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
-            
 
             double weight = getWeightFunc().apply(queryElement);
 
-            
 
             Similarity similarity;
 
@@ -204,17 +198,13 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                 }
             } else similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-            
 
             similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, similarity.getValue() * weight);
 
-            
-            
 
             similaritySum += similarity.getValue();
             denominator += weight;
 
-            
 
             localSimilarities.add(similarity);
         }
@@ -224,21 +214,21 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
             denominator = 1;
         }
 
-        
+
         return new SimilarityImpl(this, queryObject, caseObject, similaritySum / denominator, localSimilarities);
     }
 
     private SimilarityImpl computeContainsInexact(ListObject largerList, ListObject smallerList, SimilarityValuator valuator, boolean queryFirst, DataObject queryObject, DataObject caseObject) {
-        
+
 
         SimilarityImpl similarity = new SimilarityImpl(this, queryObject, caseObject, -1.0);
 
         if (largerList.size() > smallerList.size()) {
-            
+
 
             double maxSimilarityValue = -1;
             for (int i = 0; i <= (largerList.size() - smallerList.size()); i++) {
-                
+
 
                 double similaritySum = 0;
                 double denominator = 0;
@@ -255,7 +245,6 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                     DataObject queryElement = (DataObject) queryElementIterator.next();
                     DataObject caseElement = (DataObject) caseElementIterator.next();
 
-                    
 
                     // the query has to be at the first position, because the similarity computation can be
                     // asymetric
@@ -264,18 +253,16 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                     Similarity currentSimilarity;
                     String localSimilarityMeasure;
                     if (queryFirst) {
-                        
+
 
                         localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
 
                         if (localSimilarityMeasure == null)
                             localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
-                        
 
                         weight = getWeightFunc().apply(queryElement);
 
-                        
 
                         if (valuator instanceof SimilarityValuatorImplExt) {
                             try {
@@ -286,27 +273,21 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                         } else
                             currentSimilarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-                        
-
-                        
 
                         currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, currentSimilarity.getValue() * weight);
 
-                        
 
                     } else {
-                        
+
 
                         localSimilarityMeasure = getSimilarityMeasureFunc().apply(caseElement, queryElement);
 
                         if (localSimilarityMeasure == null)
                             localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
-                        
 
                         weight = getWeightFunc().apply(caseElement);
 
-                        
 
                         if (valuator instanceof SimilarityValuatorImplExt) {
                             try {
@@ -317,20 +298,16 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                         } else
                             currentSimilarity = valuator.computeSimilarity(caseElement, queryElement, localSimilarityMeasure);
 
-                        
-
-                        
 
                         currentSimilarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(caseElement.getDataClass(), localSimilarityMeasure), caseElement, queryElement, currentSimilarity.getValue() * weight);
 
-                        
 
                     }
                     similaritySum += currentSimilarity.getValue();
                     denominator += weight;
                     localSimilarities.add(currentSimilarity);
 
-                    
+
                 }
 
                 // adding the difference in lengths
@@ -341,41 +318,38 @@ public class SMListMappingImplExt extends SMListMappingImpl implements SMListMap
                 }
                 // if the new computed similarity is higher than the present one, it's the new maximum value
                 if ((similaritySum / denominator) > maxSimilarityValue) {
-                    
+
 
                     maxSimilarityValue = (similaritySum / denominator);
 
-                    
 
                     if (queryFirst) {
                         similarity = new SimilarityImpl(this, queryObject, caseObject, maxSimilarityValue, localSimilarities);
                     } else {
                         similarity = new SimilarityImpl(this, caseObject, queryObject, maxSimilarityValue, localSimilarities);
                     }
-                    
+
                 } else {
-                    
+
                 }
             }
-            
+
             return similarity;
 
         } else if (largerList.size() < smallerList.size()) {
-            
+
             // if the case is bigger than the query, the same method is called again with swapped objects,
             // so the computation was just implemented once
             similarity = computeContainsInexact(smallerList, largerList, valuator, false, caseObject, queryObject);
 
-            
 
             return similarity;
         }
-        
+
         // if both lists have the same size, they just can match exactly, so the method for the exact
         // contains is called
         similarity = computeContainsExact(largerList, smallerList, valuator, queryObject, caseObject);
 
-        
 
         return similarity;
     }

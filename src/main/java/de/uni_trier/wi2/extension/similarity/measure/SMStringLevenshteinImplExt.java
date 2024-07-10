@@ -8,8 +8,8 @@ import de.uni_trier.wi2.procake.data.object.base.StringObject;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.string.impl.SMStringLevenshteinImpl;
+import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.utils.XEStoSystem;
-
 
 
 public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implements SMStringLevenshteinExt {
@@ -26,7 +26,7 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        
+
 
         StringObject queryString, caseString;
 
@@ -42,12 +42,9 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
             caseString = (StringObject) caseObject;
         }
 
-        
+        if (queryKey != null && caseKey != null && !queryKey.equals(caseKey))
+            return new SimilarityImpl(this, queryObject, caseObject, 0);
 
-        Similarity similarity = super.compute(queryString, caseString, valuator);
-
-        
-
-        return similarity;
+        return super.compute(queryString, caseString, valuator);
     }
 }
