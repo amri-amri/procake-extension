@@ -18,15 +18,15 @@ public class SMListCorrectnessImplExtTest extends SimilarityMeasureTest {
     }
 
     @Test
-    public void test1(){
-        ListObject queryList = utils.createListObject();;
+    public void test1() {
+        ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("B"));
         queryList.addValue(utils.createStringObject("C"));
         queryList.addValue(utils.createStringObject("D"));
 
-        ListObject caseList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("D"));
@@ -36,7 +36,7 @@ public class SMListCorrectnessImplExtTest extends SimilarityMeasureTest {
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(4./6, sim.getValue(), delta);
+        assertEquals(4. / 6, sim.getValue(), delta);
 
 
         caseList.addValue(utils.createStringObject("C"));
@@ -49,15 +49,15 @@ public class SMListCorrectnessImplExtTest extends SimilarityMeasureTest {
     }
 
     @Test
-    public void test2(){
-        ListObject queryList = utils.createListObject();;
+    public void test2() {
+        ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("B"));
         queryList.addValue(utils.createStringObject("C"));
         queryList.addValue(utils.createStringObject("D"));
 
-        ListObject caseList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("D"));
@@ -82,19 +82,19 @@ public class SMListCorrectnessImplExtTest extends SimilarityMeasureTest {
 
         sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(1./3, sim.getValue(), delta);
+        assertEquals(1. / 3, sim.getValue(), delta);
 
 
         sm = new SMListCorrectnessImplExt();
         sm.setWeightFunc(a -> {
-            if (((StringObject) a).getNativeString().equals("B") || ((StringObject) a).getNativeString().equals("C")) return 0.5;
+            if (((StringObject) a).getNativeString().equals("B") || ((StringObject) a).getNativeString().equals("C"))
+                return 0.5;
             return 1.;
         });
 
         sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(2.25/3.25, sim.getValue(), delta);
-
+        assertEquals(2.25 / 3.25, sim.getValue(), delta);
 
 
     }

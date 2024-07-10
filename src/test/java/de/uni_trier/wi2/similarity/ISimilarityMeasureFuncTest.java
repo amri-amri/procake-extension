@@ -80,8 +80,7 @@ public abstract class ISimilarityMeasureFuncTest extends SimilarityMeasureTest {
         NESTWorkflowBuilder<NESTSequentialWorkflowObject> builder = new NESTWorkflowBuilderImpl();
 
 
-
-        NESTSequentialWorkflowObject queryGraph = builder.createNESTWorkflowGraphObject("query", NESTSequentialWorkflowClass.CLASS_NAME,null);
+        NESTSequentialWorkflowObject queryGraph = builder.createNESTWorkflowGraphObject("query", NESTSequentialWorkflowClass.CLASS_NAME, null);
 
         NESTAbstractWorkflowModifier queryModifier = queryGraph.getModifier();
 
@@ -95,8 +94,7 @@ public abstract class ISimilarityMeasureFuncTest extends SimilarityMeasureTest {
         queryModifier.insertNewControlflowEdge(queryTaskB, queryTaskC, null);
 
 
-
-        NESTSequentialWorkflowObject caseGraph = builder.createNESTWorkflowGraphObject("case", NESTSequentialWorkflowClass.CLASS_NAME,null);
+        NESTSequentialWorkflowObject caseGraph = builder.createNESTWorkflowGraphObject("case", NESTSequentialWorkflowClass.CLASS_NAME, null);
 
         NESTAbstractWorkflowModifier caseModifier = caseGraph.getModifier();
 
@@ -110,8 +108,7 @@ public abstract class ISimilarityMeasureFuncTest extends SimilarityMeasureTest {
         caseModifier.insertNewControlflowEdge(caseTaskB, caseTaskC, null);
 
 
-
-        ArrayList<MethodInvoker> methodInvokers = new ArrayList<>() ;
+        ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
         methodInvokers.add(new MethodInvoker(
                 "setSimilarityMeasureFunc",
                 new Class[]{SimilarityMeasureFunc.class},

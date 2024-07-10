@@ -6,7 +6,6 @@ import de.uni_trier.wi2.parsing.model.DoubleComponent;
 import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
 import de.uni_trier.wi2.parsing.model.WF_IfComponent;
 import de.uni_trier.wi2.utils.WeightFunc;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

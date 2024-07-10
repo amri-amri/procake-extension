@@ -2,9 +2,10 @@ package de.uni_trier.wi2.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.ValidationMessage;
-import de.uni_trier.wi2.parsing.model.*;
+import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
+import de.uni_trier.wi2.parsing.model.SMF_IfComponent;
+import de.uni_trier.wi2.parsing.model.StringComponent;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
-import de.uni_trier.wi2.utils.WeightFunc;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -110,7 +111,7 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
         }
 
         // Define the WeightFunc which computes the output according to the JSON
-        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
+        SimilarityMeasureFunc similarityMeasureFunc = (q, c) -> {
             for (SMF_IfComponent ifComponent : ifComponents)
                 if (ifComponent.isSatisfied(q, c)) return ifComponent.getReturnValue();
             return null;

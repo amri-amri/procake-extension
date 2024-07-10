@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
@@ -25,21 +26,21 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
     }
 
     @Test
-    public void test1(){
+    public void test1() {
         ListObject queryList = workdays();
         ListObject caseList = weekdays();
 
-        for (int n = 0; n<10; n++) {
+        for (int n = 0; n < 10; n++) {
             SMCollectionIsolatedMappingImplExt sm = new SMCollectionIsolatedMappingImplExt();
             sm.setSimilarityToUse(SMStringEqual.NAME);
 
             double[] randomWeights = new double[7];
-            for (int r = 0; r < 7; r ++) {
+            for (int r = 0; r < 7; r++) {
                 randomWeights[r] = Math.random();
             }
             WeightFunc wf = a -> {
                 String stringValue = ((StringObject) a).getNativeString();
-                for (int d = 0; d<7; d++) if (days[d].equals(stringValue)) return randomWeights[d];
+                for (int d = 0; d < 7; d++) if (days[d].equals(stringValue)) return randomWeights[d];
                 return 1.;
             };
             sm.setWeightFunc(wf);
@@ -51,7 +52,7 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         ListObject queryList = weekdays();
         ListObject caseList = workdays();
 
@@ -72,7 +73,7 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
     }
 
     @Test
-    public void test3(){
+    public void test3() {
         ListObject queryList = weekdays();
         ListObject caseList = workdays();
 
@@ -88,12 +89,12 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
         sm.setWeightFunc(wf);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
-        assertEquals(5./6, sim.getValue(), delta);
+        assertEquals(5. / 6, sim.getValue(), delta);
 
     }
 
     @Test
-    public void test4(){
+    public void test4() {
         ListObject queryList = weekdays();
         ListObject caseList = workdays();
 
@@ -103,13 +104,13 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
         sm.setWeightFunc(a -> 1.);
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
-        assertEquals(true, sim.getValue()>5./7 && sim.getValue()<1.);
+        assertTrue(sim.getValue() > 5. / 7 && sim.getValue() < 1.);
 
     }
 
     @Test
-    public void test5(){
-        ListObject queryList = utils.createListObject();;
+    public void test5() {
+        ListObject queryList = utils.createListObject();
         ListObject caseList = workdays();
 
         SMCollectionIsolatedMappingImplExt sm = new SMCollectionIsolatedMappingImplExt();
@@ -121,9 +122,9 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
     }
 
     @Test
-    public void test6(){
+    public void test6() {
         ListObject queryList = weekdays();
-        ListObject caseList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();
 
         SMCollectionIsolatedMappingImplExt sm = new SMCollectionIsolatedMappingImplExt();
         sm.setSimilarityToUse(SMStringEqual.NAME);
@@ -134,11 +135,11 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
     }
 
     @Test
-    public void test7(){
+    public void test7() {
         SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
 
-        ListObject queryList = utils.createListObject();;
-        ListObject caseList = utils.createListObject();;
+        ListObject queryList = utils.createListObject();
+        ListObject caseList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("Abc"));
         queryList.addValue(utils.createStringObject("dEf"));
@@ -148,7 +149,7 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
 
         SMCollectionIsolatedMappingImplExt sm = new SMCollectionIsolatedMappingImplExt();
         sm.setSimilarityToUse(SMStringEqual.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -162,7 +163,7 @@ public class SMCollectionIsolatedMappingImplExtTest extends ISimilarityMeasureFu
 
         sm = new SMCollectionIsolatedMappingImplExt();
         sm.setSimilarityToUse(SMStringEqual.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

@@ -5,7 +5,6 @@ import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.impl.ListObjectImpl;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequenceNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
-import de.uni_trier.wi2.procake.data.object.nest.NESTTaskNodeObject;
 import de.uni_trier.wi2.procake.data.object.nest.utils.impl.NESTSequentialWorkflowValidatorImpl;
 import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
 

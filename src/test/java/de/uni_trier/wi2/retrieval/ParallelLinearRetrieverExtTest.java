@@ -2,7 +2,6 @@ package de.uni_trier.wi2.retrieval;
 
 import de.uni_trier.wi2.base.SimpleTestBase;
 import de.uni_trier.wi2.conversion.sax.XEStoNESTsAXConverter;
-import de.uni_trier.wi2.conversion.sax.XEStoNESTsAXparallelConverter;
 import de.uni_trier.wi2.extension.retrieval.ParallelLinearRetrieverImplExt;
 import de.uni_trier.wi2.extension.similarity.measure.collection.SMCollectionIsolatedMappingExt;
 import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingExt;
@@ -22,7 +21,6 @@ import de.uni_trier.wi2.procake.data.objectpool.impl.WriteableObjectPoolImpl;
 import de.uni_trier.wi2.procake.retrieval.Query;
 import de.uni_trier.wi2.procake.retrieval.RetrievalResult;
 import de.uni_trier.wi2.procake.retrieval.RetrievalResultList;
-import de.uni_trier.wi2.procake.retrieval.impl.ParallelLinearRetrieverImpl;
 import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.base.SMObjectEqual;
 import de.uni_trier.wi2.procake.similarity.base.numeric.SMNumericLinear;
@@ -35,7 +33,6 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.geom.Arc2D;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -50,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
     @Test
-    public void ten_workers(){
+    public void ten_workers() {
         // query object Q
         StringObject q1 = utils.createStringObject("AEI");
         SetObject q2 = utils.createSetObject();
@@ -105,10 +102,10 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
         };
 
         // similarity measure function
-        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
-            if (q instanceof StringObject   && c instanceof StringObject)   return SMStringLevenshtein.NAME;
-            if (q instanceof SetObject      && c instanceof SetObject)      return SMCollectionIsolatedMappingExt.NAME;
-            if (q instanceof IntegerObject  && c instanceof IntegerObject)  return SMNumericLinear.NAME;
+        SimilarityMeasureFunc similarityMeasureFunc = (q, c) -> {
+            if (q instanceof StringObject && c instanceof StringObject) return SMStringLevenshtein.NAME;
+            if (q instanceof SetObject && c instanceof SetObject) return SMCollectionIsolatedMappingExt.NAME;
+            if (q instanceof IntegerObject && c instanceof IntegerObject) return SMNumericLinear.NAME;
             return SMObjectEqual.NAME;
         };
 
@@ -118,7 +115,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
             public ArrayList<MethodInvoker> apply(DataObject q, DataObject c) {
                 ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
 
-                if (q instanceof SetObject      && c instanceof SetObject)  {
+                if (q instanceof SetObject && c instanceof SetObject) {
                     methodInvokers.add(new MethodInvoker(
                             "setSimilarityMeasureFunc",
                             new Class[]{SimilarityMeasureFunc.class},
@@ -137,7 +134,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
                 }
 
-                if (q instanceof IntegerObject  && c instanceof IntegerObject)  {
+                if (q instanceof IntegerObject && c instanceof IntegerObject) {
 
                     methodInvokers.add(new MethodInvoker(
                             "setMinimum",
@@ -171,7 +168,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
         similarity = smListMappingImplExt.compute(Q, C1, simVal);
 
-        assertEquals(23./45, similarity.getValue(), delta);
+        assertEquals(23. / 45, similarity.getValue(), delta);
 
         // - C2 -
         smListMappingImplExt = new SMListMappingImplExt();
@@ -182,7 +179,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
         similarity = smListMappingImplExt.compute(Q, C2, simVal);
 
-        assertEquals(29./45, similarity.getValue(), delta);
+        assertEquals(29. / 45, similarity.getValue(), delta);
 
         // - C3 -
         smListMappingImplExt = new SMListMappingImplExt();
@@ -224,9 +221,9 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
         RetrievalResultList retrievalResults = parallelLinearRetrieverImplExt.perform(query);
         Iterator retrievalResultIterator = retrievalResults.iterator();
 
-        assertEquals("C3", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
-        assertEquals("C2", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
-        assertEquals("C1", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
+        assertEquals("C3", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+        assertEquals("C2", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+        assertEquals("C1", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
 
     }
 

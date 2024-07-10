@@ -56,7 +56,5 @@ public class XMLtoWeightFuncConverterTest extends SimpleTestBase {
         assertEquals(1, weightFunc.apply(q), 0);
 
 
-
-
     }
 }

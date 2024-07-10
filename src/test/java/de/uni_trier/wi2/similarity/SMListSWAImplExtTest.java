@@ -25,8 +25,8 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test1(){
-        ListObject queryList = utils.createListObject();;
+    public void test1() {
+        ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
         queryList.addValue(utils.createStringObject("Y"));
@@ -35,7 +35,7 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
         queryList.addValue(utils.createStringObject("M"));
         queryList.addValue(utils.createStringObject("M"));
 
-        ListObject caseList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("C"));
@@ -52,13 +52,13 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
-        Assert.assertEquals(4./6, sim.getValue(), delta);
+        Assert.assertEquals(4. / 6, sim.getValue(), delta);
 
     }
 
     @Test
-    public void test2(){
-        ListObject queryList1 = utils.createListObject();;
+    public void test2() {
+        ListObject queryList1 = utils.createListObject();
 
         queryList1.addValue(utils.createStringObject("A"));
         queryList1.addValue(utils.createStringObject("Y"));
@@ -68,7 +68,7 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
         queryList1.addValue(utils.createStringObject("M"));
 
 
-        ListObject queryList2 = utils.createListObject();;
+        ListObject queryList2 = utils.createListObject();
 
         queryList2.addValue(utils.createStringObject("A"));
         queryList2.addValue(utils.createStringObject("B"));
@@ -76,7 +76,7 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
         queryList2.addValue(utils.createStringObject("M"));
         queryList2.addValue(utils.createStringObject("M"));
 
-        ListObject caseList = utils.createListObject();;
+        ListObject caseList = utils.createListObject();
         caseList.addValue(utils.createStringObject("A"));
         caseList.addValue(utils.createStringObject("B"));
         caseList.addValue(utils.createStringObject("C"));
@@ -111,11 +111,11 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test3(){
+    public void test3() {
         SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
 
-        ListObject queryList = utils.createListObject();;
-        ListObject caseList = utils.createListObject();;
+        ListObject queryList = utils.createListObject();
+        ListObject caseList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("Abc"));
         queryList.addValue(utils.createStringObject("dEf"));
@@ -126,7 +126,7 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
 
         SMListSWAImplExt sm = new SMListSWAImplExt();
         sm.setLocalSimilarityToUse(SMStringLevenshtein.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -139,7 +139,7 @@ public class SMListSWAImplExtTest extends ISimilarityMeasureFuncTest {
 
         sm = new SMListSWAImplExt();
         sm.setLocalSimilarityToUse(SMStringLevenshtein.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

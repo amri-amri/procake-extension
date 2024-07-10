@@ -151,7 +151,7 @@ public abstract class JSONtoFunctionConverter {
                 String name = (String) node.get("name");
                 List<Map> arguments = (List<Map>) node.get("arguments");
                 int size = 0;
-                if (arguments!=null) size = arguments.size();
+                if (arguments != null) size = arguments.size();
 
                 ValueComponent[] argumentComponents = new ValueComponent[size];
 

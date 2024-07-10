@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 public class LinearRetrieverExtTest extends SimpleTestBase {
 
     @Test
-    public void correctness_of_retrieval(){
+    public void correctness_of_retrieval() {
         // query object Q
         StringObject q1 = utils.createStringObject("AEI");
         SetObject q2 = utils.createSetObject();
@@ -88,10 +88,10 @@ public class LinearRetrieverExtTest extends SimpleTestBase {
         };
 
         // similarity measure function
-        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
-            if (q instanceof StringObject   && c instanceof StringObject)   return SMStringLevenshtein.NAME;
-            if (q instanceof SetObject      && c instanceof SetObject)      return SMCollectionIsolatedMappingExt.NAME;
-            if (q instanceof IntegerObject  && c instanceof IntegerObject)  return SMNumericLinear.NAME;
+        SimilarityMeasureFunc similarityMeasureFunc = (q, c) -> {
+            if (q instanceof StringObject && c instanceof StringObject) return SMStringLevenshtein.NAME;
+            if (q instanceof SetObject && c instanceof SetObject) return SMCollectionIsolatedMappingExt.NAME;
+            if (q instanceof IntegerObject && c instanceof IntegerObject) return SMNumericLinear.NAME;
             return SMObjectEqual.NAME;
         };
 
@@ -101,7 +101,7 @@ public class LinearRetrieverExtTest extends SimpleTestBase {
             public ArrayList<MethodInvoker> apply(DataObject q, DataObject c) {
                 ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
 
-                if (q instanceof SetObject      && c instanceof SetObject)  {
+                if (q instanceof SetObject && c instanceof SetObject) {
                     methodInvokers.add(new MethodInvoker(
                             "setSimilarityMeasureFunc",
                             new Class[]{SimilarityMeasureFunc.class},
@@ -120,7 +120,7 @@ public class LinearRetrieverExtTest extends SimpleTestBase {
 
                 }
 
-                if (q instanceof IntegerObject  && c instanceof IntegerObject)  {
+                if (q instanceof IntegerObject && c instanceof IntegerObject) {
 
                     methodInvokers.add(new MethodInvoker(
                             "setMinimum",
@@ -154,7 +154,7 @@ public class LinearRetrieverExtTest extends SimpleTestBase {
 
         similarity = smListMappingImplExt.compute(Q, C1, simVal);
 
-        assertEquals(23./45, similarity.getValue(), delta);
+        assertEquals(23. / 45, similarity.getValue(), delta);
 
         // - C2 -
         smListMappingImplExt = new SMListMappingImplExt();
@@ -165,7 +165,7 @@ public class LinearRetrieverExtTest extends SimpleTestBase {
 
         similarity = smListMappingImplExt.compute(Q, C2, simVal);
 
-        assertEquals(29./45, similarity.getValue(), delta);
+        assertEquals(29. / 45, similarity.getValue(), delta);
 
         // - C3 -
         smListMappingImplExt = new SMListMappingImplExt();
@@ -205,9 +205,9 @@ public class LinearRetrieverExtTest extends SimpleTestBase {
         RetrievalResultList retrievalResults = linearRetrieverImplExt.perform(query);
         Iterator retrievalResultIterator = retrievalResults.iterator();
 
-        assertEquals("C3", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
-        assertEquals("C2", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
-        assertEquals("C1", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
+        assertEquals("C3", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+        assertEquals("C2", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+        assertEquals("C1", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
 
     }
 }

@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <property name="LOG_DIR" value="target/log/debug" />
+    <property name="LOG_DIR" value="target/log/debug"/>
     <appender name="DEBUG_FILE" class="ch.qos.logback.core.FileAppender">
         <file>${LOG_DIR}/tests.log</file>
         <append>false</append>
@@ -20,7 +20,7 @@
     </appender>
 
     <root level="info">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 
     <root level="debug">

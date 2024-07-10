@@ -25,7 +25,7 @@ public class SMListDTWImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test1(){
+    public void test1() {
         ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
@@ -47,7 +47,7 @@ public class SMListDTWImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         ListObject queryList = utils.createListObject();
 
 
@@ -89,7 +89,7 @@ public class SMListDTWImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test3(){
+    public void test3() {
         ListObject queryList = utils.createListObject();
         ListObject caseList = utils.createListObject();
 
@@ -102,7 +102,7 @@ public class SMListDTWImplExtTest extends ISimilarityMeasureFuncTest {
 
         SMListDTWImplExt sm = new SMListDTWImplExt();
         sm.setLocalSimilarityToUse(SMStringLevenshtein.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -111,12 +111,12 @@ public class SMListDTWImplExtTest extends ISimilarityMeasureFuncTest {
 
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
-        assertEquals(8./15, sim.getValue(), delta);
+        assertEquals(8. / 15, sim.getValue(), delta);
 
 
         sm = new SMListDTWImplExt();
         sm.setLocalSimilarityToUse(SMStringLevenshtein.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

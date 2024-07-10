@@ -108,7 +108,7 @@ public class SimilarityModelTest extends SimilarityModelTestBase {
             }
         };
 
-        addSimilarityMeasureToSimilarityModel(sma3, model.getAggregateSystemClass());;
+        addSimilarityMeasureToSimilarityModel(sma3, model.getAggregateSystemClass());
 
         similarityModel.setDefaultSimilarityMeasure(model.getAggregateSystemClass(), "SMA3");
 
@@ -116,7 +116,7 @@ public class SimilarityModelTest extends SimilarityModelTestBase {
     }
 
     @Test
-    public void test_different_subclass_same_similarity_measure(){
+    public void test_different_subclass_same_similarity_measure() {
         SimilarityMeasureImpl sms3 = new SimilarityMeasureImpl() {
             @Override
             public boolean isSimilarityFor(DataClass dataClass, String s) {
