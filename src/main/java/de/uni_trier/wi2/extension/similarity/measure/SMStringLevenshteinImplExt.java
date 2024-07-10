@@ -21,6 +21,7 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
         if (XEStoSystem.isXESStringClass(dataclass)) return true;
+        if (XEStoSystem.isXESIDClass(dataclass)) return true;
         return super.isSimilarityFor(dataclass, orderName);
     }
 
@@ -29,15 +30,22 @@ public class SMStringLevenshteinImplExt extends SMStringLevenshteinImpl implemen
 
 
         StringObject queryString, caseString;
+        DataClass queryClass = queryObject.getDataClass();
+        DataClass caseClass = caseObject.getDataClass();
 
-        if (XEStoSystem.isXESStringClass(queryObject.getDataClass())) {
+        String queryKey = null;
+        String caseKey = null;
+
+        if (XEStoSystem.isXESStringClass(queryClass) || XEStoSystem.isXESStringClass(queryClass)) {
             queryString = (StringObject) ((AggregateObject) queryObject).getAttributeValue(XESorAggregateAttributeNames.VALUE);
+            queryKey = ((StringObject) ((AggregateObject) queryObject).getAttributeValue(XESorAggregateAttributeNames.KEY)).getNativeString();
         } else {
             queryString = (StringObject) queryObject;
         }
 
-        if (XEStoSystem.isXESStringClass(caseObject.getDataClass())) {
+        if (XEStoSystem.isXESStringClass(caseClass) || XEStoSystem.isXESStringClass(caseClass)) {
             caseString = (StringObject) ((AggregateObject) caseObject).getAttributeValue(XESorAggregateAttributeNames.VALUE);
+            caseKey = ((StringObject) ((AggregateObject) caseObject).getAttributeValue(XESorAggregateAttributeNames.KEY)).getNativeString();
         } else {
             caseString = (StringObject) caseObject;
         }
