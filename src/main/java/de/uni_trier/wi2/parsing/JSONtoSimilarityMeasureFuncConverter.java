@@ -2,7 +2,9 @@ package de.uni_trier.wi2.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.ValidationMessage;
+import de.uni_trier.wi2.parsing.model.*;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
+import de.uni_trier.wi2.utils.WeightFunc;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,7 +36,7 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException {
+    public static SimilarityMeasureFunc getSimilarityMeasureFunc(File file) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (file == null) {
             return SimilarityMeasureFunc.getDefault();
         }
@@ -58,7 +60,7 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException {
+    public static SimilarityMeasureFunc getSimilarityMeasureFunc(String str) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (str == null) {
             return SimilarityMeasureFunc.getDefault();
         }
@@ -84,48 +86,33 @@ public class JSONtoSimilarityMeasureFuncConverter extends JSONtoFunctionConverte
      * @param map the Map which is to be converted into a SimilarityMeasureFunc
      * @return the SimilarityMeasureFunc generated from the Map
      */
-    private static SimilarityMeasureFunc getSimilarityMeasureFunc(Map map) {
+    private static SimilarityMeasureFunc getSimilarityMeasureFunc(Map map) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         // Get root element
         assert (map.get("element-type").equals("similarity-measure-function"));
 
+        // Get if statements
         List ifStatements = (List) map.get("if-statements");
 
-        // Define the SimilarityMeasureFunc which computes the output according to the JSON
-        SimilarityMeasureFunc similarityMeasureFunc = (q, c) -> {
+        final int amountOfIfStatements = ifStatements.size();
 
+        SMF_IfComponent[] ifComponents = new SMF_IfComponent[amountOfIfStatements];
 
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the JSON file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
+        for (int i = 0; i < amountOfIfStatements; i++) {
+            Map ifStatement = (Map) ifStatements.get(i);
 
-            for (int i = 0; i < ifStatements.size(); i++) {
+            Map condition = (Map) ifStatement.get("condition");
+            Map returnValue = (Map) ifStatement.get("return-value");
 
-                // If the evaluation of the "condition" property of the "if" node 
-                //  returns true, the "return-value" property of the "if" node, a "string" property, is
-                //  evaluated and the generated String object is returned.
+            LogicalOrConditionComponent conditionComponent = (LogicalOrConditionComponent) evaluate(condition);
+            StringComponent stringComponent = (StringComponent) evaluate(returnValue);
+            SMF_IfComponent ifComponent = new SMF_IfComponent(conditionComponent, stringComponent);
+            ifComponents[i] = ifComponent;
+        }
 
-                Map ifStatement = (Map) ifStatements.get(i);
-
-                Map condition = (Map) ifStatement.get("condition");
-                Map returnValue = (Map) ifStatement.get("return-value");
-
-                try {
-                    boolean ifStatementEvaluated = true;
-                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition).evaluate(q,c);
-
-                    if (ifStatementEvaluated) {
-                        String similarityMeasure = null;
-                        if (returnValue != null) similarityMeasure = (String) evaluate(returnValue).evaluate(q,c);
-
-                        return similarityMeasure;
-                    }
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-
+        // Define the WeightFunc which computes the output according to the JSON
+        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
+            for (SMF_IfComponent ifComponent : ifComponents)
+                if (ifComponent.isSatisfied(q, c)) return ifComponent.getReturnValue();
             return null;
         };
 

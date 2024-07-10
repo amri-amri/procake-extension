@@ -2,7 +2,11 @@ package de.uni_trier.wi2.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.ValidationMessage;
+import de.uni_trier.wi2.parsing.model.DoubleComponent;
+import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
+import de.uni_trier.wi2.parsing.model.WF_IfComponent;
 import de.uni_trier.wi2.utils.WeightFunc;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,7 +38,7 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter {
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static WeightFunc getWeightFunc(File file) throws ParserConfigurationException, IOException, SAXException {
+    public static WeightFunc getWeightFunc(File file) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (file == null) {
             return WeightFunc.getDefault();
         }
@@ -58,7 +62,7 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter {
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static WeightFunc getWeightFunc(String str) throws ParserConfigurationException, IOException, SAXException {
+    public static WeightFunc getWeightFunc(String str) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (str == null) {
             return WeightFunc.getDefault();
         }
@@ -84,49 +88,34 @@ public class JSONtoWeightFuncConverter extends JSONtoFunctionConverter {
      * @param map the Map which is to be converted into a WeightFunc
      * @return the WeightFunc generated from the Map
      */
-    private static WeightFunc getWeightFunc(Map map) {
+    private static WeightFunc getWeightFunc(Map map) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         // Get root element
         assert (map.get("element-type").equals("weight-function"));
 
+        // Get if statements
         List ifStatements = (List) map.get("if-statements");
+
+        final int amountOfIfStatements = ifStatements.size();
+
+        WF_IfComponent[] ifComponents = new WF_IfComponent[amountOfIfStatements];
+
+        for (int i = 0; i < amountOfIfStatements; i++) {
+            Map ifStatement = (Map) ifStatements.get(i);
+
+            Map condition = (Map) ifStatement.get("condition");
+            Map returnValue = (Map) ifStatement.get("return-value");
+
+            LogicalOrConditionComponent conditionComponent = (LogicalOrConditionComponent) evaluate(condition);
+            DoubleComponent doubleComponent = (DoubleComponent) evaluate(returnValue);
+            WF_IfComponent ifComponent = new WF_IfComponent(conditionComponent, doubleComponent);
+            ifComponents[i] = ifComponent;
+        }
 
         // Define the WeightFunc which computes the output according to the JSON
         WeightFunc weightFunc = (q) -> {
-
-
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the JSON file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
-
-            for (int i = 0; i < ifStatements.size(); i++) {
-
-                // If the evaluation of the "condition" property of the "if" node 
-                //  returns true, the "return-value" property of the "if" node, a "double" property, is
-                //  evaluated and the generated Double object is returned.
-
-                Map ifStatement = (Map) ifStatements.get(i);
-
-                Map condition = (Map) ifStatement.get("condition");
-                Map returnValue = (Map) ifStatement.get("return-value");
-
-                try {
-                    boolean ifStatementEvaluated = true;
-                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition).evaluate(q,null);
-
-                    if (ifStatementEvaluated) {
-                        double weight = 1;
-                        if (returnValue != null) weight = (double) evaluate(returnValue).evaluate(q,null);
-
-                        return weight;
-                    }
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-
-            return 1.;
+            for (WF_IfComponent ifComponent : ifComponents)
+                if (ifComponent.isSatisfied(q, null)) return ifComponent.getReturnValue();
+            return 1;
         };
 
         return weightFunc;

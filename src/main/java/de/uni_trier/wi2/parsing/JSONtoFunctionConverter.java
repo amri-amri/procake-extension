@@ -150,10 +150,12 @@ public abstract class JSONtoFunctionConverter {
             case "method":
                 String name = (String) node.get("name");
                 List<Map> arguments = (List<Map>) node.get("arguments");
+                int size = 0;
+                if (arguments!=null) size = arguments.size();
 
-                ValueComponent[] argumentComponents = new ValueComponent[arguments.size()];
+                ValueComponent[] argumentComponents = new ValueComponent[size];
 
-                for (int i = 0; i < arguments.size(); i++) {
+                for (int i = 0; i < size; i++) {
                     Map argument = arguments.get(i);
                     ValueComponent argComp;
                     if (argument.get("element-type").equals("string"))

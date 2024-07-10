@@ -2,8 +2,13 @@ package de.uni_trier.wi2.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.ValidationMessage;
+import de.uni_trier.wi2.parsing.model.LogicalOrConditionComponent;
+import de.uni_trier.wi2.parsing.model.MIF_IfComponent;
+import de.uni_trier.wi2.parsing.model.MethodListComponent;
+import de.uni_trier.wi2.parsing.model.StringComponent;
 import de.uni_trier.wi2.utils.MethodInvoker;
 import de.uni_trier.wi2.utils.MethodInvokersFunc;
+import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,7 +41,7 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter {
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static MethodInvokersFunc getMethodInvokersFunc(File file) throws ParserConfigurationException, IOException, SAXException {
+    public static MethodInvokersFunc getMethodInvokersFunc(File file) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (file == null) {
             return MethodInvokersFunc.getDefault();
         }
@@ -60,7 +65,7 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter {
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public static MethodInvokersFunc getMethodInvokersFunc(String str) throws ParserConfigurationException, IOException, SAXException {
+    public static MethodInvokersFunc getMethodInvokersFunc(String str) throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (str == null) {
             return MethodInvokersFunc.getDefault();
         }
@@ -86,51 +91,36 @@ public class JSONtoMethodInvokersFuncConverter extends JSONtoFunctionConverter {
      * @param map the Map which is to be converted into a MethodInvokersFunc
      * @return the MethodInvokersFunc generated from the Map
      */
-    private static MethodInvokersFunc getMethodInvokersFunc(Map map) {
+    private static MethodInvokersFunc getMethodInvokersFunc(Map map) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         // Get root element
         assert (map.get("element-type").equals("method-invokers-function"));
 
+        // Get if statements
         List ifStatements = (List) map.get("if-statements");
 
-        // Define the MethodInvokersFunc which computes the output according to the JSON
+        final int amountOfIfStatements = ifStatements.size();
+
+        MIF_IfComponent[] ifComponents = new MIF_IfComponent[amountOfIfStatements];
+
+        for (int i = 0; i < amountOfIfStatements; i++) {
+            Map ifStatement = (Map) ifStatements.get(i);
+
+            Map condition = (Map) ifStatement.get("condition");
+            Map returnValue = (Map) ifStatement.get("return-value");
+
+            LogicalOrConditionComponent conditionComponent = (LogicalOrConditionComponent) evaluate(condition);
+            MethodListComponent methodListComponent = (MethodListComponent) evaluate(returnValue);
+            MIF_IfComponent ifComponent = new MIF_IfComponent(conditionComponent, methodListComponent);
+            ifComponents[i] = ifComponent;
+        }
+
+        // Define the WeightFunc which computes the output according to the JSON
         MethodInvokersFunc methodInvokersFunc = (q, c) -> {
-
-
-            // It is important that the evaluation of the "if" nodes happens in the order of the
-            //  definition in the JSON file. This guarantees that an author of such a file can implicitly define
-            //  an "else" or "else if" condition.
-
-            for (int i = 0; i < ifStatements.size(); i++) {
-
-                // If the evaluation of the "condition" property of the "if" node
-                //  returns true, the "return-value" property of the "if" node, a "method-list" property, is
-                //  evaluated and the generated ArrayList<MethodInvoker> object is returned.
-
-                Map ifStatement = (Map) ifStatements.get(i);
-
-                Map condition = (Map) ifStatement.get("condition");
-                Map returnValue = (Map) ifStatement.get("return-value");
-
-                try {
-                    boolean ifStatementEvaluated = true;
-                    if (condition != null) ifStatementEvaluated = (boolean) evaluate(condition).evaluate(q,c);
-
-                    if (ifStatementEvaluated) {
-                        ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
-                        if (returnValue != null)
-                            methodInvokers = (ArrayList<MethodInvoker>) evaluate(returnValue).evaluate(q,c);
-
-                        return methodInvokers;
-                    }
-                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                         IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-
-            return new ArrayList<>();
+            for (MIF_IfComponent ifComponent : ifComponents)
+                if (ifComponent.isSatisfied(q, c)) return ifComponent.getReturnValue();
+            return null;
         };
+
 
         return methodInvokersFunc;
     }
