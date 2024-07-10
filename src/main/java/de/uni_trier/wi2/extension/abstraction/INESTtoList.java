@@ -12,7 +12,6 @@ import de.uni_trier.wi2.procake.utils.exception.NoSequentialGraphException;
 import java.util.Set;
 
 
-
 /**
  * A simple interface providing a default method for converting {@link NESTSequentialWorkflowObject}s to {@link ListObject}s.
  * Implementing this interface can be useful for similarity measures.
@@ -27,10 +26,10 @@ public interface INESTtoList {
      * The semantic descriptors of these task nodes are being put in a list in the order of the workflow.
      * This list is then returned.
      *
-     * @param workflowObject  the sequential workflow to be converted
-     * @return  the list containing the semantic descriptors of the task nodes
+     * @param workflowObject the sequential workflow to be converted
+     * @return the list containing the semantic descriptors of the task nodes
      * @throws NoSequentialGraphException if (1) {@code workflowObject} is not a valid {@code NESTSequentialWorkflow} or
-     * (2) {@code workflowObject.getStartNodes().size()} is greater than 1.
+     *                                    (2) {@code workflowObject.getStartNodes().size()} is greater than 1.
      */
     default ListObject toList(NESTSequentialWorkflowObject workflowObject) throws NoSequentialGraphException {
         ListObject workflowList = new ListObjectImpl(ModelFactory.getDefaultModel().getListSystemClass());
@@ -41,16 +40,15 @@ public interface INESTtoList {
 
         if (!new NESTSequentialWorkflowValidatorImpl(workflowObject).isValidSequentialWorkflow() || startNodes.size() > 1) {
             NoSequentialGraphException e = new NoSequentialGraphException(
-                    "NESTSequentialWorkflowObject is not valid.",
-                    workflowObject.getId(),
-                    workflowObject);
+                    "NESTSequentialWorkflowObject is not valid. ID=%s",
+                    workflowObject.getId());
             throw e;
         }
 
         NESTSequenceNodeObject node = startNodes.iterator().next();
 
         while (node != null) {
-            workflowList.addValue(  ((NESTTaskNodeObject) node).getSemanticDescriptor()  );
+            workflowList.addValue(node.getSemanticDescriptor());
             node = node.getNextNode();
         }
 

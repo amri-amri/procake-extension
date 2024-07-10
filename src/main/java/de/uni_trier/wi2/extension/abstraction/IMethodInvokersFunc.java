@@ -10,7 +10,7 @@ public interface IMethodInvokersFunc {
     /**
      * sets the MethodInvokersFunc
      *
-     * @param methodInvokersFunc  the MethodInvokersFunc to be set
+     * @param methodInvokersFunc the MethodInvokersFunc to be set
      */
     void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc);
 
