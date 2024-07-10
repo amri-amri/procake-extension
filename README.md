@@ -453,7 +453,7 @@ For the three central functional interfaces of this extension
 ([SimilarityMeasureFunc, MethodInvokersFunc, WeightFunc](#similaritymeasurefunc-methodinvoker-methodinvokersfunc--weightfunc))
 Document Type Definitions (.dtd) and JSON Schemas (.jschema)
 have been defined to schematize
-these Java-like XML formats. The DTD and JSchema files can be
+these Java-like XML/ JSON formats. The DTD and JSchema files can be
 found under
 `src/main/resources/de/uni_trier/wi2/dtd` and
 `src/main/resources/de/uni_trier/wi2/jschema` or at
@@ -475,8 +475,9 @@ to contain exactly one of the following elements as first child:
 5. `<same-object-as>`,
 6. `<instance-of>`, or
 7. `<regex>`,
+8. `<function>`,
 
-which all may represent the condition.
+which all represent the condition.
 And the second child element of an `<if>` element has to be
 a `<method-list>` element which represents the
 `ArrayList<MethodInvoker>`.
@@ -484,11 +485,12 @@ I will discuss the 'condition elements' at first.
 
 In more detail, the 'condition elements' represent
 Java-operators/functions which return a boolean value.
-`<and>`, `<or>` & `<not>` represent
-`&&`, `||` & `!`. `<equals>` represents `boolean Object.equals(Object obj)`
+`<and>`, `<or>` & `<not>` represent the logical operators
+`&&`, `||`, and `!` in Java. `<equals>` represents
+`boolean Object.equals(Object obj)`
 while `<same-object-as>` represents the `==`operator.
 `<instance-of>` represents the `instanceof`operator and
-`<regex>` represents a test if a String matches a regular
+`<regex>` represents a test of a String matching a regular
 expression.
 
 Since `<and>`, `<or>` & `<not>` represent boolean operators, their
@@ -527,7 +529,46 @@ But since `String` objects can be return-values of methods, a
 `<string>` element, as well.
 Keep in mind that the order of children plays a role here!
 
-Let's talk about the 'object elements' mentioned above.
+The `<function>` element has no children, but it requires
+an attribute `name`. Other than that, the attributes
+`arg1`, `arg2`, and `arg3` may or may not appear, respectively.
+There is a fixed set of values the `name` attribute can
+assume. Depending on the values of `name` and the other
+attributes - if present - a certain function is called,
+returning a boolean. These functions check certain
+attributes of the query and case objects given to the
+MethodInvokersFunc, which might be overly complicated
+or even impossible using only the other elements described in
+the DTD.
+I will present the different function names and the resulting
+behavior now:
+1. `qcAttributesHaveSameKeyAndType`: Checks if the given
+    query and case objects are `AggregateObject`s representing
+   XES attributes and if so, if their keys and types are
+   the same. The type is the name of the XES attribute the
+   query or case object represents ("string", "double", etc.).
+    If `arg1` is given, it is checked if the keys
+    also equal `arg1`. If `arg2` is given, it is checked whether
+    the types equal `arg2`.
+2. `qAttributeHasKeyTypeValue`: Checks if the given query object
+   is an `AggregateObject` representing an XES attribute.
+   If `arg1` is given, it is checked if the key equals `arg1`.
+   If `arg2` is given, it is checked whether the type equals
+   `arg2`. If `arg3` is given, it is checked whether the
+   XES attributes value equals `arg3`.
+3. `cAttributeHasKeyTypeValue`: Same as above but for the
+   given case object.
+4. `qEventContainsAttribute`: Checks if the given query object
+   is an object of `XESEventClass` representing an XES event.
+   If at least one
+   of `arg1`, `arg2`, `arg3` is given, it is checked, whether
+   the event contains an event attribute that has a) `arg1`
+   as key, if `arg1` is present, b) `arg2` as type, if `arg2`
+   is present, and c) `arg3` as value, if `arg3` is present.
+5. `cEventContainsAttribute`: Same as above but for the
+   given case object.
+
+Now, let's talk about the 'object elements' mentioned above.
 Since we're always talking about query and case objects on
 which a retrieval or a similarity measuring has to be
 performed, there are `<q>` and `<c>`elements representing
@@ -714,6 +755,7 @@ it belongs to, which can be:
 * `same-object-as`
 * `instance-of`
 * `regex`
+* `function`
 * `q`
 * `c`
 * `string`
@@ -882,7 +924,7 @@ and `src/test/resources/de/uni_trier/wi2/json` respectively.
 Here are some boilerplate snippets for possible use cases:
 1. [q and c both have DataClass "XYZ"](#q-and-c-both-have-procake-class-xyz)
 2. [q and c are StringObjects](#q-and-c-are-stringobjects)
-3. [Always return certain value](#always-return-certain-value)
+3. [Always return certain value (trivial functional interface)](#always-return-certain-value)
 
 #### q and c both have ProCake-class "XYZ"
 __Java__

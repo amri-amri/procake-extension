@@ -1,6 +1,8 @@
 package de.uni_trier.wi2.parsing;
 
 import de.uni_trier.wi2.parsing.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -33,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public abstract class XMLtoFunctionConverter {
 
+    private static final Logger logger = LoggerFactory.getLogger(XMLtoFunctionConverter.class);
     /**
      * flag that shows if a function converter has been initialized yet
      */
@@ -58,17 +61,17 @@ public abstract class XMLtoFunctionConverter {
         dBuilder.setErrorHandler(new ErrorHandler() {
             @Override
             public void warning(SAXParseException exception) {
-                exception.printStackTrace();
+                logger.warn(exception.toString());
             }
 
             @Override
             public void error(SAXParseException exception) {
-                exception.printStackTrace();
+                logger.error(exception.toString());
             }
 
             @Override
             public void fatalError(SAXParseException exception) {
-                exception.printStackTrace();
+                logger.error(exception.toString());
             }
         });
 
