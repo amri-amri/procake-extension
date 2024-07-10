@@ -188,6 +188,8 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
         String localSimilarityMeasure;
         double weight = getWeightFunc().apply(queryElement);
+        if (weight <= 0) return new SimilarityImpl(this, queryElement, null, 0.);
+
         Similarity maxSimilarity = new SimilarityImpl(null, queryElement, null, 0.0);
 
         DataObjectIterator caseElementIterator = caseCollection.iterator();
