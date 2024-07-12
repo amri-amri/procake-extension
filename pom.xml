@@ -7,15 +7,29 @@
 
     <groupId>de.uni-trier.wi2</groupId>
     <artifactId>procake-extension</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.5.18-SNAPSHOT</version>
 
     <dependencies>
 
         <dependency>
             <groupId>de.uni-trier.wi2</groupId>
             <artifactId>procake-framework</artifactId>
-            <version>4.0.0</version>
+            <version>6.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>de.uni-trier.wi2</groupId>
+            <artifactId>xestoworkflowconverter</artifactId>
+            <version>2.2.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.dhatim/fastexcel-reader -->
+        <dependency>
+            <groupId>org.dhatim</groupId>
+            <artifactId>fastexcel-reader</artifactId>
+            <version>0.18.0</version>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
@@ -23,11 +37,32 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.4.14</version>
         </dependency>
+
+        <!-- JSON -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.16.1</version>
+        </dependency>
+
 
     </dependencies>
 

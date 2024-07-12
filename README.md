@@ -11,10 +11,13 @@
 9. [RetrieverExt, ParallelLinearRetrieverImplExt & LinearRetrieverImplExt](#retrieverext-parallellinearretrieverimplext--linearretrieverimplext)
 10. [Examples](#examples)
 12. [Parsing](#parsing)
-    - [Explaination of the DTDs](#parsing)
-    - [Differences between the DTDs](#differences-between-the-dtds)
-    - [XMLtoFunctionConverter](#xmltofunctionconverter)
-    - [Example](#example)
+    - [XML](#xml-to-functional-interface)
+      - [Explaination of the DTDs](#parsing)
+      - [Differences between the DTDs](#differences-between-the-dtds)
+      - [XMLtoFunctionConverter](#xmltofunctionconverter)
+      - [Example](#example)
+    - [JSON](#json-to-functional-interface)
+    - [Boilerplate](#boilerplate)
 
 ## Introduction
 
@@ -445,15 +448,19 @@ of a retrieval
 In order to communicate with a ProCAKE instance per an API,
 a way of transporting functional interfaces without having to
 use java code had to be found.
-This has been achieved by turning Java code into an XML format.
+This has been achieved by turning Java code into an XML or JSON format.
 For the three central functional interfaces of this extension
 ([SimilarityMeasureFunc, MethodInvokersFunc, WeightFunc](#similaritymeasurefunc-methodinvoker-methodinvokersfunc--weightfunc))
-Document Type Definitions (.dtd) have been defined to schematize
-this Java-like XML format. The DTD files can be found under
-`src/main/resources/de/uni_trier/wi2/schema` or at
-https://karim-amri.de/dtd/. I will explain the components on
-the example of `methodinvokers-function.dtd`:
+Document Type Definitions (.dtd) and JSON Schemas (.jschema)
+have been defined to schematize
+these Java-like XML/ JSON formats. The DTD and JSchema files can be
+found under
+`src/main/resources/de/uni_trier/wi2/dtd` and
+`src/main/resources/de/uni_trier/wi2/jschema` or at
+https://karim-amri.de/dtd/ or https://karim-amri.de/jschema/. I will first explain the XML
+components on the example of `methodinvokers-function.dtd`:
 
+### XML to Functional Interface
 The root element in this case is the `<method-invokers-function>`
 element, which can contain an arbitrary amount of `<if>`
 elements. An if-statement in Java consists of a condition and
@@ -468,8 +475,9 @@ to contain exactly one of the following elements as first child:
 5. `<same-object-as>`,
 6. `<instance-of>`, or
 7. `<regex>`,
+8. `<function>`,
 
-which all may represent the condition.
+which all represent the condition.
 And the second child element of an `<if>` element has to be
 a `<method-list>` element which represents the
 `ArrayList<MethodInvoker>`.
@@ -477,11 +485,12 @@ I will discuss the 'condition elements' at first.
 
 In more detail, the 'condition elements' represent
 Java-operators/functions which return a boolean value.
-`<and>`, `<or>` & `<not>` represent
-`&&`, `||` & `!`. `<equals>` represents `boolean Object.equals(Object obj)`
+`<and>`, `<or>` & `<not>` represent the logical operators
+`&&`, `||`, and `!` in Java. `<equals>` represents
+`boolean Object.equals(Object obj)`
 while `<same-object-as>` represents the `==`operator.
 `<instance-of>` represents the `instanceof`operator and
-`<regex>` represents a test if a String matches a regular
+`<regex>` represents a test of a String matching a regular
 expression.
 
 Since `<and>`, `<or>` & `<not>` represent boolean operators, their
@@ -499,9 +508,8 @@ is why their child elements are exactly two of the following:
 5. `<double>`,
 6. `<boolean>`,
 7. `<character>`,
-8. `<integer>`,
-9. `<byte>`, and
-10. `<method-return-value>`,
+8. `<integer>`, and
+9. `<method-return-value>`,
 
 which represent just that: an object. I will adress these
 'object elements' later.
@@ -521,7 +529,46 @@ But since `String` objects can be return-values of methods, a
 `<string>` element, as well.
 Keep in mind that the order of children plays a role here!
 
-Let's talk about the 'object elements' mentioned above.
+The `<function>` element has no children, but it requires
+an attribute `name`. Other than that, the attributes
+`arg1`, `arg2`, and `arg3` may or may not appear, respectively.
+There is a fixed set of values the `name` attribute can
+assume. Depending on the values of `name` and the other
+attributes - if present - a certain function is called,
+returning a boolean. These functions check certain
+attributes of the query and case objects given to the
+MethodInvokersFunc, which might be overly complicated
+or even impossible using only the other elements described in
+the DTD.
+I will present the different function names and the resulting
+behavior now:
+1. `qcAttributesHaveSameKeyAndType`: Checks if the given
+    query and case objects are `AggregateObject`s representing
+   XES attributes and if so, if their keys and types are
+   the same. The type is the name of the XES attribute the
+   query or case object represents ("string", "double", etc.).
+    If `arg1` is given, it is checked if the keys
+    also equal `arg1`. If `arg2` is given, it is checked whether
+    the types equal `arg2`.
+2. `qAttributeHasKeyTypeValue`: Checks if the given query object
+   is an `AggregateObject` representing an XES attribute.
+   If `arg1` is given, it is checked if the key equals `arg1`.
+   If `arg2` is given, it is checked whether the type equals
+   `arg2`. If `arg3` is given, it is checked whether the
+   XES attributes value equals `arg3`.
+3. `cAttributeHasKeyTypeValue`: Same as above but for the
+   given case object.
+4. `qEventContainsAttribute`: Checks if the given query object
+   is an object of `XESEventClass` representing an XES event.
+   If at least one
+   of `arg1`, `arg2`, `arg3` is given, it is checked, whether
+   the event contains an event attribute that has a) `arg1`
+   as key, if `arg1` is present, b) `arg2` as type, if `arg2`
+   is present, and c) `arg3` as value, if `arg3` is present.
+5. `cEventContainsAttribute`: Same as above but for the
+   given case object.
+
+Now, let's talk about the 'object elements' mentioned above.
 Since we're always talking about query and case objects on
 which a retrieval or a similarity measuring has to be
 performed, there are `<q>` and `<c>`elements representing
@@ -529,10 +576,10 @@ the query and case object, respectively.
 These elements are empty and have no attributes.
 
 The `<string>`, `<double>`, `<boolean>`, `<character>`,
-`<integer>`, & `<byte>` elements are all empty
+& `<integer>` elements are all empty
 but have one required attribute called `value`, which,
 you guessed it, stores the value of the `String`, `Double`,
-`Boolean`, `Character`, `Integer`, or `Byte` object.
+`Boolean`, `Character`, or `Integer` object.
 
 As you might have also guessed, a `<method-return-value>` element
 represents the return-value of a method, which in turn is
@@ -546,7 +593,7 @@ represented by the second child is called.
 A `<method>` has a required attribute `name`, which contains
 the exact name of the method without modifiers or parameters.
 It can have an arbitrary amount of `<string>`, `<double>`,
-`<boolean>`, `<character>`, `<integer>`, & `<byte>` elements
+`<boolean>`, `<character>`, & `<integer>` elements
 as children which represent the arguments of the method.
 
 A `<method-list>` element contains an arbitrary amount
@@ -562,23 +609,23 @@ first one and defining the first child element as
 Also, if none of the `<if>` elements' conditions were satisfied,
 a default value is returned as follows:
 
-### Differences between the DTDs
-#### Default value:
+#### Differences between the DTDs
+##### Default value:
 - `methodinvokers-function.dtd`: Empty `ArrayList<MethodInvoker>`
 - `similaritymeasure-function.dtd`: `null`
 - `weight-function.dtd`: a `double` with the value `1`
-#### Name of root element:
+##### Name of root element:
 - `methodinvokers-function.dtd`: `<method-invokers-function>`
 - `similaritymeasure-function.dtd`: `<similarity-measure-function>`
 - `weight-function.dtd`: `<weight-function>`
-#### Second child of `<if>` Element.
+##### Second child of `<if>` Element.
 - `methodinvokers-function.dtd`: `<method-list>`
 - `similaritymeasure-function.dtd`: `<string>`
 - `weight-function.dtd`: `<double>`
 
 The second child of the `<if>` element always represents the
 return value of the respective functional interface.
-#### Availability of `<c>` element.
+##### Availability of `<c>` element.
 - `methodinvokers-function.dtd`: yes
 - `similaritymeasure-function.dtd`: yes
 - `weight-function.dtd`: no
@@ -586,7 +633,16 @@ return value of the respective functional interface.
 Since `WeightFunc.apply(DataObject q)` takes only one argument,
 there is no need for the `<c>` element to exist in that DTD.
 
-### XMLtoFunctionConverter
+##### Availability of functions
+- `methodinvokers-function.dtd`: all
+- `similaritymeasure-function.dtd`: all
+- `weight-function.dtd`: only `qAttributeHasKeyTypeValue` and `qEventContainsAttribute`
+
+Since `WeightFunc.apply(DataObject q)` takes only one argument,
+`qcAttributesHaveSameKeyAndType` can not be inside a `WeightFunc`,
+because this function depends on both the query and a case object.
+
+#### XMLtoFunctionConverter
 
 The three inheritors of the abstract class `XMLtoFunctionConverter`
 - `XMLtoMethodInvokersFuncConverter`,
@@ -608,7 +664,7 @@ It is necessary that the `<!DOCTYPE ...` tag is given. Use
 the URL https://karim-amri.de/dtd/ if you want to avoid errors
 (see example below).
 
-### Example
+#### Example
 Take a look at the following XML
 `src/test/resources/de/uni_trier/wi2/xml/weight-function-test.xml`:
 ```xml
@@ -687,4 +743,588 @@ WeightFunc weighTFunc = new WeightFunc() {
         return 1d;
     }
 };
+```
+
+### JSON to Functional Interface
+The basic structures of an XML and a JSON representation are
+pretty similar. Every one of the above explained tags
+is available as a JSON object, but every object has to have
+an `element-type` property, which is a __string property__.
+The value of this property has to be the type of the object
+it belongs to, which can be:
+
+* `similarity-measure-function`
+* `method-invokers-function`
+* `weight-function`
+* `if`
+* `and`
+* `or`
+* `not`
+* `equals`
+* `same-object-as`
+* `instance-of`
+* `regex`
+* `function`
+* `q`
+* `c`
+* `string`
+* `double`
+* `boolean`
+* `character`
+* `integer`
+* `method`
+* `method-return-value`
+* `method-list`
+
+This is necessary so that the parser knows what kind of object
+it is dealing with.
+
+The root object is an object where `element-type` is one of
+`similarity-measure-function`, `method-invokers-function`,
+or`weight-function`. Also, if a non-trivial functional interface
+(always returning a default value) is to be constructed,
+a property `if-statements` of type __array__ has to be declared.
+Content of that array can only be __Objects__ of `element-type`
+`if`.
+
+#### Example
+This example at
+`src/test/resources/de/uni_trier/wi2/json/weight-function-test.json`,
+ represents the same `WeightFunc` as the XML example above:
+```json
+{
+  "element-type": "weight-function",
+  "if-statements": [
+    {
+      "element-type": "if",
+      "condition": {
+        "element-type": "or",
+        "content": [
+          {
+            "element-type": "and",
+            "content": [
+              {
+                "element-type": "instance-of",
+                "a": {
+                  "element-type": "q"
+                },
+                "b": {
+                  "element-type": "string",
+                  "value": "de.uni_trier.wi2.procake.data.object.base.IntegerObject"
+                }
+              },
+              {
+                "element-type": "equals",
+                "a": {
+                  "element-type": "double",
+                  "value": 2
+                },
+                "b": {
+                  "element-type": "method-return-value",
+                  "object": {
+                    "element-type": "q"
+                  },
+                  "method": {
+                    "element-type": "method",
+                    "name": "getNativeInteger"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "element-type": "and",
+            "content": [
+              {
+                "element-type": "instance-of",
+                "a": {
+                  "element-type": "q"
+                },
+                "b": {
+                  "element-type": "string",
+                  "value": "de.uni_trier.wi2.procake.data.object.base.BooleanObject"
+                }
+              },
+              {
+                "element-type": "not",
+                "content": {
+                  "element-type": "same-object-as",
+                  "a": {
+                    "element-type": "boolean",
+                    "value": "false"
+                  },
+                  "b": {
+                    "element-type": "method-return-value",
+                    "object": {
+                      "element-type": "q"
+                    },
+                    "method": {
+                      "element-type": "method",
+                      "name": "getNativeBoolean"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "return-value": {
+        "element-type": "double",
+        "value": 0.3
+      }
+    },
+    {
+      "element-type": "if",
+      "condition": {
+        "element-type": "and",
+        "content": [
+          {
+            "element-type": "instance-of",
+            "a": {
+              "element-type": "q"
+            },
+            "b": {
+              "element-type": "string",
+              "value": "de.uni_trier.wi2.procake.data.object.base.StringObject"
+            }
+          },
+          {
+            "element-type": "regex",
+            "pattern": {
+              "element-type": "string",
+              "value": "ab(c)*d"
+            },
+            "matcher": {
+              "element-type": "method-return-value",
+              "object": {
+                "element-type": "q"
+              },
+              "method": {
+                "element-type": "method",
+                "name": "getNativeString"
+              }
+            }
+          }
+        ]
+      },
+      "return-value": {
+        "element-type": "double",
+        "value": 0.4
+      }
+    }
+  ]
+}
+```
+
+The only differences between the XML and JSON representations
+are grammatical and syntactical, which is
+why I will not describe the JSON schemas further.
+If you feel stuck in trying to understand these DTDs or
+schemas, take a look at the concepts of DTD and JSON schema
+themselves to understand why certain keywords are chosen
+they way they are and take a look at the `evaluate`- and
+`get...Func`-methods of XMLtoFunctionConverter and
+JSONtoFunctionConverter respectively. Also, take a look at the
+examples in `src/test/resources/de/uni_trier/wi2/xml`
+and `src/test/resources/de/uni_trier/wi2/json` respectively.
+
+### Boilerplate
+Here are some boilerplate snippets for possible use cases:
+1. [q and c both have DataClass "XYZ"](#q-and-c-both-have-procake-class-xyz)
+2. [q and c are StringObjects](#q-and-c-are-stringobjects)
+3. [Always return certain value (trivial functional interface)](#always-return-certain-value)
+
+#### q and c both have ProCake-class "XYZ"
+__Java__
+```Java
+String dataClassQ = q.getDataClass().getName();
+String dataClassC = c.getDataClass().getName();
+if (dataClassQ.equals(dataClassC) && dataClassQ.equals("XYZ")) {
+    return ...
+}
+```
+
+__XML__
+```XML
+<if>
+    <and>
+        <equals>
+            <method-return-value>
+                <method-return-value>
+                    <q/>
+                    <method name="getDataClass"/>
+                </method-return-value>
+                <method name="getName"/>
+            </method-return-value>
+            <method-return-value>
+                <method-return-value>
+                    <c/>
+                    <method name="getDataClass"/>
+                </method-return-value>
+                <method name="getName"/>
+            </method-return-value>
+        </equals>
+        <equals>
+            <method-return-value>
+                <method-return-value>
+                    <q/>
+                    <method name="getDataClass"/>
+                </method-return-value>
+                <method name="getName"/>
+            </method-return-value>
+            <string value="XYZ"/>
+        </equals>
+    </and>
+    ...
+</if>
+```
+
+__JSON__
+```JSON
+{
+  "element-type": "if",
+  "condition": {
+    "element-type": "and",
+    "content": [
+      {
+        "element-type":  "equals",
+        "a": {
+          "element-type": "method-return-value",
+          "object": {
+            "element-type": "method-return-value",
+            "object": {
+              "element-type": "q"
+            },
+            "method": {
+              "element-type": "method",
+              "name": "getDataClass"
+            }
+          },
+          "method": {
+            "element-type": "method",
+            "name": "getName"
+          }
+        },
+        "b": {
+          "element-type": "method-return-value",
+          "object": {
+            "element-type": "method-return-value",
+            "object": {
+              "element-type": "c"
+            },
+            "method": {
+              "element-type": "method",
+              "name": "getDataClass"
+            }
+          },
+          "method": {
+            "element-type": "method",
+            "name": "getName"
+          }
+        }
+      },
+      {
+        "element-type": "equals",
+        "a": {
+          "element-type": "method-return-value",
+          "object": {
+            "element-type": "method-return-value",
+            "object": {
+              "element-type": "q"
+            },
+            "method": {
+              "element-type": "method",
+              "name": "getDataClass"
+            }
+          },
+          "method": {
+            "element-type": "method",
+            "name": "getName"
+          }
+        },
+        "b": {
+          "element-type": "string",
+          "value": "XYZ"
+        }
+      }
+    ]
+  },
+  "return-value": { ... }
+}
+```
+
+
+
+#### q and c are StringObjects
+__Java__
+```Java
+if (q instanceof StringObject && c instanceof StringObject){
+    return ...
+}
+```
+
+__XML__
+```XML
+<if>
+    <and>
+        <instance-of>
+            <q/>
+            <string value="StringObject"/>
+        </instance-of>
+        <instance-of>
+            <c/>
+            <string value="StringObject"/>
+        </instance-of>
+    </and>
+    ...
+</if>
+```
+
+__JSON__
+```JSON
+{
+  "element-type": "if",
+  "condition": {
+    "element-type": "and",
+    "content": [
+      {
+        "element-type": "instance-of",
+        "a": {
+          "element-type": "q"
+        },
+        "b": {
+          "element-type": "string",
+          "value": "StringObject"
+        }
+      },
+      {
+        "element-type": "instance-of",
+        "a": {
+          "element-type": "c"
+        },
+        "b": {
+          "element-type": "string",
+          "value": "StringObject"
+        }
+      }
+    ]
+  },
+  "return-value": { ... }
+}
+```
+
+#### Always return certain value
+__Java__
+```Java
+return ...
+```
+
+__XML__
+```XML
+<if>
+    <equals>
+        <q/>
+        <q/>
+    </equals>
+    ...
+</if>
+```
+
+__JSON__
+```JSON
+{
+  "element-type": "if",
+  "return-value": { ... }
+}
+```
+No condition means `true` here!
+
+
+
+```mermaid
+---
+title: Class Diagram of Components used by Functional Interface Converters
+---
+classDiagram
+    
+    class AndComponent{
+        -LogicalOrConditionComponent[] conditions
+    }
+
+    class NotComponent{
+        -LogicalOrConditionComponent condition
+    }
+
+    class OrComponent{
+        -LogicalOrConditionComponent[] conditions
+    }
+    
+    class EqualsComponent{
+        -ObjectOrValueComponent object1
+        -ObjectOrValueComponent object2
+    }
+    
+    class InstanceOfComponent{
+        -ObjectComponent object
+        -StringComponent stringC
+    }
+    
+    class RegexComponent{
+        -StringOrMethodReturnValueComponent pattern
+        -StringOrMethodReturnValueComponent string
+    }
+    
+    class SameObjectAsComponent{
+        -ObjectOrValueComponent object1
+        -ObjectOrValueComponent object2
+    }
+    
+    class BooleanComponent{
+        -Boolean value
+    }
+    
+    class CharacterComponent{
+        -Character value
+    }
+
+    class DoubleComponent{
+        -Double value
+    }
+
+    class IntegerComponent{
+        -Integer value
+    }
+
+    class StringComponent{
+        -String value
+    }
+    
+    class CComponent
+    
+    class QComponent
+    
+    class MethodComponent{
+        -ValueComponent[] arguments
+        -String name
+    }
+    
+    class MethodListComponent{
+        -MethodComponent[] methods
+        + ArrayList<MethodInvoker> evaluate()
+    }
+
+    class MethodReturnValueComponent{
+        -ObjectComponent object
+        -MethodComponent method
+    }
+
+
+    class FunctionComponent{
+        -String name
+        -String firstArgument
+        -String secondArgument
+    }
+
+
+    class IfComponent{
+        <<abstract>>
+        -LogicalOrConditionComponent conditionComponent
+        + boolean isSatisfied(DataObject, DataObject )
+    }
+
+    class MIF_IfComponent{
+        -MethodListComponent methodList
+    }
+
+    class SMF_IfComponent{
+        -StringComponent string
+    }
+
+    class WF_IfComponent{
+        -DoubleComponent doubleComponent
+    }
+    
+    
+    class Component{
+        <<interface>>
+        + T evaluate(DataObject, DataObject)
+    }
+    
+    class ConditionComponent{
+        <<interface>>
+    }
+    
+    class LogicalComponent{
+        <<interface>>
+    }
+    
+    class LogicalOrConditionComponent{
+        <<interface>>
+        + Boolean evaluate(DataObject, DataObject)
+    }
+    
+    class ObjectComponent{
+        <<interface>>
+    }
+    
+    class ObjectOrValueComponent{
+        <<interface>>
+    }
+    
+    class StringOrMethodReturnValueComponent{
+        <<interface>>
+    }
+    
+    class ValueComponent{
+        <<interface>>
+        + T evaluate()
+    }
+    
+    
+    
+    
+    
+    
+    
+    LogicalComponent <|-- AndComponent
+    LogicalComponent <|-- NotComponent
+    LogicalComponent <|-- OrComponent
+    
+    ConditionComponent <|-- EqualsComponent
+    ConditionComponent <|-- InstanceOfComponent
+    ConditionComponent <|-- RegexComponent
+    ConditionComponent <|-- SameObjectAsComponent
+    
+    ValueComponent <|-- BooleanComponent
+    ValueComponent <|-- CharacterComponent
+    ValueComponent <|-- DoubleComponent
+    ValueComponent <|-- IntegerComponent
+    ValueComponent <|-- StringComponent
+    
+    ObjectComponent <|-- CComponent
+    ObjectComponent <|-- QComponent
+    
+    Component <|-- MethodComponent
+    Component <|-- MethodListComponent
+    ObjectComponent <|-- MethodReturnValueComponent
+    StringOrMethodReturnValueComponent <|-- MethodReturnValueComponent
+
+    ObjectComponent <|-- FunctionComponent
+    StringOrMethodReturnValueComponent <|-- FunctionComponent
+    
+    IfComponent <|-- MIF_IfComponent
+    IfComponent <|-- SMF_IfComponent
+    IfComponent <|-- WF_IfComponent
+
+    LogicalOrConditionComponent <|-- ConditionComponent
+    LogicalOrConditionComponent <|-- LogicalComponent
+    Component <|-- LogicalOrConditionComponent
+    ObjectOrValueComponent <|-- ObjectComponent
+    Component <|-- ObjectOrValueComponent
+    Component <|-- StringOrMethodReturnValueComponent
+    ObjectOrValueComponent <|-- ValueComponent
+    
+    
+
 ```

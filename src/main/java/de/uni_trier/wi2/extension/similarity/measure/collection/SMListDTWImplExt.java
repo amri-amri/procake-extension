@@ -1,7 +1,11 @@
 package de.uni_trier.wi2.extension.similarity.measure.collection;
 
-import de.uni_trier.wi2.extension.abstraction.*;
+import de.uni_trier.wi2.extension.abstraction.IMethodInvokersFunc;
+import de.uni_trier.wi2.extension.abstraction.INESTtoList;
+import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
+import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -10,16 +14,13 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListDTWImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import de.uni_trier.wi2.utils.MethodInvoker;
-import de.uni_trier.wi2.utils.MethodInvokersFunc;
-import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
-import de.uni_trier.wi2.utils.WeightFunc;
+import de.uni_trier.wi2.utils.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
+import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
 /**
  * A similarity measure using the 'Dynamic Time Warping' algorithm for {@link ListObject}s.
@@ -51,53 +52,42 @@ import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
 public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INESTtoList, ISimilarityMeasureFunc, IWeightFunc, IMethodInvokersFunc {
 
     protected SimilarityMeasureFunc similarityMeasureFunc = (a, b) -> null;
-    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
+    protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<>();
     protected WeightFunc weightFunc = (a) -> 1;
-    ArrayList<Similarity> localSimilarities;
 
     @Override
     public void setLocalSimilarityToUse(String similarityToUse) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
         super.setLocalSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        METHOD_CALL.trace("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getSimilarityToUse()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        METHOD_CALL.trace("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getMethodInvokersFunc()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        METHOD_CALL.trace("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getWeightFunc()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getWeightFunc(): return {}", weightFunc);
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -108,49 +98,51 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
     }
 
     public String getSystemName() {
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getSystemName()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.getSystemName(): return {}", SMListDTWExt.NAME);
         return SMListDTWExt.NAME;
     }
 
-    public void setHalvingDistancePercentage(Double a){
+    public void setHalvingDistancePercentage(Double a) {
         this.setHalvingDistancePercentage((double) a);
+    }
+
+    @Override
+    public boolean isSimilarityFor(DataClass dataclass, String orderName) {
+        if (XEStoSystem.isXESListClass(dataclass)) return true;
+        if (dataclass.isNESTSequentialWorkflow()) return true;
+        return super.isSimilarityFor(dataclass, orderName);
     }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
-        localSimilarities = new ArrayList<>();
+        Object[] similarityComputation = computeSimilarityValue(queryObject, caseObject, valuator);
+        double similarityValue = (double) similarityComputation[0];
+        ArrayList<Similarity> localSimilarities = (ArrayList<Similarity>) similarityComputation[1];
+        Similarity similarity = new SimilarityImpl(this, queryObject, caseObject, similarityValue, localSimilarities);
 
-        Similarity similarity = new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue(queryObject, caseObject, valuator), localSimilarities);
-
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.compute(DataObject, DataObject, SimilarityValuator): return Similarity");
 
         return similarity;
     }
 
-    protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
+    protected Object[] computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         //prepare new arrays containing initial null-elements
         DataObject[] queryList, caseList;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESListClass")))
-            queryList = ((ListObject) XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject)).getValues().toArray(DataObject[]::new);
+        if (XEStoSystem.isXESListClass(queryObject.getDataClass()))
+            queryList = getXESListAsSystemListObject((AggregateObject) queryObject).getCollection().toArray(new DataObject[0]);
         else if (queryObject.isNESTSequentialWorkflow())
-            queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
-        else queryList = ((ListObject) queryObject).getValues().toArray(DataObject[]::new);
+            queryList = toList((NESTSequentialWorkflowObject) queryObject).getCollection().toArray(new DataObject[0]);
+        else queryList = ((ListObject) queryObject).getValues().toArray(new DataObject[0]);
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESListClass")))
-            caseList = ((ListObject) XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject)).getValues().toArray(DataObject[]::new);
+        if (XEStoSystem.isXESListClass(caseObject.getDataClass()))
+            caseList = getXESListAsSystemListObject((AggregateObject) caseObject).getCollection().toArray(new DataObject[0]);
         else if (caseObject.isNESTSequentialWorkflow())
-            caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
-        else caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
+            caseList = toList((NESTSequentialWorkflowObject) caseObject).getCollection().toArray(new DataObject[0]);
+        else caseList = ((ListObject) caseObject).getValues().toArray(new DataObject[0]);
 
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): queryList={}, caseList={}", maxSubstring(queryList), maxSubstring(caseList));
 
         DataObject[] queryArray = new DataObject[queryList.length + 1];
         DataObject[] caseArray = new DataObject[caseList.length + 1];
@@ -206,12 +198,7 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                 wTempDenominator += getWeightFunc().apply(queryArray[j]);
             }
         }
-        
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): wTempDenominator={}", wTempDenominator);
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): halvingDistancePercentage={}", getHalvingDistancePercentage());
 
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): for (int j = 1; j < queryArray.length; j++){...");
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator):     for (int i = 1; i < caseArray.length; j++){...");
 
         for (int j = 1; j < queryArray.length; j++) {
 
@@ -222,19 +209,13 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                 wTemp = getHalvingDistancePercentage() / (2 * wTempDenominator);
             }
 
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): queryArray[j={}]={}", j, queryArray[j]);
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): weight={}", weight);
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): wTemp={}", wTemp);
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): wTempDenominator={}", wTempDenominator);
 
             for (int i = 1; i < caseArray.length; i++) {
                 String localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryArray[j], caseArray[i]);
                 if (localSimilarityMeasure == null)
                     localSimilarityMeasure = valuator.getSimilarityMeasure(queryArray[j], caseArray[i]).getSystemName();
 
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): caseArray[i={}]={}", i, caseArray[i]);
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): localSimilarityMeasure={}", maxSubstring(localSimilarityMeasure));
-                
+
                 Similarity similarity;
 
                 if (valuator instanceof SimilarityValuatorImplExt) {
@@ -245,26 +226,17 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                     }
                 } else similarity = valuator.computeSimilarity(queryArray[j], caseArray[i], localSimilarityMeasure);
 
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): similarity={}", maxSubstring(similarity));
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): apply weight...");
-                
-                // apply weight
-                similarity = new SimilarityImpl(
-                        valuator.getSimilarityModel().getSimilarityMeasure(queryArray[j].getDataClass(), localSimilarityMeasure),
-                        queryArray[j],
-                        caseArray[i],
-                        similarity.getValue() * weight
-                );
 
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): similarity={}", maxSubstring(similarity));
-                
+                // apply weight
+                similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryArray[j].getDataClass(), localSimilarityMeasure), queryArray[j], caseArray[i], similarity.getValue() * weight);
+
+
                 localSimilarityMatrix[i][j] = similarity;
 
                 double diagonal = matrix[i - 1][j - 1] + wTemp * similarity.getValue() * 2;
                 double horizontal = matrix[i][j - 1] + wTemp * similarity.getValue();
                 double vertical = matrix[i - 1][j] + wTemp * similarity.getValue();
-                
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): diagonal={}, horizontal={}, vertical={}", diagonal, horizontal, vertical);
+
 
                 if (diagonal >= horizontal && diagonal >= vertical) {
 
@@ -291,19 +263,11 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
                     normalizationMatrix[i][j] = normalizationMatrix[i - 1][j] + wTemp * weight;
 
                 }
-                
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): computation matrix:\n{}", maxSubstring(get2DMatrixString(matrix)));
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): normalization matrix:\n{}", maxSubstring(get2DMatrixString(normalizationMatrix)));
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): origin matrix:\n{}", maxSubstring(get2DMatrixString(originMatrix)));
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): local similarity matrix:\n{}", maxSubstring(get2DMatrixString(localSimilarityMatrix)));
 
-                if (matrix[i][j] >= matrix[maxCell_i][maxCell_j]
-                        && (!forceAlignmentEndsWithQuery || j == queryArray.length - 1)) {
+                if (matrix[i][j] >= matrix[maxCell_i][maxCell_j] && (!forceAlignmentEndsWithQuery || j == queryArray.length - 1)) {
                     maxCell_i = i;
                     maxCell_j = j;
                 }
-                
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): maxCell_i={}, maxCell_j={}", maxCell_i, maxCell_j);
 
             }
         }
@@ -312,6 +276,9 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
         int origin_i = maxCell_i;
         int origin_j = maxCell_j;
         int h_i;
+
+
+        ArrayList<Similarity> localSimilarities = new ArrayList<>();
 
         while (origin_i + origin_j > 0) {
             localSimilarities.add(localSimilarityMatrix[origin_i][origin_j]);
@@ -322,16 +289,12 @@ public class SMListDTWImplExt extends SMListDTWImpl implements SMListDTWExt, INE
 
         Collections.reverse(localSimilarities);
 
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): localSimilarities={}", localSimilarities);
-        
+
         double maxSimilarityValue = matrix[maxCell_i][maxCell_j];
         double denominator = normalizationMatrix[maxCell_i][maxCell_j];
 
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): maxSimilarityValue={}, denominator={}", maxSimilarityValue, denominator);
-        
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListDTWImplExt.computeSimilarityValue(DataObject, DataObject, SimilarityValuator): return maxSimilarityValue / denominator={}", maxSimilarityValue / denominator);
 
-        return maxSimilarityValue / denominator;
+        return new Object[]{maxSimilarityValue / denominator, localSimilarities};
     }
 
 }

@@ -10,7 +10,7 @@ public interface ISimilarityMeasureFunc {
     /**
      * sets the SimilarityMeasureFunc
      *
-     * @param similarityMeasureFunc  the WeightFunc to be set
+     * @param similarityMeasureFunc the WeightFunc to be set
      */
     void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc);
 

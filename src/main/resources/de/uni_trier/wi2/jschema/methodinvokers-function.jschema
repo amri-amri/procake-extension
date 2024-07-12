@@ -1,0 +1,373 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "method-invokers-function JSON schema",
+    "description": "Schema for JSON representation of a MethodInvokersFunc to be converted to an actual MethodInvokersFunc.",
+    "type": "object",
+    "properties": {
+        "element-type": {
+            "type": "string",
+            "enum": ["method-invokers-function"]
+        },
+        "if-statements": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/if"
+            }
+        }
+    },
+    "required": ["element-type"],
+    
+    "definitions": {
+        "if": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["if"]
+                },
+                "condition": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/and" },
+                        { "$ref": "#/definitions/or" },
+                        { "$ref": "#/definitions/not" },
+                        { "$ref": "#/definitions/equals" },
+                        { "$ref": "#/definitions/same-object-as" },
+                        { "$ref": "#/definitions/instance-of" },
+                        { "$ref": "#/definitions/regex" }
+                    ]
+                },
+                "return-value": { "$ref": "#/definitions/method-list" }
+            },
+            "required": ["element-type"]
+        },
+
+
+        
+        "and": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["and"]
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            { "$ref": "#/definitions/and" },
+                            { "$ref": "#/definitions/or" },
+                            { "$ref": "#/definitions/not" },
+                            { "$ref": "#/definitions/equals" },
+                            { "$ref": "#/definitions/same-object-as" },
+                            { "$ref": "#/definitions/instance-of" },
+                            { "$ref": "#/definitions/regex" }
+                        ]
+                    },
+                    "minItems": 2
+                }
+            },
+            "required": ["element-type", "content"]
+        },
+        "or": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["or"]
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            { "$ref": "#/definitions/and" },
+                            { "$ref": "#/definitions/or" },
+                            { "$ref": "#/definitions/not" },
+                            { "$ref": "#/definitions/equals" },
+                            { "$ref": "#/definitions/same-object-as" },
+                            { "$ref": "#/definitions/instance-of" },
+                            { "$ref": "#/definitions/regex" }
+                        ]
+                    },
+                    "minItems": 2
+                }
+            },
+            "required": ["element-type", "content"]
+        },
+        "not": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["not"]
+                },
+                "content": {
+                    "oneOf": [
+                            { "$ref": "#/definitions/and" },
+                            { "$ref": "#/definitions/or" },
+                            { "$ref": "#/definitions/not" },
+                            { "$ref": "#/definitions/equals" },
+                            { "$ref": "#/definitions/same-object-as" },
+                            { "$ref": "#/definitions/instance-of" },
+                            { "$ref": "#/definitions/regex" }
+                        ]
+                }
+            },
+            "required": ["element-type", "content"]
+        },
+        
+        "equals": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["equals"]
+                },
+                "a": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/q" },
+						{ "$ref": "#/definitions/c" },
+                        { "$ref": "#/definitions/string" },
+                        { "$ref": "#/definitions/double" },
+                        { "$ref": "#/definitions/boolean" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                },
+                "b": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/q" },
+						{ "$ref": "#/definitions/c" },
+                        { "$ref": "#/definitions/string" },
+                        { "$ref": "#/definitions/double" },
+                        { "$ref": "#/definitions/boolean" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                }
+            },
+            "required": ["element-type", "a", "b"]
+        },
+        "same-object-as": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["same-object-as"]
+                },
+                "a": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/q" },
+						{ "$ref": "#/definitions/c" },
+                        { "$ref": "#/definitions/string" },
+                        { "$ref": "#/definitions/double" },
+                        { "$ref": "#/definitions/boolean" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                },
+                "b": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/q" },
+						{ "$ref": "#/definitions/c" },
+                        { "$ref": "#/definitions/string" },
+                        { "$ref": "#/definitions/double" },
+                        { "$ref": "#/definitions/boolean" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                }
+            },
+            "required": ["element-type", "a", "b"]
+        },
+        
+        "instance-of": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["instance-of"]
+                },
+                "a": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/q" },
+						{ "$ref": "#/definitions/c" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                },
+                "b": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/string" }
+                    ]
+                }
+            },
+            "required": ["element-type", "a", "b"]
+        },
+        
+        "regex": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["regex"]
+                },
+                "pattern": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/string" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                },
+                "matcher": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/string" },
+                        { "$ref": "#/definitions/method-return-value" }
+                    ]
+                }
+            },
+            "required": ["element-type", "pattern", "matcher"]
+        },
+        
+        "q": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["q"]
+                }
+            },
+            "required": ["element-type"]
+        },
+		"c": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["c"]
+                }
+            },
+            "required": ["element-type"]
+        },
+        "string": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["string"]
+                },
+                "value": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": ["element-type", "value"]
+        },
+        "double": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["double"]
+                },
+                "value": {
+                    "type": "number"
+                }
+            },
+            "required": ["element-type", "value"]
+        },
+        "boolean": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["boolean"]
+                },
+                "value": {
+                    "type": ["string", "number"]
+                }
+            },
+            "required": ["element-type", "value"]
+        },
+        "character": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["character"]
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "required": ["element-type", "value"]
+        },
+        "integer": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["integer"]
+                },
+                "value": {
+                    "type": "number"
+                }
+            },
+            "required": ["element-type", "value"]
+        },
+        "method-return-value": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["method-return-value"]
+                },
+                "object": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/q" },
+						{ "$ref": "#/definitions/c" },
+                        { "$ref": "#/definitions/method" }
+                    ]
+                },
+                "method": { "$ref": "#/definitions/method" }
+            },
+            "required": ["element-type", "object", "method"]
+        },
+        "method": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["method"]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            { "$ref": "#/definitions/string" },
+                            { "$ref": "#/definitions/double" },
+                            { "$ref": "#/definitions/boolean" },
+                            { "$ref": "#/definitions/character" },
+                            { "$ref": "#/definitions/integer" }
+                        ]
+                    }
+                }
+            },
+            "required": ["element-type", "name"]
+        },
+        "method-list": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["method-list"]
+                },
+                "content": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/method" }
+                }
+            },
+            "required": ["element-type"]
+        },
+        "function": {
+            "properties": {
+                "element-type": {
+                    "type": "string",
+                    "enum": ["function"]
+                },
+                "name": {
+                    "type": "string",
+                    "enum": ["qcAttributesHaveSameKeyAndType", "qAttributeHasKeyTypeValue", "qEventContainsAttribute", "cAttributeHasKeyTypeValue", "cEventContainsAttribute"]
+                },
+                "arg1": {
+                    "type": "string"
+                },
+                "arg2": {
+                    "type": "string"
+                },
+                "arg3": {
+                    "type": "string"
+                }
+            },
+            "required": ["element-type", "name"]
+        }
+    }
+}

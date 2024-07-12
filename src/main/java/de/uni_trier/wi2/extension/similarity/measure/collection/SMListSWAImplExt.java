@@ -1,7 +1,11 @@
 package de.uni_trier.wi2.extension.similarity.measure.collection;
 
-import de.uni_trier.wi2.extension.abstraction.*;
+import de.uni_trier.wi2.extension.abstraction.IMethodInvokersFunc;
+import de.uni_trier.wi2.extension.abstraction.INESTtoList;
+import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
+import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
@@ -10,16 +14,12 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMListSWAImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import de.uni_trier.wi2.utils.MethodInvoker;
-import de.uni_trier.wi2.utils.MethodInvokersFunc;
-import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
-import de.uni_trier.wi2.utils.WeightFunc;
+import de.uni_trier.wi2.utils.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.METHOD_CALL;
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.maxSubstring;
+import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
 /**
  * A similarity measure using the 'Smith-Waterman' algorithm for {@link ListObject}s.
@@ -54,49 +54,50 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     protected MethodInvokersFunc methodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
     protected WeightFunc weightFunc = (a) -> 1;
 
+
     @Override
     public void setLocalSimilarityToUse(String similarityToUse) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
+
         super.setLocalSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        METHOD_CALL.trace("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSimilarityToUse()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
+
+
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
+
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        METHOD_CALL.trace("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getMethodInvokersFunc()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
+
+
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
+
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        METHOD_CALL.trace("public WeightFunc procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getWeightFunc()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getWeightFunc(): return {}", weightFunc);
+
+
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
+
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -107,46 +108,47 @@ public class SMListSWAImplExt extends SMListSWAImpl implements SMListSWAExt, INE
     }
 
     public String getSystemName() {
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSystemName()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.getSystemName(): return {}", SMListSWAExt.NAME);
+
+
         return SMListSWAExt.NAME;
     }
 
+    @Override
+    public boolean isSimilarityFor(DataClass dataclass, String orderName) {
+        if (XEStoSystem.isXESListClass(dataclass)) return true;
+        if (dataclass.isNESTSequentialWorkflow()) return true;
+        return super.isSimilarityFor(dataclass, orderName);
+    }
 
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
 
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
         Similarity similarity = new SimilarityImpl(this, queryObject, caseObject, computeSimilarityValue(queryObject, caseObject, valuator));
 
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.compute(DataObject, DataObject, SimilarityValuator): return Similarity");
 
         return similarity;
 
     }
 
     protected double computeSimilarityValue(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMListSWAImplExt.computeSimilarityValue(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
 
-        //TODO: DIAGNOSTICS!
 
         //prepare new arrays containing initial null-elements
         DataObject[] queryList, caseList;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESListClass")))
-            queryList = ((ListObject) XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject)).getValues().toArray(DataObject[]::new);
+        if (XEStoSystem.isXESListClass(queryObject.getDataClass()))
+            queryList = getXESListAsSystemListObject((AggregateObject) queryObject).getCollection().toArray(new DataObject[0]);
         else if (queryObject.isNESTSequentialWorkflow())
-            queryList = toList((NESTSequentialWorkflowObject) queryObject).getValues().toArray(DataObject[]::new);
-        else queryList = ((ListObject) queryObject).getValues().toArray(DataObject[]::new);
+            queryList = toList((NESTSequentialWorkflowObject) queryObject).getCollection().toArray(new DataObject[0]);
+        else queryList = ((ListObject) queryObject).getValues().toArray(new DataObject[0]);
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESListClass")))
-            caseList = ((ListObject) XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject)).getValues().toArray(DataObject[]::new);
+        if (XEStoSystem.isXESListClass(caseObject.getDataClass()))
+            caseList = getXESListAsSystemListObject((AggregateObject) caseObject).getCollection().toArray(new DataObject[0]);
         else if (caseObject.isNESTSequentialWorkflow())
-            caseList = toList((NESTSequentialWorkflowObject) caseObject).getValues().toArray(DataObject[]::new);
-        else caseList = ((ListObject) caseObject).getValues().toArray(DataObject[]::new);
+            caseList = toList((NESTSequentialWorkflowObject) caseObject).getCollection().toArray(new DataObject[0]);
+        else caseList = ((ListObject) caseObject).getValues().toArray(new DataObject[0]);
 
-        //TODO:DIAGNOSTICS!
 
         DataObject[] queryArray = new DataObject[queryList.length + 1];
         DataObject[] caseArray = new DataObject[caseList.length + 1];

@@ -1,0 +1,29 @@
+package de.uni_trier.wi2.extension.similarity.measure.taxonomy.abstraction;
+
+import de.uni_trier.wi2.utils.taxonomy.Taxonomy;
+
+import java.io.IOException;
+
+/**
+ * This abstract class represents an implementation of the "Resnik similarity" in
+ * SÁNCHEZ, David; BATET, Montserrat. Semantic similarity estimation in the biomedical domain: An ontology-based information-theoretic perspective. Journal of biomedical informatics, 2011, 44. Jg., Nr. 5, S. 749-759.
+ */
+public abstract class SMResnik extends SMTaxonomy {
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Here, similarity is defined as the information content of the least common subsumer of
+     * the given codes: sim_res(c1,c2) = IC(LCS(c1,c2))
+     *
+     * @param code1 the first code
+     * @param code2 the second code
+     * @return A similarity value between 0 and 1.
+     * @throws IOException if there was an error reading the *.xlsx file associated with the
+     *                     given taxonomy.
+     */
+    protected double computeSimilarity(String code1, String code2) throws IOException {
+        String lcs = Taxonomy.getLeastCommonSubsumer(code1, code2);
+        return Taxonomy.getInformationContent(taxonomy, lcs);
+    }
+}

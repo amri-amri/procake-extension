@@ -5,6 +5,7 @@ import de.uni_trier.wi2.extension.abstraction.INESTtoList;
 import de.uni_trier.wi2.extension.abstraction.ISimilarityMeasureFunc;
 import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
+import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
 import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
@@ -14,16 +15,12 @@ import de.uni_trier.wi2.procake.similarity.Similarity;
 import de.uni_trier.wi2.procake.similarity.SimilarityValuator;
 import de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionIsolatedMappingImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
-import de.uni_trier.wi2.utils.MethodInvoker;
-import de.uni_trier.wi2.utils.MethodInvokersFunc;
-import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
-import de.uni_trier.wi2.utils.WeightFunc;
+import de.uni_trier.wi2.utils.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import static de.uni_trier.wi2.ProcakeExtensionLoggingUtils.*;
-import static de.uni_trier.wi2.extension.abstraction.XESBaseToSystemClass.getXESAggregateAttributesAsSystemCollectionObject;
+import static de.uni_trier.wi2.utils.XEStoSystem.getXESListAsSystemListObject;
 
 /**
  * A similarity measure using the 'Isolated Mapping' algorithm for {@link CollectionObject}s.
@@ -62,48 +59,44 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     protected WeightFunc weightFunc = (a) -> 1;
 
     @Override
+    public boolean isReusable() {
+        return true;
+    }
+
+    @Override
     public void setSimilarityToUse(String similarityToUse) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.setSimilarityToUse(String similarityToUse={})...", similarityToUse);
         super.setSimilarityToUse(similarityToUse);
         similarityMeasureFunc = (a, b) -> similarityToUse;
     }
 
     @Override
     public SimilarityMeasureFunc getSimilarityMeasureFunc() {
-        METHOD_CALL.trace("public SimilarityMeasureFunc procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getSimilarityToUse()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getSimilarityToUse(): return {}", similarityMeasureFunc);
         return similarityMeasureFunc;
     }
 
     @Override
     public void setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.setSimilarityMeasureFunc(SimilarityMeasureFunc similarityMeasureFunc={})...", similarityMeasureFunc);
         this.similarityMeasureFunc = similarityMeasureFunc;
     }
 
     @Override
     public MethodInvokersFunc getMethodInvokersFunc() {
-        METHOD_CALL.trace("public MethodInvokersFunc procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getMethodInvokersFunc()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getMethodInvokersFunc(): return {}", methodInvokersFunc);
         return methodInvokersFunc;
     }
 
     @Override
     public void setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.setMethodInvokersFunc(MethodInvokersFunc methodInvokersFunc={})...", methodInvokersFunc);
         this.methodInvokersFunc = methodInvokersFunc;
     }
 
     @Override
     public WeightFunc getWeightFunc() {
-        METHOD_CALL.trace("public WeightFunc procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getWeightFunc()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getWeightFunc(): return {}", weightFunc);
         return weightFunc;
     }
 
     @Override
     public void setWeightFunc(WeightFunc weightFunc) {
-        METHOD_CALL.trace("public void procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.setWeightFunc(WeightFunc weightFunc={})...", weightFunc);
+
         this.weightFunc = (q) -> {
             Double weight = weightFunc.apply(q);
             if (weight == null) return 1;
@@ -114,9 +107,16 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     }
 
     public String getSystemName() {
-        METHOD_CALL.trace("public String procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getSystemName()...");
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.getSystemName(): return {}", SMCollectionIsolatedMappingExt.NAME);
+
+
         return SMCollectionIsolatedMappingExt.NAME;
+    }
+
+    @Override
+    public boolean isSimilarityFor(DataClass dataclass, String orderName) {
+        if (XEStoSystem.isXESListClass(dataclass)) return true;
+        if (dataclass.isNESTSequentialWorkflow()) return true;
+        return super.isSimilarityFor(dataclass, orderName);
     }
 
 
@@ -130,30 +130,26 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
      */
     @Override
     public Similarity compute(DataObject queryObject, DataObject caseObject, SimilarityValuator valuator) {
-        METHOD_CALL.trace("public Similarity procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject queryObject={}, DataObject caseObject={}, SimilarityValuator valuator={})", maxSubstring(queryObject), maxSubstring(caseObject), maxSubstring(valuator));
+
 
         CollectionObject queryCollection, caseCollection;
 
-        if (queryObject.getDataClass().isSubclassOf(queryObject.getModel().getClass("XESBaseClass")))
-            queryCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) queryObject);
+        if (XEStoSystem.isXESListClass(queryObject.getDataClass()))
+            queryCollection = getXESListAsSystemListObject((AggregateObject) queryObject);
         else if (queryObject.isNESTSequentialWorkflow())
             queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
-        if (caseObject.getDataClass().isSubclassOf(caseObject.getModel().getClass("XESBaseClass")))
-            caseCollection = getXESAggregateAttributesAsSystemCollectionObject((AggregateObject) caseObject);
+        if (XEStoSystem.isXESListClass(caseObject.getDataClass()))
+            caseCollection = getXESListAsSystemListObject((AggregateObject) queryObject);
         else if (caseObject.isNESTSequentialWorkflow())
             caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
         else caseCollection = (CollectionObject) caseObject;
 
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): queryCollection={}, caseCollection={}", maxSubstring(queryCollection), maxSubstring(caseCollection));
-
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): Similarity similarity = de.uni_trier.wi2.procake.similarity.base.collection.impl.SMCollectionImpl.checkStoppingCriteria(queryCollection, caseCollection);");
-
         Similarity similarity = checkStoppingCriteria(queryCollection, caseCollection);
 
         if (similarity != null) {
-            METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return {}", maxSubstring(similarity));
+
             return similarity;
         }
 
@@ -170,67 +166,43 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
         while (queryElementIterator.hasNext()) {
             DataObject queryElement = queryElementIterator.nextDataObject();
 
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): queryElement={}", maxSubstring(queryElement));
-
             Similarity localSimilarity = this.computeLocalSimilarity(queryElement, caseCollection, valuator);
-
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): localSimilarity={}", maxSubstring(localSimilarity));
 
             similaritySum += localSimilarity.getValue();
             weight = getWeightFunc().apply(queryElement);
             divisor += weight;
 
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): similaritySum={}", similaritySum);
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): weight={}", weight);
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): divisor={}", divisor);
 
             localSimilarities.add(localSimilarity);
         }
 
-        similarity = new SimilarityImpl(
-                this,
-                queryObject,
-                caseObject,
-                similaritySum / divisor,
-                localSimilarities);
+        similarity = new SimilarityImpl(this, queryObject, caseObject, similaritySum / divisor, localSimilarities);
 
-        METHOD_CALL.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt.compute(DataObject, DataObject, SimilarityValuator): return Similarity {}", maxSubstring(similarity));
 
         return similarity;
     }
 
     @Override
     protected Similarity computeLocalSimilarity(DataObject queryElement, CollectionObject caseCollection, SimilarityValuator valuator) {
-        METHOD_CALL.trace(
-                "protected Similarity procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt" +
-                        ".computeLocalSimilarity(DataObject queryElement={}, CollectionObject caseCollection={}, SimilarityValuator valuator={})",
-                maxSubstring(queryElement), maxSubstring(caseCollection), maxSubstring(valuator));
+
 
         String localSimilarityMeasure;
         double weight = getWeightFunc().apply(queryElement);
+        if (weight <= 0) return new SimilarityImpl(this, queryElement, null, 0.);
+
         Similarity maxSimilarity = new SimilarityImpl(null, queryElement, null, 0.0);
 
         DataObjectIterator caseElementIterator = caseCollection.iterator();
 
-        DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): weight = {}", weight);
 
         while (caseElementIterator.hasNext()) {
             DataObject caseElement = caseElementIterator.nextDataObject();
-
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                    "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                    "caseElement = {}", caseElement);
-
 
             localSimilarityMeasure = getSimilarityMeasureFunc().apply(queryElement, caseElement);
 
             if (localSimilarityMeasure == null)
                 localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                    "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                    "localSimilarityMeasure = {}", localSimilarityMeasure);
 
             Similarity similarity;
 
@@ -238,74 +210,27 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
                 try {
                     similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, methodInvokersFunc.apply(queryElement, caseElement));
 
-                    DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                            "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                            "similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, methodInvokersFunc.apply(queryElement, caseElement));");
+
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                     similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-                    DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                            "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                            "similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);");
+
                 }
             } else {
                 similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);
 
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                        "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                        "similarity = valuator.computeSimilarity(queryElement, caseElement, localSimilarityMeasure);");
-            }
 
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                    "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                    "similarity = {}", similarity);
+            }
 
             //Application of the weight function
-            similarity = new SimilarityImpl(
-                    valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure),
-                    queryElement,
-                    caseElement,
-                    similarity.getValue() * weight,
-                    (ArrayList<Similarity>) similarity.getLocalSimilarities(),
-                    similarity.getInfo());
-
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                    "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                    "apply weight function...");
-
-            DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                    "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                    "similarity = {}", similarity);
+            similarity = new SimilarityImpl(valuator.getSimilarityModel().getSimilarityMeasure(queryElement.getDataClass(), localSimilarityMeasure), queryElement, caseElement, similarity.getValue() * weight, (ArrayList<Similarity>) similarity.getLocalSimilarities(), similarity.getInfo());
 
             if (similarity.isValidValue() && similarity.getValue() > maxSimilarity.getValue()) {
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                        "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                        "similarity.isValidValue() && similarity.getValue() > maxSimilarity.getValue()");
-
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                        "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                        "maxSimilarity = similarity");
-
                 maxSimilarity = similarity;
             } else {
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                        "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                        "!similarity.isValidValue() || similarity.getValue() <= maxSimilarity.getValue()");
 
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                        "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                        "similarity.isValidValue() = {}", similarity.isValidValue());
-
-                DIAGNOSTICS.trace("procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt." +
-                        "computeLocalSimilarity(DataObject, CollectionObject , SimilarityValuator): " +
-                        "similarity.getValue()={}, maxSimilarity.getValue()={}", similarity.getValue(), maxSimilarity.getValue());
             }
         }
-
-        METHOD_CALL.trace(
-                "procake-extension.extension.similarity.measure.collection.SMCollectionIsolatedMappingImplExt" +
-                        ".computeLocalSimilarity(DataObject, CollectionObject, SimilarityValuator): " +
-                "return maxSimilarity={}", maxSubstring(maxSimilarity));
 
         return maxSimilarity;
     }

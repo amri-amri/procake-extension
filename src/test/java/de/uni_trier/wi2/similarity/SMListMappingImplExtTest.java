@@ -24,7 +24,7 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test1(){
+    public void test1() {
         ListObject queryList = workdays();
         ListObject caseList = weekdays();
 
@@ -33,18 +33,18 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(1.0, sim.getValue(),delta);
+        assertEquals(1.0, sim.getValue(), delta);
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse(SMStringEqual.NAME);
 
         sim = sm.compute(caseList, queryList, simVal);
 
-        assertEquals(1.0, sim.getValue(),delta);
+        assertEquals(1.0, sim.getValue(), delta);
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
@@ -62,7 +62,7 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(2./3, sim.getValue(), delta);
+        assertEquals(2. / 3, sim.getValue(), delta);
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse(SMStringEqual.NAME);
@@ -76,8 +76,6 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
         assertEquals(1., sim.getValue(), delta);
 
 
-
-
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse(SMStringEqual.NAME);
         sm.setWeightFunc(a -> {
@@ -87,8 +85,7 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
         sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(4./5, sim.getValue(), delta);
-
+        assertEquals(4. / 5, sim.getValue(), delta);
 
 
         sm = new SMListMappingImplExt();
@@ -100,12 +97,12 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
         sim = sm.compute(caseList, queryList, simVal);
 
-        assertEquals(2./3, sim.getValue(), delta);
+        assertEquals(2. / 3, sim.getValue(), delta);
 
     }
 
     @Test
-    public void test3(){
+    public void test3() {
         ListObject queryList = utils.createListObject();
 
         queryList.addValue(utils.createStringObject("A"));
@@ -130,7 +127,7 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
         Similarity sim = sm.compute(queryList, caseList, simVal);
 
-        assertEquals(2./3, sim.getValue(), delta);
+        assertEquals(2. / 3, sim.getValue(), delta);
 
 
         sm = new SMListMappingImplExt();
@@ -144,7 +141,6 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
         sim = sm.compute(caseList, queryList, simVal);
 
         assertEquals(1., sim.getValue(), delta);
-
 
 
         queryList.addValue(utils.createStringObject("E"));
@@ -163,7 +159,7 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
     }
 
     @Test
-    public void test4(){
+    public void test4() {
         SimilarityValuatorImplExt simValExt = new SimilarityValuatorImplExt(simVal.getSimilarityModel());
 
         ListObject queryList = utils.createListObject();
@@ -178,7 +174,7 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
         SMListMappingImplExt sm = new SMListMappingImplExt();
         sm.setSimilarityToUse(SMStringLevenshtein.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseSensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);
@@ -187,11 +183,11 @@ public class SMListMappingImplExtTest extends ISimilarityMeasureFuncTest {
 
 
         Similarity sim = sm.compute(queryList, caseList, simValExt);
-        assertEquals(1./3, sim.getValue(), delta);
+        assertEquals(1. / 3, sim.getValue(), delta);
 
         sm = new SMListMappingImplExt();
         sm.setSimilarityToUse(SMStringLevenshtein.NAME);
-        sm.setMethodInvokersFunc((a, b)->{
+        sm.setMethodInvokersFunc((a, b) -> {
             MethodInvoker mi = new MethodInvoker("setCaseInsensitive", new Class[]{}, new Object[]{});
             ArrayList<MethodInvoker> list = new ArrayList<>();
             list.add(mi);

@@ -50,13 +50,31 @@ import java.util.ArrayList;
  * </ul>
  */
 public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retriever, RetrievalFactoryObject, RetrieverExt {
-
+//todo: implements Retriever<..., ...>
+    /**
+     * The extended version of the similarity valuator implementation
+     */
     protected SimilarityValuatorImplExt valuator;
 
+    /**
+     * The list of global {@link MethodInvoker}s to set parameters of the global similarity measure
+     */
     protected ArrayList<MethodInvoker> globalMethodInvokers = new ArrayList<MethodInvoker>();
 
-    protected SimilarityMeasureFunc localSimilarityMeasureFunc = (a,b) -> null;
+    /**
+     * The functional interface assigning similarity measures to pairs of data objects
+     */
+    protected SimilarityMeasureFunc localSimilarityMeasureFunc = (a, b) -> null;
+
+    /**
+     * The functional interface assigning weight values to pairs of data objects
+     */
     protected WeightFunc localWeightFunc = (a) -> 1;
+
+    /**
+     * The functional interface assigning methods to pairs of data objects. The methods
+     * are to be invoked on the similarity measures assigned to the same pairs of data objects.
+     */
     protected MethodInvokersFunc localMethodInvokersFunc = (a, b) -> new ArrayList<MethodInvoker>();
 
     protected SimilarityCache similarityCache;
@@ -117,16 +135,14 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
     }
 
     @Override
-    protected SimilarityValuator getValuator() {
+    public SimilarityValuator getValuator() {
         return valuator;
     }
 
-    @Override
     public SimilarityCache getSimilarityCache() {
         return similarityCache;
     }
 
-    @Override
     public void setSimilarityCache(SimilarityCache similarityCache) {
         this.similarityCache = similarityCache;
     }
@@ -173,7 +189,7 @@ public class LinearRetrieverImplExt extends LinearRetrieverImpl implements Retri
         globalMethodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
 
         DataObjectIterator iter = getObjectPool().iterator();
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             DataObject caseObject = iter.nextDataObject();
 
             Similarity sim = null;

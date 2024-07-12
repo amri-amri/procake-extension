@@ -1,17 +1,23 @@
 package de.uni_trier.wi2.retrieval;
 
 import de.uni_trier.wi2.base.SimpleTestBase;
+import de.uni_trier.wi2.conversion.sax.XEStoNESTsAXConverter;
 import de.uni_trier.wi2.extension.retrieval.ParallelLinearRetrieverImplExt;
 import de.uni_trier.wi2.extension.similarity.measure.collection.SMCollectionIsolatedMappingExt;
 import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingExt;
 import de.uni_trier.wi2.extension.similarity.measure.collection.SMListMappingImplExt;
+import de.uni_trier.wi2.parsing.XMLtoMethodInvokersFuncConverter;
+import de.uni_trier.wi2.parsing.XMLtoSimilarityMeasureFuncConverter;
+import de.uni_trier.wi2.parsing.XMLtoWeightFuncConverter;
 import de.uni_trier.wi2.procake.data.object.DataObject;
 import de.uni_trier.wi2.procake.data.object.base.IntegerObject;
 import de.uni_trier.wi2.procake.data.object.base.ListObject;
 import de.uni_trier.wi2.procake.data.object.base.SetObject;
 import de.uni_trier.wi2.procake.data.object.base.StringObject;
+import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.ObjectPoolFactory;
 import de.uni_trier.wi2.procake.data.objectpool.WriteableObjectPool;
+import de.uni_trier.wi2.procake.data.objectpool.impl.WriteableObjectPoolImpl;
 import de.uni_trier.wi2.procake.retrieval.Query;
 import de.uni_trier.wi2.procake.retrieval.RetrievalResult;
 import de.uni_trier.wi2.procake.retrieval.RetrievalResultList;
@@ -24,16 +30,24 @@ import de.uni_trier.wi2.utils.MethodInvokersFunc;
 import de.uni_trier.wi2.utils.SimilarityMeasureFunc;
 import de.uni_trier.wi2.utils.WeightFunc;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
     @Test
-    public void ten_workers(){
+    public void ten_workers() {
         // query object Q
         StringObject q1 = utils.createStringObject("AEI");
         SetObject q2 = utils.createSetObject();
@@ -88,10 +102,10 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
         };
 
         // similarity measure function
-        SimilarityMeasureFunc similarityMeasureFunc = (q,c) -> {
-            if (q instanceof StringObject   && c instanceof StringObject)   return SMStringLevenshtein.NAME;
-            if (q instanceof SetObject      && c instanceof SetObject)      return SMCollectionIsolatedMappingExt.NAME;
-            if (q instanceof IntegerObject  && c instanceof IntegerObject)  return SMNumericLinear.NAME;
+        SimilarityMeasureFunc similarityMeasureFunc = (q, c) -> {
+            if (q instanceof StringObject && c instanceof StringObject) return SMStringLevenshtein.NAME;
+            if (q instanceof SetObject && c instanceof SetObject) return SMCollectionIsolatedMappingExt.NAME;
+            if (q instanceof IntegerObject && c instanceof IntegerObject) return SMNumericLinear.NAME;
             return SMObjectEqual.NAME;
         };
 
@@ -101,7 +115,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
             public ArrayList<MethodInvoker> apply(DataObject q, DataObject c) {
                 ArrayList<MethodInvoker> methodInvokers = new ArrayList<>();
 
-                if (q instanceof SetObject      && c instanceof SetObject)  {
+                if (q instanceof SetObject && c instanceof SetObject) {
                     methodInvokers.add(new MethodInvoker(
                             "setSimilarityMeasureFunc",
                             new Class[]{SimilarityMeasureFunc.class},
@@ -120,7 +134,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
                 }
 
-                if (q instanceof IntegerObject  && c instanceof IntegerObject)  {
+                if (q instanceof IntegerObject && c instanceof IntegerObject) {
 
                     methodInvokers.add(new MethodInvoker(
                             "setMinimum",
@@ -154,7 +168,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
         similarity = smListMappingImplExt.compute(Q, C1, simVal);
 
-        assertEquals(23./45, similarity.getValue(), delta);
+        assertEquals(23. / 45, similarity.getValue(), delta);
 
         // - C2 -
         smListMappingImplExt = new SMListMappingImplExt();
@@ -165,7 +179,7 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
 
         similarity = smListMappingImplExt.compute(Q, C2, simVal);
 
-        assertEquals(29./45, similarity.getValue(), delta);
+        assertEquals(29. / 45, similarity.getValue(), delta);
 
         // - C3 -
         smListMappingImplExt = new SMListMappingImplExt();
@@ -207,9 +221,54 @@ public class ParallelLinearRetrieverExtTest extends SimpleTestBase {
         RetrievalResultList retrievalResults = parallelLinearRetrieverImplExt.perform(query);
         Iterator retrievalResultIterator = retrievalResults.iterator();
 
-        assertEquals("C3", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
-        assertEquals("C2", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
-        assertEquals("C1", ( (RetrievalResult) retrievalResultIterator.next()).getObjectId() );
+        assertEquals("C3", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+        assertEquals("C2", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+        assertEquals("C1", ((RetrievalResult) retrievalResultIterator.next()).getObjectId());
+
+    }
+
+    @Test
+    public void test0() throws IOException, ParserConfigurationException, ClassNotFoundException, InvocationTargetException, SAXException, NoSuchMethodException, IllegalAccessException {
+        String xes = Files.readString(Path.of("src/test/resources/de/uni_trier/wi2/parallel/log.xes"));
+
+        String[] ids = new String[10];
+        for (int i = 0; i < ids.length; i++) ids[i] = "T" + i;
+
+        XEStoNESTsAXConverter converter = new XEStoNESTsAXConverter(model);
+        converter.configure(false, false, null, ids);
+        List<NESTSequentialWorkflowObject> workflows = converter.convert(xes);
+        WriteableObjectPool<NESTSequentialWorkflowObject> pool = new WriteableObjectPoolImpl<>();
+        pool.storeAll(workflows);
+
+        ParallelLinearRetrieverImplExt retriever = new ParallelLinearRetrieverImplExt();
+        retriever.setSimilarityModel(similarityModel);
+        retriever.setNumberOfWorkers(3);
+        retriever.setObjectPool(pool);
+
+
+        String globalSimilarityMeasure = "ListDTWExt";
+        ArrayList<MethodInvoker> globalMethodInvokers = new ArrayList<>();
+        globalMethodInvokers.add(new MethodInvoker("setHalvingDistancePercentage", new Class[]{double.class}, new Object[]{0.5d}));
+
+        SimilarityMeasureFunc localSimilarityMeasureFunc = XMLtoSimilarityMeasureFuncConverter.getSimilarityMeasureFunc(new File("src/test/resources/de/uni_trier/wi2/parallel/smf.xml"));
+        MethodInvokersFunc localMethodInvokersFunc = XMLtoMethodInvokersFuncConverter.getMethodInvokersFunc(new File("src/test/resources/de/uni_trier/wi2/parallel/mif.xml"));
+        WeightFunc localWeightFunc = XMLtoWeightFuncConverter.getWeightFunc(new File("src/test/resources/de/uni_trier/wi2/parallel/wf.xml"));
+
+
+        retriever.setGlobalSimilarityMeasure(globalSimilarityMeasure);
+        retriever.setGlobalMethodInvokers(globalMethodInvokers);
+
+        retriever.setLocalSimilarityMeasureFunc(localSimilarityMeasureFunc);
+        retriever.setLocalMethodInvokersFunc(localMethodInvokersFunc);
+        retriever.setLocalWeightFunc(localWeightFunc);
+
+
+        Query query = retriever.newQuery();
+        query.setQueryObject(workflows.get(0));
+        query.setRetrieveCases(false);
+        query.setNumberOfResults(10);
+        RetrievalResultList retrievalResults = retriever.perform(query);
+        retrievalResults.iterator();
 
     }
 }

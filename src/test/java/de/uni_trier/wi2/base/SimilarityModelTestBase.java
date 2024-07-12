@@ -9,7 +9,7 @@ import de.uni_trier.wi2.procake.similarity.base.impl.SMObjectEqualImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityImpl;
 import de.uni_trier.wi2.procake.similarity.impl.SimilarityMeasureImpl;
 
-public abstract class SimilarityModelTestBase extends TestBase{
+public abstract class SimilarityModelTestBase extends TestBase {
 
 
     @Override
@@ -67,11 +67,9 @@ public abstract class SimilarityModelTestBase extends TestBase{
         addSimilarityMeasureToSimilarityModel(sma2, ac2);
 
 
-
-
     }
 
-    private SimilarityMeasureImpl createConstantSimilarityMeasure(String name, double value, DataClass dataClass){
+    private SimilarityMeasureImpl createConstantSimilarityMeasure(String name, double value, DataClass dataClass) {
         return new SimilarityMeasureImpl() {
             @Override
             public Similarity compute(DataObject dataObject, DataObject dataObject1, SimilarityValuator similarityValuator) {

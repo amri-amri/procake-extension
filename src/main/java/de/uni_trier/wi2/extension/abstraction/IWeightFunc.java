@@ -10,7 +10,7 @@ public interface IWeightFunc {
     /**
      * sets the WeightFunc
      *
-     * @param weightFunc  the WeightFunc to be set
+     * @param weightFunc the WeightFunc to be set
      */
     void setWeightFunc(WeightFunc weightFunc);
 

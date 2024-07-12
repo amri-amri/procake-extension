@@ -24,7 +24,7 @@ public abstract class SimilarityMeasureTest extends SimpleTestBase {
     public String superclassName;
 
     @Test
-    public void empty_lists(){
+    public void empty_lists() {
         ListObject queryList = utils.createListObject();
         ListObject caseList = utils.createListObject();
 
@@ -64,8 +64,7 @@ public abstract class SimilarityMeasureTest extends SimpleTestBase {
         NESTWorkflowBuilder<NESTSequentialWorkflowObject> builder = new NESTWorkflowBuilderImpl();
 
 
-
-        NESTSequentialWorkflowObject queryGraph = builder.createNESTWorkflowGraphObject("query", NESTSequentialWorkflowClass.CLASS_NAME,null);
+        NESTSequentialWorkflowObject queryGraph = builder.createNESTWorkflowGraphObject("query", NESTSequentialWorkflowClass.CLASS_NAME, null);
 
         NESTAbstractWorkflowModifier queryModifier = queryGraph.getModifier();
 
@@ -79,8 +78,7 @@ public abstract class SimilarityMeasureTest extends SimpleTestBase {
         queryModifier.insertNewControlflowEdge(queryTaskB, queryTaskC, null);
 
 
-
-        NESTSequentialWorkflowObject caseGraph = builder.createNESTWorkflowGraphObject("case", NESTSequentialWorkflowClass.CLASS_NAME,null);
+        NESTSequentialWorkflowObject caseGraph = builder.createNESTWorkflowGraphObject("case", NESTSequentialWorkflowClass.CLASS_NAME, null);
 
         NESTAbstractWorkflowModifier caseModifier = caseGraph.getModifier();
 

@@ -7,11 +7,12 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public class XMLtoSimilarityMeasureFuncParserTest {
 
     @Test
-    public void test1() throws IOException, ParserConfigurationException, SAXException {
+    public void test1() throws IOException, ParserConfigurationException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         String similarityMeasureFuncXML = IOUtils.getResourceAsString("/xml/similaritymeasure-func-test.xml");
 

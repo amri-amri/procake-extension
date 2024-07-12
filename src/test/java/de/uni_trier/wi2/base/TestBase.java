@@ -24,7 +24,7 @@ public abstract class TestBase {
     public final double delta = 0.0000001;
 
     @Before
-    public void initialize(){
+    public void initialize() {
 
         CakeInstance.start(ResourcePaths.PATH_COMPOSITION);
 
@@ -35,12 +35,13 @@ public abstract class TestBase {
 
     }
 
-    protected void addSimilarityMeasureToSimilarityModel(SimilarityMeasureImpl sm, DataClass dataClass){
+    protected void addSimilarityMeasureToSimilarityModel(SimilarityMeasureImpl sm, DataClass dataClass) {
 
         // puts name and SimilarityMeasure-Object in cache (should be called only once per SM)
         try {
             similarityModel.registerSimilarityMeasureTemplate(sm);
-        } catch (NameAlreadyExistsException e) {};
+        } catch (NameAlreadyExistsException ignored) {
+        }
 
         // sets the DataClass the SM can be applied to
         sm.setDataClass(dataClass);
@@ -60,20 +61,20 @@ public abstract class TestBase {
             "Sunday"
     };
 
-    public ListObject weekdays(){
-        ListObject weekdays = (ListObject) utils.createListObject();
+    public ListObject weekdays() {
+        ListObject weekdays = utils.createListObject();
 
-        for (int i = 0; i<7; i++){
+        for (int i = 0; i < 7; i++) {
             weekdays.addValue(utils.createStringObject(days[i]));
         }
 
         return weekdays;
     }
 
-    public ListObject workdays(){
-        ListObject workdays = (ListObject) utils.createListObject();
+    public ListObject workdays() {
+        ListObject workdays = utils.createListObject();
 
-        for (int i = 0; i<5; i++){
+        for (int i = 0; i < 5; i++) {
             workdays.addValue(utils.createStringObject(days[i]));
         }
 
