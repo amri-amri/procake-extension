@@ -633,6 +633,15 @@ return value of the respective functional interface.
 Since `WeightFunc.apply(DataObject q)` takes only one argument,
 there is no need for the `<c>` element to exist in that DTD.
 
+##### Availability of functions
+- `methodinvokers-function.dtd`: all
+- `similaritymeasure-function.dtd`: all
+- `weight-function.dtd`: only `qAttributeHasKeyTypeValue` and `qEventContainsAttribute`
+
+Since `WeightFunc.apply(DataObject q)` takes only one argument,
+`qcAttributesHaveSameKeyAndType` can not be inside a `WeightFunc`,
+because this function depends on both the query and a case object.
+
 #### XMLtoFunctionConverter
 
 The three inheritors of the abstract class `XMLtoFunctionConverter`
