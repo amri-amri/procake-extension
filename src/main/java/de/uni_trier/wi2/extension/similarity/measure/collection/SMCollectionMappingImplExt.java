@@ -7,8 +7,7 @@ import de.uni_trier.wi2.extension.abstraction.IWeightFunc;
 import de.uni_trier.wi2.extension.similarity.valuator.SimilarityValuatorImplExt;
 import de.uni_trier.wi2.procake.data.model.DataClass;
 import de.uni_trier.wi2.procake.data.object.DataObject;
-import de.uni_trier.wi2.procake.data.object.base.AggregateObject;
-import de.uni_trier.wi2.procake.data.object.base.CollectionObject;
+import de.uni_trier.wi2.procake.data.object.base.*;
 import de.uni_trier.wi2.procake.data.object.nest.NESTSequentialWorkflowObject;
 import de.uni_trier.wi2.procake.data.objectpool.DataObjectIterator;
 import de.uni_trier.wi2.procake.similarity.Similarity;
@@ -139,6 +138,7 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
     @Override
     public boolean isSimilarityFor(DataClass dataclass, String orderName) {
         if (XEStoSystem.isXESListClass(dataclass)) return true;
+        if (XEStoSystem.isXESEventClass(dataclass)) return true;
         if (dataclass.isNESTSequentialWorkflow()) return true;
         return super.isSimilarityFor(dataclass, orderName);
     }
@@ -151,12 +151,16 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
 
         if (XEStoSystem.isXESListClass(queryObject.getDataClass()))
             queryCollection = getXESListAsSystemListObject((AggregateObject) queryObject);
+        else if (XEStoSystem.isXESEventClass(queryObject.getDataClass()))
+            queryCollection = (ListObject) queryObject;
         else if (queryObject.isNESTSequentialWorkflow())
             queryCollection = toList((NESTSequentialWorkflowObject) queryObject);
         else queryCollection = (CollectionObject) queryObject;
 
         if (XEStoSystem.isXESListClass(caseObject.getDataClass()))
-            caseCollection = getXESListAsSystemListObject((AggregateObject) queryObject);
+            caseCollection = getXESListAsSystemListObject((AggregateObject) caseObject);
+        else if (XEStoSystem.isXESEventClass(caseObject.getDataClass()))
+            caseCollection = (ListObject) caseObject;
         else if (caseObject.isNESTSequentialWorkflow())
             caseCollection = toList((NESTSequentialWorkflowObject) caseObject);
         else caseCollection = (CollectionObject) caseObject;
@@ -333,7 +337,9 @@ public class SMCollectionMappingImplExt extends SMCollectionMappingImpl implemen
                 localSimilarityMeasure = valuator.getSimilarityMeasure(queryElement, caseElement).getSystemName();
 
             Similarity similarity;
-            if (valuator instanceof SimilarityValuatorImplExt) {
+            if (weight <= 0) {
+                similarity = new SimilarityImpl(null,null,null, 0);
+            } else if (valuator instanceof SimilarityValuatorImplExt) {
                 try {
                     similarity = ((SimilarityValuatorImplExt) valuator).computeSimilarity(queryElement, caseElement, localSimilarityMeasure, getMethodInvokersFunc().apply(queryElement, caseElement));
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {

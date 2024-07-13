@@ -107,8 +107,6 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
     }
 
     public String getSystemName() {
-
-
         return SMCollectionIsolatedMappingExt.NAME;
     }
 
@@ -155,7 +153,7 @@ public class SMCollectionIsolatedMappingImplExt extends SMCollectionIsolatedMapp
 
         double similaritySum = 0.0;
         ArrayList<Similarity> localSimilarities = new ArrayList<>();
-        DataObjectIterator queryElementIterator = queryCollection.iterator();
+        DataObjectIterator<?> queryElementIterator = queryCollection.iterator();
 
         double divisor = 0.0;
         double weight;
