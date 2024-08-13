@@ -182,6 +182,20 @@ public class ParallelLinearRetrieverImplExt extends ParallelLinearRetrieverImpl 
         // create instance
         ParallelPoolProcessing poolProcessing = new ParallelPoolProcessing(getObjectPool(), taskSize, sorting, numberOfWorkers);
 
+        final MethodInvokersFunc methodInvokersFunc_ = getLocalMethodInvokersFunc();
+
+        setLocalMethodInvokersFunc(new MethodInvokersFunc() {
+            @Override
+            public ArrayList<MethodInvoker> apply(DataObject q, DataObject c) {
+                ArrayList<MethodInvoker> methodInvokers = methodInvokersFunc_.apply(q, c);
+                if (methodInvokers == null) methodInvokers = new ArrayList<>();
+                methodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
+                methodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{this}));
+                methodInvokers.add(new MethodInvoker("setWeightFunc", new Class[]{WeightFunc.class}, new Object[]{getLocalWeightFunc()}));
+                return methodInvokers;
+            }
+        });
+
         if (globalMethodInvokers != null) {
             globalMethodInvokers.add(new MethodInvoker("setSimilarityMeasureFunc", new Class[]{SimilarityMeasureFunc.class}, new Object[]{getLocalSimilarityMeasureFunc()}));
             globalMethodInvokers.add(new MethodInvoker("setMethodInvokersFunc", new Class[]{MethodInvokersFunc.class}, new Object[]{getLocalMethodInvokersFunc()}));
